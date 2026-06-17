@@ -1,0 +1,608 @@
+using System;
+using System.Collections.Generic;
+using System.Data.SQLite;
+using SistemaGestionNomina.Models;
+
+namespace SistemaGestionNomina.Data
+{
+    public class UsuarioRepository
+    {
+        public Usuario GetByUsername(string username)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand("SELECT * FROM Usuarios WHERE NombreUsuario = @u AND Estado = 'Activo';", connection))
+            {
+                command.Parameters.AddWithValue("@u", username);
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return new Usuario
+                        {
+                            IdUsuario = Convert.ToInt32(reader["IdUsuario"]),
+                            NombreUsuario = Convert.ToString(reader["NombreUsuario"]),
+                            PasswordHash = Convert.ToString(reader["PasswordHash"]),
+                            Rol = Convert.ToString(reader["Rol"]),
+                            Estado = Convert.ToString(reader["Estado"])
+                        };
+                    }
+                }
+            }
+
+            return null;
+        }
+    }
+
+    public class DepartamentoRepository
+    {
+        public List<Departamento> GetAll()
+        {
+            List<Departamento> items = new List<Departamento>();
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand("SELECT IdDepartamento, Nombre FROM Departamentos ORDER BY Nombre;", connection))
+            using (SQLiteDataReader reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    items.Add(new Departamento
+                    {
+                        IdDepartamento = Convert.ToInt32(reader["IdDepartamento"]),
+                        Nombre = Convert.ToString(reader["Nombre"])
+                    });
+                }
+            }
+
+            return items;
+        }
+    }
+
+    public class EmpleadoRepository
+    {
+        public List<Empleado> GetAll(string search, int? departmentId, string status)
+        {
+            List<Empleado> items = new List<Empleado>();
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"SELECT e.*, d.Nombre AS DepartamentoNombre
+                FROM Empleados e
+                INNER JOIN Departamentos d ON d.IdDepartamento = e.IdDepartamento
+                WHERE (@search = '' OR e.Codigo LIKE @like OR e.Nombre LIKE @like OR e.Apellido LIKE @like OR e.Cedula LIKE @like)
+                  AND (@dep = 0 OR e.IdDepartamento = @dep)
+                  AND (@estado = '' OR e.Estado = @estado)
+                ORDER BY e.Nombre, e.Apellido;", connection))
+            {
+                command.Parameters.AddWithValue("@search", search ?? string.Empty);
+                command.Parameters.AddWithValue("@like", "%" + (search ?? string.Empty) + "%");
+                command.Parameters.AddWithValue("@dep", departmentId.HasValue ? departmentId.Value : 0);
+                command.Parameters.AddWithValue("@estado", status ?? string.Empty);
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        items.Add(MapEmpleado(reader));
+                    }
+                }
+            }
+
+            return items;
+        }
+
+        public List<Empleado> GetActiveByDepartment(int? departmentId)
+        {
+            return GetAll(string.Empty, departmentId, "Activo");
+        }
+
+        public Empleado GetById(int id)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"SELECT e.*, d.Nombre AS DepartamentoNombre
+                FROM Empleados e INNER JOIN Departamentos d ON d.IdDepartamento = e.IdDepartamento
+                WHERE e.IdEmpleado = @id;", connection))
+            {
+                command.Parameters.AddWithValue("@id", id);
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    return reader.Read() ? MapEmpleado(reader) : null;
+                }
+            }
+        }
+
+        public bool ExistsCode(string code, int ignoreId)
+        {
+            return Exists("Codigo", code, ignoreId);
+        }
+
+        public bool ExistsCedula(string cedula, int ignoreId)
+        {
+            return Exists("Cedula", cedula, ignoreId);
+        }
+
+        public int Add(Empleado empleado)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"INSERT INTO Empleados
+                (Codigo, Nombre, Apellido, Cedula, Cargo, IdDepartamento, SalarioBase, Estado, FechaIngreso)
+                VALUES (@codigo, @nombre, @apellido, @cedula, @cargo, @dep, @salario, @estado, @fecha);
+                SELECT last_insert_rowid();", connection))
+            {
+                FillEmpleadoParameters(command, empleado);
+                return Convert.ToInt32(command.ExecuteScalar());
+            }
+        }
+
+        public void Update(Empleado empleado)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"UPDATE Empleados SET
+                Codigo = @codigo, Nombre = @nombre, Apellido = @apellido, Cedula = @cedula,
+                Cargo = @cargo, IdDepartamento = @dep, SalarioBase = @salario,
+                Estado = @estado, FechaIngreso = @fecha
+                WHERE IdEmpleado = @id;", connection))
+            {
+                FillEmpleadoParameters(command, empleado);
+                command.Parameters.AddWithValue("@id", empleado.IdEmpleado);
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public void Deactivate(int id)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand("UPDATE Empleados SET Estado = 'Inactivo' WHERE IdEmpleado = @id;", connection))
+            {
+                command.Parameters.AddWithValue("@id", id);
+                command.ExecuteNonQuery();
+            }
+        }
+
+        private bool Exists(string field, string value, int ignoreId)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand("SELECT COUNT(1) FROM Empleados WHERE " + field + " = @value AND IdEmpleado <> @id;", connection))
+            {
+                command.Parameters.AddWithValue("@value", value);
+                command.Parameters.AddWithValue("@id", ignoreId);
+                return Convert.ToInt32(command.ExecuteScalar()) > 0;
+            }
+        }
+
+        private static Empleado MapEmpleado(SQLiteDataReader reader)
+        {
+            return new Empleado
+            {
+                IdEmpleado = Convert.ToInt32(reader["IdEmpleado"]),
+                Codigo = Convert.ToString(reader["Codigo"]),
+                Nombre = Convert.ToString(reader["Nombre"]),
+                Apellido = Convert.ToString(reader["Apellido"]),
+                Cedula = Convert.ToString(reader["Cedula"]),
+                Cargo = Convert.ToString(reader["Cargo"]),
+                IdDepartamento = Convert.ToInt32(reader["IdDepartamento"]),
+                DepartamentoNombre = Convert.ToString(reader["DepartamentoNombre"]),
+                SalarioBase = Convert.ToDecimal(reader["SalarioBase"]),
+                Estado = Convert.ToString(reader["Estado"]),
+                FechaIngreso = DateTime.Parse(Convert.ToString(reader["FechaIngreso"]))
+            };
+        }
+
+        private static void FillEmpleadoParameters(SQLiteCommand command, Empleado empleado)
+        {
+            command.Parameters.AddWithValue("@codigo", empleado.Codigo);
+            command.Parameters.AddWithValue("@nombre", empleado.Nombre);
+            command.Parameters.AddWithValue("@apellido", empleado.Apellido);
+            command.Parameters.AddWithValue("@cedula", empleado.Cedula);
+            command.Parameters.AddWithValue("@cargo", empleado.Cargo);
+            command.Parameters.AddWithValue("@dep", empleado.IdDepartamento);
+            command.Parameters.AddWithValue("@salario", empleado.SalarioBase);
+            command.Parameters.AddWithValue("@estado", empleado.Estado);
+            command.Parameters.AddWithValue("@fecha", empleado.FechaIngreso.ToString("yyyy-MM-dd"));
+        }
+    }
+
+    public class AsistenciaRepository
+    {
+        public int Add(Asistencia asistencia)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"INSERT INTO Asistencias
+                (IdEmpleado, Fecha, HoraEntrada, HoraSalida, HorasTrabajadas, Estado)
+                VALUES (@empleado, @fecha, @entrada, @salida, @horas, @estado);
+                SELECT last_insert_rowid();", connection))
+            {
+                command.Parameters.AddWithValue("@empleado", asistencia.IdEmpleado);
+                command.Parameters.AddWithValue("@fecha", asistencia.Fecha.ToString("yyyy-MM-dd"));
+                command.Parameters.AddWithValue("@entrada", asistencia.HoraEntrada.HasValue ? asistencia.HoraEntrada.Value.ToString(@"hh\:mm") : null);
+                command.Parameters.AddWithValue("@salida", asistencia.HoraSalida.HasValue ? asistencia.HoraSalida.Value.ToString(@"hh\:mm") : null);
+                command.Parameters.AddWithValue("@horas", asistencia.HorasTrabajadas);
+                command.Parameters.AddWithValue("@estado", asistencia.Estado);
+                return Convert.ToInt32(command.ExecuteScalar());
+            }
+        }
+
+        public List<Asistencia> GetAll(DateTime? start, DateTime? end, int? employeeId, string status)
+        {
+            List<Asistencia> items = new List<Asistencia>();
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"SELECT a.*, e.Nombre || ' ' || e.Apellido AS EmpleadoNombre
+                FROM Asistencias a
+                INNER JOIN Empleados e ON e.IdEmpleado = a.IdEmpleado
+                WHERE (@inicio = '' OR a.Fecha >= @inicio)
+                  AND (@fin = '' OR a.Fecha <= @fin)
+                  AND (@empleado = 0 OR a.IdEmpleado = @empleado)
+                  AND (@estado = '' OR a.Estado = @estado)
+                ORDER BY a.Fecha DESC, EmpleadoNombre;", connection))
+            {
+                command.Parameters.AddWithValue("@inicio", start.HasValue ? start.Value.ToString("yyyy-MM-dd") : string.Empty);
+                command.Parameters.AddWithValue("@fin", end.HasValue ? end.Value.ToString("yyyy-MM-dd") : string.Empty);
+                command.Parameters.AddWithValue("@empleado", employeeId.HasValue ? employeeId.Value : 0);
+                command.Parameters.AddWithValue("@estado", status ?? string.Empty);
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        items.Add(MapAsistencia(reader));
+                    }
+                }
+            }
+
+            return items;
+        }
+
+        public decimal GetExtraHours(int employeeId, DateTime start, DateTime end)
+        {
+            decimal total = 0;
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"SELECT HorasTrabajadas FROM Asistencias
+                WHERE IdEmpleado = @id AND Fecha BETWEEN @inicio AND @fin AND Estado IN ('Puntual','Tardanza');", connection))
+            {
+                command.Parameters.AddWithValue("@id", employeeId);
+                command.Parameters.AddWithValue("@inicio", start.ToString("yyyy-MM-dd"));
+                command.Parameters.AddWithValue("@fin", end.ToString("yyyy-MM-dd"));
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        decimal hours = Convert.ToDecimal(reader["HorasTrabajadas"]);
+                        if (hours > 8)
+                        {
+                            total += hours - 8;
+                        }
+                    }
+                }
+            }
+
+            return total;
+        }
+
+        private static Asistencia MapAsistencia(SQLiteDataReader reader)
+        {
+            string entrada = Convert.ToString(reader["HoraEntrada"]);
+            string salida = Convert.ToString(reader["HoraSalida"]);
+            return new Asistencia
+            {
+                IdAsistencia = Convert.ToInt32(reader["IdAsistencia"]),
+                IdEmpleado = Convert.ToInt32(reader["IdEmpleado"]),
+                EmpleadoNombre = Convert.ToString(reader["EmpleadoNombre"]),
+                Fecha = DateTime.Parse(Convert.ToString(reader["Fecha"])),
+                HoraEntrada = string.IsNullOrWhiteSpace(entrada) ? (TimeSpan?)null : TimeSpan.Parse(entrada),
+                HoraSalida = string.IsNullOrWhiteSpace(salida) ? (TimeSpan?)null : TimeSpan.Parse(salida),
+                HorasTrabajadas = Convert.ToDecimal(reader["HorasTrabajadas"]),
+                Estado = Convert.ToString(reader["Estado"])
+            };
+        }
+    }
+
+    public class NominaRepository
+    {
+        public int CreatePeriodo(PeriodoNomina periodo)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"INSERT INTO PeriodosNomina (Nombre, FechaInicio, FechaFin, Estado)
+                VALUES (@nombre, @inicio, @fin, @estado); SELECT last_insert_rowid();", connection))
+            {
+                command.Parameters.AddWithValue("@nombre", periodo.Nombre);
+                command.Parameters.AddWithValue("@inicio", periodo.FechaInicio.ToString("yyyy-MM-dd"));
+                command.Parameters.AddWithValue("@fin", periodo.FechaFin.ToString("yyyy-MM-dd"));
+                command.Parameters.AddWithValue("@estado", periodo.Estado);
+                return Convert.ToInt32(command.ExecuteScalar());
+            }
+        }
+
+        public int CreateNomina(Nomina nomina)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteTransaction transaction = connection.BeginTransaction())
+            {
+                using (SQLiteCommand command = new SQLiteCommand(@"INSERT INTO Nominas
+                    (IdPeriodo, FechaCalculo, TotalIngresos, TotalDeducciones, TotalNeto, Estado)
+                    VALUES (@periodo, @fecha, @ingresos, @deducciones, @neto, @estado);
+                    SELECT last_insert_rowid();", connection, transaction))
+                {
+                    command.Parameters.AddWithValue("@periodo", nomina.IdPeriodo);
+                    command.Parameters.AddWithValue("@fecha", nomina.FechaCalculo.ToString("yyyy-MM-dd HH:mm:ss"));
+                    command.Parameters.AddWithValue("@ingresos", nomina.TotalIngresos);
+                    command.Parameters.AddWithValue("@deducciones", nomina.TotalDeducciones);
+                    command.Parameters.AddWithValue("@neto", nomina.TotalNeto);
+                    command.Parameters.AddWithValue("@estado", nomina.Estado);
+                    int idNomina = Convert.ToInt32(command.ExecuteScalar());
+
+                    foreach (NominaDetalle detalle in nomina.Detalles)
+                    {
+                        using (SQLiteCommand detailCommand = new SQLiteCommand(@"INSERT INTO NominaDetalle
+                            (IdNomina, IdEmpleado, SueldoBase, Bonos, HorasExtra, MontoHorasExtra, TotalIngresos, TotalDeducciones, NetoPagar)
+                            VALUES (@nomina, @empleado, @sueldo, @bonos, @horas, @montoHoras, @ingresos, @deducciones, @neto);", connection, transaction))
+                        {
+                            detailCommand.Parameters.AddWithValue("@nomina", idNomina);
+                            detailCommand.Parameters.AddWithValue("@empleado", detalle.IdEmpleado);
+                            detailCommand.Parameters.AddWithValue("@sueldo", detalle.SueldoBase);
+                            detailCommand.Parameters.AddWithValue("@bonos", detalle.Bonos);
+                            detailCommand.Parameters.AddWithValue("@horas", detalle.HorasExtra);
+                            detailCommand.Parameters.AddWithValue("@montoHoras", detalle.MontoHorasExtra);
+                            detailCommand.Parameters.AddWithValue("@ingresos", detalle.TotalIngresos);
+                            detailCommand.Parameters.AddWithValue("@deducciones", detalle.TotalDeducciones);
+                            detailCommand.Parameters.AddWithValue("@neto", detalle.NetoPagar);
+                            detailCommand.ExecuteNonQuery();
+                        }
+                    }
+
+                    transaction.Commit();
+                    return idNomina;
+                }
+            }
+        }
+
+        public List<Nomina> GetAll()
+        {
+            List<Nomina> items = new List<Nomina>();
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"SELECT n.*, p.Nombre AS PeriodoNombre
+                FROM Nominas n INNER JOIN PeriodosNomina p ON p.IdPeriodo = n.IdPeriodo
+                ORDER BY n.FechaCalculo DESC;", connection))
+            using (SQLiteDataReader reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    items.Add(new Nomina
+                    {
+                        IdNomina = Convert.ToInt32(reader["IdNomina"]),
+                        IdPeriodo = Convert.ToInt32(reader["IdPeriodo"]),
+                        PeriodoNombre = Convert.ToString(reader["PeriodoNombre"]),
+                        FechaCalculo = DateTime.Parse(Convert.ToString(reader["FechaCalculo"])),
+                        TotalIngresos = Convert.ToDecimal(reader["TotalIngresos"]),
+                        TotalDeducciones = Convert.ToDecimal(reader["TotalDeducciones"]),
+                        TotalNeto = Convert.ToDecimal(reader["TotalNeto"]),
+                        Estado = Convert.ToString(reader["Estado"])
+                    });
+                }
+            }
+
+            return items;
+        }
+
+        public List<NominaDetalle> GetDetalles(int idNomina)
+        {
+            List<NominaDetalle> items = new List<NominaDetalle>();
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"SELECT nd.*, e.Codigo, e.Nombre || ' ' || e.Apellido AS EmpleadoNombre, d.Nombre AS Departamento
+                FROM NominaDetalle nd
+                INNER JOIN Empleados e ON e.IdEmpleado = nd.IdEmpleado
+                INNER JOIN Departamentos d ON d.IdDepartamento = e.IdDepartamento
+                WHERE nd.IdNomina = @id
+                ORDER BY EmpleadoNombre;", connection))
+            {
+                command.Parameters.AddWithValue("@id", idNomina);
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        items.Add(MapDetalle(reader));
+                    }
+                }
+            }
+
+            return items;
+        }
+
+        private static NominaDetalle MapDetalle(SQLiteDataReader reader)
+        {
+            return new NominaDetalle
+            {
+                IdDetalle = Convert.ToInt32(reader["IdDetalle"]),
+                IdNomina = Convert.ToInt32(reader["IdNomina"]),
+                IdEmpleado = Convert.ToInt32(reader["IdEmpleado"]),
+                CodigoEmpleado = Convert.ToString(reader["Codigo"]),
+                EmpleadoNombre = Convert.ToString(reader["EmpleadoNombre"]),
+                Departamento = Convert.ToString(reader["Departamento"]),
+                SueldoBase = Convert.ToDecimal(reader["SueldoBase"]),
+                Bonos = Convert.ToDecimal(reader["Bonos"]),
+                HorasExtra = Convert.ToDecimal(reader["HorasExtra"]),
+                MontoHorasExtra = Convert.ToDecimal(reader["MontoHorasExtra"]),
+                TotalIngresos = Convert.ToDecimal(reader["TotalIngresos"]),
+                TotalDeducciones = Convert.ToDecimal(reader["TotalDeducciones"]),
+                NetoPagar = Convert.ToDecimal(reader["NetoPagar"])
+            };
+        }
+    }
+
+    public class ComprobanteRepository
+    {
+        public void Add(Comprobante comprobante)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"INSERT OR IGNORE INTO Comprobantes
+                (IdNomina, IdEmpleado, NumeroComprobante, FechaGeneracion, RutaPdf)
+                VALUES (@nomina, @empleado, @numero, @fecha, @ruta);", connection))
+            {
+                command.Parameters.AddWithValue("@nomina", comprobante.IdNomina);
+                command.Parameters.AddWithValue("@empleado", comprobante.IdEmpleado);
+                command.Parameters.AddWithValue("@numero", comprobante.NumeroComprobante);
+                command.Parameters.AddWithValue("@fecha", comprobante.FechaGeneracion.ToString("yyyy-MM-dd HH:mm:ss"));
+                command.Parameters.AddWithValue("@ruta", comprobante.RutaPdf ?? string.Empty);
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public void UpdateRutaPdf(int idComprobante, string ruta)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand("UPDATE Comprobantes SET RutaPdf = @ruta WHERE IdComprobante = @id;", connection))
+            {
+                command.Parameters.AddWithValue("@ruta", ruta ?? string.Empty);
+                command.Parameters.AddWithValue("@id", idComprobante);
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public List<Comprobante> GetAll(string search)
+        {
+            List<Comprobante> items = new List<Comprobante>();
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"SELECT c.*, e.Codigo, e.Nombre || ' ' || e.Apellido AS EmpleadoNombre,
+                       p.Nombre AS PeriodoNombre, nd.TotalIngresos, nd.TotalDeducciones, nd.NetoPagar
+                FROM Comprobantes c
+                INNER JOIN Empleados e ON e.IdEmpleado = c.IdEmpleado
+                INNER JOIN Nominas n ON n.IdNomina = c.IdNomina
+                INNER JOIN PeriodosNomina p ON p.IdPeriodo = n.IdPeriodo
+                INNER JOIN NominaDetalle nd ON nd.IdNomina = c.IdNomina AND nd.IdEmpleado = c.IdEmpleado
+                WHERE (@search = '' OR c.NumeroComprobante LIKE @like OR e.Nombre LIKE @like OR e.Apellido LIKE @like OR p.Nombre LIKE @like)
+                ORDER BY c.FechaGeneracion DESC;", connection))
+            {
+                command.Parameters.AddWithValue("@search", search ?? string.Empty);
+                command.Parameters.AddWithValue("@like", "%" + (search ?? string.Empty) + "%");
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        items.Add(MapComprobante(reader));
+                    }
+                }
+            }
+
+            return items;
+        }
+
+        public Comprobante GetById(int id)
+        {
+            List<Comprobante> all = GetAll(string.Empty);
+            for (int i = 0; i < all.Count; i++)
+            {
+                if (all[i].IdComprobante == id)
+                {
+                    return all[i];
+                }
+            }
+
+            return null;
+        }
+
+        private static Comprobante MapComprobante(SQLiteDataReader reader)
+        {
+            return new Comprobante
+            {
+                IdComprobante = Convert.ToInt32(reader["IdComprobante"]),
+                IdNomina = Convert.ToInt32(reader["IdNomina"]),
+                IdEmpleado = Convert.ToInt32(reader["IdEmpleado"]),
+                NumeroComprobante = Convert.ToString(reader["NumeroComprobante"]),
+                FechaGeneracion = DateTime.Parse(Convert.ToString(reader["FechaGeneracion"])),
+                RutaPdf = Convert.ToString(reader["RutaPdf"]),
+                CodigoEmpleado = Convert.ToString(reader["Codigo"]),
+                EmpleadoNombre = Convert.ToString(reader["EmpleadoNombre"]),
+                PeriodoNombre = Convert.ToString(reader["PeriodoNombre"]),
+                TotalIngresos = Convert.ToDecimal(reader["TotalIngresos"]),
+                TotalDeducciones = Convert.ToDecimal(reader["TotalDeducciones"]),
+                NetoPagar = Convert.ToDecimal(reader["NetoPagar"])
+            };
+        }
+    }
+
+    public class ConfiguracionRepository
+    {
+        public List<ConfiguracionNomina> GetAll()
+        {
+            List<ConfiguracionNomina> items = new List<ConfiguracionNomina>();
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand("SELECT * FROM ConfiguracionNomina ORDER BY NombreParametro;", connection))
+            using (SQLiteDataReader reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    items.Add(new ConfiguracionNomina
+                    {
+                        IdConfiguracion = Convert.ToInt32(reader["IdConfiguracion"]),
+                        NombreParametro = Convert.ToString(reader["NombreParametro"]),
+                        Valor = Convert.ToDecimal(reader["Valor"]),
+                        Descripcion = Convert.ToString(reader["Descripcion"])
+                    });
+                }
+            }
+
+            return items;
+        }
+
+        public decimal GetValue(string name, decimal fallback)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand("SELECT Valor FROM ConfiguracionNomina WHERE NombreParametro = @n;", connection))
+            {
+                command.Parameters.AddWithValue("@n", name);
+                object result = command.ExecuteScalar();
+                return result == null || result == DBNull.Value ? fallback : Convert.ToDecimal(result);
+            }
+        }
+
+        public void Save(string name, decimal value, string description)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"INSERT INTO ConfiguracionNomina (NombreParametro, Valor, Descripcion)
+                VALUES (@n, @v, @d)
+                ON CONFLICT(NombreParametro) DO UPDATE SET Valor = excluded.Valor, Descripcion = excluded.Descripcion;", connection))
+            {
+                command.Parameters.AddWithValue("@n", name);
+                command.Parameters.AddWithValue("@v", value);
+                command.Parameters.AddWithValue("@d", description);
+                command.ExecuteNonQuery();
+            }
+        }
+    }
+
+    public class ReporteRepository
+    {
+        public int Add(ReporteGenerado reporte)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"INSERT INTO ReportesGenerados
+                (NombreReporte, Tipo, GeneradoPor, FechaGeneracion, RutaArchivo)
+                VALUES (@nombre, @tipo, @por, @fecha, @ruta); SELECT last_insert_rowid();", connection))
+            {
+                command.Parameters.AddWithValue("@nombre", reporte.NombreReporte);
+                command.Parameters.AddWithValue("@tipo", reporte.Tipo);
+                command.Parameters.AddWithValue("@por", reporte.GeneradoPor);
+                command.Parameters.AddWithValue("@fecha", reporte.FechaGeneracion.ToString("yyyy-MM-dd HH:mm:ss"));
+                command.Parameters.AddWithValue("@ruta", reporte.RutaArchivo ?? string.Empty);
+                return Convert.ToInt32(command.ExecuteScalar());
+            }
+        }
+
+        public List<ReporteGenerado> GetAll()
+        {
+            List<ReporteGenerado> items = new List<ReporteGenerado>();
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand("SELECT * FROM ReportesGenerados ORDER BY FechaGeneracion DESC;", connection))
+            using (SQLiteDataReader reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    items.Add(new ReporteGenerado
+                    {
+                        IdReporte = Convert.ToInt32(reader["IdReporte"]),
+                        NombreReporte = Convert.ToString(reader["NombreReporte"]),
+                        Tipo = Convert.ToString(reader["Tipo"]),
+                        GeneradoPor = Convert.ToString(reader["GeneradoPor"]),
+                        FechaGeneracion = DateTime.Parse(Convert.ToString(reader["FechaGeneracion"])),
+                        RutaArchivo = Convert.ToString(reader["RutaArchivo"])
+                    });
+                }
+            }
+
+            return items;
+        }
+    }
+}
