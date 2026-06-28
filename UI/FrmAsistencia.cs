@@ -65,6 +65,39 @@ namespace SistemaGestionNomina.UI
                     a.HoraSalida.HasValue ? a.HoraSalida.Value.ToString(@"hh\:mm") : "--",
                     a.HorasTrabajadas.ToString("0.00"), a.Estado);
             }
+
+            UpdateSummaryCards();
+        }
+
+        private void UpdateSummaryCards()
+        {
+            int presentes = 0;
+            int ausentes = 0;
+            int tardanzas = 0;
+
+            foreach (Asistencia asistencia in currentItems)
+            {
+                if (asistencia.Estado == "Puntual")
+                {
+                    presentes++;
+                }
+                else if (asistencia.Estado == "Tardanza")
+                {
+                    presentes++;
+                    tardanzas++;
+                }
+                else if (asistencia.Estado == "Falta")
+                {
+                    ausentes++;
+                }
+            }
+
+            int total = currentItems.Count;
+            decimal porcentaje = total == 0 ? 0 : Math.Round((presentes * 100m) / total, 0);
+            lblPresentesValor.Text = presentes.ToString();
+            lblAusentesValor.Text = ausentes.ToString();
+            lblTardanzasValor.Text = tardanzas.ToString();
+            lblPorcentajeValor.Text = porcentaje.ToString("0") + "%";
         }
 
         private void btnRegistrar_Click(object sender, EventArgs e)

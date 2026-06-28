@@ -55,9 +55,9 @@ namespace SistemaGestionNomina.UI
             this.panelLogin.Controls.Add(this.chkRecordar);
             this.panelLogin.Controls.Add(this.btnIngresar);
             this.panelLogin.Controls.Add(this.lblMensaje);
-            this.panelLogin.Location = new System.Drawing.Point(295, 88);
+            this.panelLogin.Location = new System.Drawing.Point(275, 78);
             this.panelLogin.Name = "panelLogin";
-            this.panelLogin.Size = new System.Drawing.Size(390, 480);
+            this.panelLogin.Size = new System.Drawing.Size(430, 520);
             this.panelLogin.TabIndex = 0;
             // 
             // lblIcono
@@ -65,31 +65,31 @@ namespace SistemaGestionNomina.UI
             this.lblIcono.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(25)))), ((int)(((byte)(34)))));
             this.lblIcono.Font = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Bold);
             this.lblIcono.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(167)))), ((int)(((byte)(139)))), ((int)(((byte)(250)))));
-            this.lblIcono.Location = new System.Drawing.Point(163, 34);
+            this.lblIcono.Location = new System.Drawing.Point(183, 34);
             this.lblIcono.Name = "lblIcono";
             this.lblIcono.Size = new System.Drawing.Size(64, 64);
             this.lblIcono.TabIndex = 0;
-            this.lblIcono.Text = "$";
+            this.lblIcono.Text = "N";
             this.lblIcono.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblTitulo
             // 
             this.lblTitulo.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
             this.lblTitulo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(228)))), ((int)(((byte)(245)))));
-            this.lblTitulo.Location = new System.Drawing.Point(40, 118);
+            this.lblTitulo.Location = new System.Drawing.Point(36, 118);
             this.lblTitulo.Name = "lblTitulo";
-            this.lblTitulo.Size = new System.Drawing.Size(310, 34);
+            this.lblTitulo.Size = new System.Drawing.Size(358, 42);
             this.lblTitulo.TabIndex = 1;
-            this.lblTitulo.Text = "Sistema de Nómina";
+            this.lblTitulo.Text = "Sistema de Gestión de Nómina";
             this.lblTitulo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblSubtitulo
             // 
             this.lblSubtitulo.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.lblSubtitulo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
-            this.lblSubtitulo.Location = new System.Drawing.Point(40, 153);
+            this.lblSubtitulo.Location = new System.Drawing.Point(40, 166);
             this.lblSubtitulo.Name = "lblSubtitulo";
-            this.lblSubtitulo.Size = new System.Drawing.Size(310, 24);
+            this.lblSubtitulo.Size = new System.Drawing.Size(350, 24);
             this.lblSubtitulo.TabIndex = 2;
             this.lblSubtitulo.Text = "Acceso corporativo seguro";
             this.lblSubtitulo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -99,7 +99,7 @@ namespace SistemaGestionNomina.UI
             this.lblUsuario.AutoSize = true;
             this.lblUsuario.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.lblUsuario.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(228)))), ((int)(((byte)(245)))));
-            this.lblUsuario.Location = new System.Drawing.Point(40, 210);
+            this.lblUsuario.Location = new System.Drawing.Point(40, 224);
             this.lblUsuario.Name = "lblUsuario";
             this.lblUsuario.Size = new System.Drawing.Size(50, 15);
             this.lblUsuario.TabIndex = 3;
@@ -110,7 +110,7 @@ namespace SistemaGestionNomina.UI
             this.lblPassword.AutoSize = true;
             this.lblPassword.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.lblPassword.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(228)))), ((int)(((byte)(245)))));
-            this.lblPassword.Location = new System.Drawing.Point(40, 282);
+            this.lblPassword.Location = new System.Drawing.Point(40, 302);
             this.lblPassword.Name = "lblPassword";
             this.lblPassword.Size = new System.Drawing.Size(70, 15);
             this.lblPassword.TabIndex = 5;
@@ -122,9 +122,9 @@ namespace SistemaGestionNomina.UI
             this.txtUsuario.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtUsuario.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.txtUsuario.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(228)))), ((int)(((byte)(245)))));
-            this.txtUsuario.Location = new System.Drawing.Point(40, 236);
+            this.txtUsuario.Location = new System.Drawing.Point(40, 252);
             this.txtUsuario.Name = "txtUsuario";
-            this.txtUsuario.Size = new System.Drawing.Size(310, 25);
+            this.txtUsuario.Size = new System.Drawing.Size(350, 25);
             this.txtUsuario.TabIndex = 4;
             this.txtUsuario.Text = "admin";
             // 
@@ -134,9 +134,9 @@ namespace SistemaGestionNomina.UI
             this.txtPassword.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtPassword.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.txtPassword.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(228)))), ((int)(((byte)(245)))));
-            this.txtPassword.Location = new System.Drawing.Point(40, 308);
+            this.txtPassword.Location = new System.Drawing.Point(40, 330);
             this.txtPassword.Name = "txtPassword";
-            this.txtPassword.Size = new System.Drawing.Size(310, 25);
+            this.txtPassword.Size = new System.Drawing.Size(350, 25);
             this.txtPassword.TabIndex = 6;
             this.txtPassword.Text = "admin123";
             this.txtPassword.UseSystemPasswordChar = true;
@@ -146,7 +146,7 @@ namespace SistemaGestionNomina.UI
             this.chkRecordar.AutoSize = true;
             this.chkRecordar.BackColor = System.Drawing.Color.Transparent;
             this.chkRecordar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
-            this.chkRecordar.Location = new System.Drawing.Point(40, 354);
+            this.chkRecordar.Location = new System.Drawing.Point(40, 378);
             this.chkRecordar.Name = "chkRecordar";
             this.chkRecordar.Size = new System.Drawing.Size(138, 19);
             this.chkRecordar.TabIndex = 7;
@@ -160,20 +160,20 @@ namespace SistemaGestionNomina.UI
             this.btnIngresar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnIngresar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnIngresar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(25)))), ((int)(((byte)(92)))));
-            this.btnIngresar.Location = new System.Drawing.Point(40, 400);
+            this.btnIngresar.Location = new System.Drawing.Point(40, 426);
             this.btnIngresar.Name = "btnIngresar";
-            this.btnIngresar.Size = new System.Drawing.Size(310, 38);
+            this.btnIngresar.Size = new System.Drawing.Size(350, 42);
             this.btnIngresar.TabIndex = 8;
-            this.btnIngresar.Text = "Ingresar al Sistema";
+            this.btnIngresar.Text = "Iniciar sesión";
             this.btnIngresar.UseVisualStyleBackColor = false;
             this.btnIngresar.Click += new System.EventHandler(this.btnIngresar_Click);
             // 
             // lblMensaje
             // 
             this.lblMensaje.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
-            this.lblMensaje.Location = new System.Drawing.Point(40, 445);
+            this.lblMensaje.Location = new System.Drawing.Point(40, 476);
             this.lblMensaje.Name = "lblMensaje";
-            this.lblMensaje.Size = new System.Drawing.Size(310, 24);
+            this.lblMensaje.Size = new System.Drawing.Size(350, 24);
             this.lblMensaje.TabIndex = 9;
             this.lblMensaje.Text = "Usuario inicial: admin / admin123";
             this.lblMensaje.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;

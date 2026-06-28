@@ -6,15 +6,25 @@ namespace SistemaGestionNomina.Helpers
     public static class ThemeHelper
     {
         public static readonly Color Background = Color.FromArgb(13, 14, 20);
-        public static readonly Color Sidebar = Color.FromArgb(5, 5, 7);
-        public static readonly Color Card = Color.FromArgb(17, 18, 26);
-        public static readonly Color CardAlt = Color.FromArgb(24, 25, 34);
-        public static readonly Color Border = Color.FromArgb(42, 43, 56);
-        public static readonly Color Text = Color.FromArgb(229, 228, 245);
-        public static readonly Color TextMuted = Color.FromArgb(170, 170, 185);
-        public static readonly Color Accent = Color.FromArgb(167, 139, 250);
-        public static readonly Color Success = Color.FromArgb(52, 211, 153);
-        public static readonly Color Error = Color.FromArgb(249, 115, 134);
+        public static readonly Color BackgroundAlt = Color.FromArgb(17, 24, 39);
+        public static readonly Color Sidebar = Color.FromArgb(11, 15, 25);
+        public static readonly Color SidebarAlt = Color.FromArgb(8, 10, 17);
+        public static readonly Color Card = Color.FromArgb(24, 25, 34);
+        public static readonly Color CardAlt = Color.FromArgb(31, 41, 55);
+        public static readonly Color CardDeep = Color.FromArgb(17, 18, 26);
+        public static readonly Color Input = Color.FromArgb(20, 23, 35);
+        public static readonly Color Border = Color.FromArgb(45, 51, 64);
+        public static readonly Color BorderSoft = Color.FromArgb(38, 43, 55);
+        public static readonly Color Text = Color.FromArgb(243, 244, 246);
+        public static readonly Color TextMuted = Color.FromArgb(161, 161, 170);
+        public static readonly Color Accent = Color.FromArgb(139, 92, 246);
+        public static readonly Color AccentAlt = Color.FromArgb(124, 58, 237);
+        public static readonly Color AccentSoft = Color.FromArgb(46, 32, 84);
+        public static readonly Color Hover = Color.FromArgb(91, 62, 168);
+        public static readonly Color Success = Color.FromArgb(34, 197, 94);
+        public static readonly Color Warning = Color.FromArgb(251, 191, 36);
+        public static readonly Color Error = Color.FromArgb(239, 68, 68);
+        public static readonly Color Info = Color.FromArgb(59, 130, 246);
 
         public static Font TitleFont(float size)
         {

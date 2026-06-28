@@ -59,11 +59,12 @@ namespace SistemaGestionNomina.UI
             List<Nomina> nominas = nominaService.GetNominas();
             List<Comprobante> comprobantes = comprobanteService.GetAll(string.Empty);
             decimal totalNomina = nominas.Count > 0 ? nominas[0].TotalNeto : 0;
+            decimal totalDeducciones = nominas.Count > 0 ? nominas[0].TotalDeducciones : 0;
 
             lblEmpleadosActivosValor.Text = activos.Count.ToString();
             lblNominaActualValor.Text = "B/. " + totalNomina.ToString("0.00");
             lblComprobantesValor.Text = comprobantes.Count.ToString();
-            lblAlertasValor.Text = "2";
+            lblAlertasValor.Text = "B/. " + totalDeducciones.ToString("0.00");
 
             chartPagos.Series["Neto"].Points.Clear();
             string[] months = { "Ene", "Feb", "Mar", "Abr", "May", "Jun" };

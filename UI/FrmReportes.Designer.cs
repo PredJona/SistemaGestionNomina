@@ -59,7 +59,7 @@ namespace SistemaGestionNomina.UI
             this.lblTitulo.Name = "lblTitulo";
             this.lblTitulo.Size = new System.Drawing.Size(520, 42);
             this.lblTitulo.TabIndex = 0;
-            this.lblTitulo.Text = "Reportes Administrativos";
+            this.lblTitulo.Text = "Centro de reportes";
             // 
             // cards
             // 
@@ -84,7 +84,7 @@ namespace SistemaGestionNomina.UI
             this.btnReporteNomina.Name = "btnReporteNomina";
             this.btnReporteNomina.Size = new System.Drawing.Size(160, 34);
             this.btnReporteNomina.TabIndex = 0;
-            this.btnReporteNomina.Text = "Reporte Nómina";
+            this.btnReporteNomina.Text = "Generar PDF";
             this.btnReporteNomina.UseVisualStyleBackColor = false;
             this.btnReporteNomina.Click += new System.EventHandler(this.btnReporteNomina_Click);
             this.cardEmpleados.BackColor = System.Drawing.Color.Black;
@@ -108,7 +108,7 @@ namespace SistemaGestionNomina.UI
             this.btnReporteEmpleados.Name = "btnReporteEmpleados";
             this.btnReporteEmpleados.Size = new System.Drawing.Size(160, 34);
             this.btnReporteEmpleados.TabIndex = 0;
-            this.btnReporteEmpleados.Text = "Empleados Activos";
+            this.btnReporteEmpleados.Text = "Generar PDF";
             this.btnReporteEmpleados.UseVisualStyleBackColor = false;
             this.btnReporteEmpleados.Click += new System.EventHandler(this.btnReporteEmpleados_Click);
             this.cardPagos.BackColor = System.Drawing.Color.Black;
@@ -132,7 +132,7 @@ namespace SistemaGestionNomina.UI
             this.btnReportePagos.Name = "btnReportePagos";
             this.btnReportePagos.Size = new System.Drawing.Size(160, 34);
             this.btnReportePagos.TabIndex = 0;
-            this.btnReportePagos.Text = "Historial de Pagos";
+            this.btnReportePagos.Text = "Generar PDF";
             this.btnReportePagos.UseVisualStyleBackColor = false;
             this.btnReportePagos.Click += new System.EventHandler(this.btnReportePagos_Click);
             this.cardDeducciones.BackColor = System.Drawing.Color.Black;
@@ -156,7 +156,7 @@ namespace SistemaGestionNomina.UI
             this.btnReporteDeducciones.Name = "btnReporteDeducciones";
             this.btnReporteDeducciones.Size = new System.Drawing.Size(160, 34);
             this.btnReporteDeducciones.TabIndex = 0;
-            this.btnReporteDeducciones.Text = "Deducciones";
+            this.btnReporteDeducciones.Text = "Generar PDF";
             this.btnReporteDeducciones.UseVisualStyleBackColor = false;
             this.btnReporteDeducciones.Click += new System.EventHandler(this.btnReporteDeducciones_Click);
             // 

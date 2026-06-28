@@ -79,7 +79,7 @@ namespace SistemaGestionNomina.UI
             this.lblTitulo.Name = "lblTitulo";
             this.lblTitulo.Size = new System.Drawing.Size(420, 42);
             this.lblTitulo.TabIndex = 0;
-            this.lblTitulo.Text = "Dashboard";
+            this.lblTitulo.Text = "Panel Ejecutivo";
             // 
             // lblSubtitulo
             // 
@@ -102,7 +102,7 @@ namespace SistemaGestionNomina.UI
             this.btnRegistrarEmpleado.Name = "btnRegistrarEmpleado";
             this.btnRegistrarEmpleado.Size = new System.Drawing.Size(170, 38);
             this.btnRegistrarEmpleado.TabIndex = 2;
-            this.btnRegistrarEmpleado.Text = "Registrar Empleado";
+            this.btnRegistrarEmpleado.Text = "+ Nuevo empleado";
             this.btnRegistrarEmpleado.UseVisualStyleBackColor = false;
             this.btnRegistrarEmpleado.Click += new System.EventHandler(this.btnRegistrarEmpleado_Click);
             // 
@@ -118,7 +118,7 @@ namespace SistemaGestionNomina.UI
             this.btnProcesarNomina.Name = "btnProcesarNomina";
             this.btnProcesarNomina.Size = new System.Drawing.Size(170, 38);
             this.btnProcesarNomina.TabIndex = 3;
-            this.btnProcesarNomina.Text = "Procesar Nómina";
+            this.btnProcesarNomina.Text = "Procesar nómina";
             this.btnProcesarNomina.UseVisualStyleBackColor = false;
             this.btnProcesarNomina.Click += new System.EventHandler(this.btnProcesarNomina_Click);
             // 
@@ -146,7 +146,7 @@ namespace SistemaGestionNomina.UI
             // lblEmpleadosActivosValor
             // 
             this.lblEmpleadosActivosValor.Font = new System.Drawing.Font("Segoe UI", 22F, System.Drawing.FontStyle.Bold);
-            this.lblEmpleadosActivosValor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(167)))), ((int)(((byte)(139)))), ((int)(((byte)(250)))));
+            this.lblEmpleadosActivosValor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(59)))), ((int)(((byte)(130)))), ((int)(((byte)(246)))));
             this.lblEmpleadosActivosValor.Location = new System.Drawing.Point(18, 56);
             this.lblEmpleadosActivosValor.Name = "lblEmpleadosActivosValor";
             this.lblEmpleadosActivosValor.Size = new System.Drawing.Size(170, 44);
@@ -177,7 +177,7 @@ namespace SistemaGestionNomina.UI
             // lblNominaActualValor
             // 
             this.lblNominaActualValor.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold);
-            this.lblNominaActualValor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(167)))), ((int)(((byte)(139)))), ((int)(((byte)(250)))));
+            this.lblNominaActualValor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(197)))), ((int)(((byte)(94)))));
             this.lblNominaActualValor.Location = new System.Drawing.Point(18, 56);
             this.lblNominaActualValor.Name = "lblNominaActualValor";
             this.lblNominaActualValor.Size = new System.Drawing.Size(200, 44);
@@ -208,7 +208,7 @@ namespace SistemaGestionNomina.UI
             // lblComprobantesValor
             // 
             this.lblComprobantesValor.Font = new System.Drawing.Font("Segoe UI", 22F, System.Drawing.FontStyle.Bold);
-            this.lblComprobantesValor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(167)))), ((int)(((byte)(139)))), ((int)(((byte)(250)))));
+            this.lblComprobantesValor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(139)))), ((int)(((byte)(92)))), ((int)(((byte)(246)))));
             this.lblComprobantesValor.Location = new System.Drawing.Point(18, 56);
             this.lblComprobantesValor.Name = "lblComprobantesValor";
             this.lblComprobantesValor.Size = new System.Drawing.Size(170, 44);
@@ -234,7 +234,7 @@ namespace SistemaGestionNomina.UI
             this.lblCardAlertas.Name = "lblCardAlertas";
             this.lblCardAlertas.Size = new System.Drawing.Size(180, 24);
             this.lblCardAlertas.TabIndex = 0;
-            this.lblCardAlertas.Text = "Alertas pendientes";
+            this.lblCardAlertas.Text = "Deducciones del mes";
             // 
             // lblAlertasValor
             // 
@@ -242,13 +242,13 @@ namespace SistemaGestionNomina.UI
             this.lblAlertasValor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(115)))), ((int)(((byte)(134)))));
             this.lblAlertasValor.Location = new System.Drawing.Point(18, 56);
             this.lblAlertasValor.Name = "lblAlertasValor";
-            this.lblAlertasValor.Size = new System.Drawing.Size(170, 44);
+            this.lblAlertasValor.Size = new System.Drawing.Size(200, 44);
             this.lblAlertasValor.TabIndex = 1;
             this.lblAlertasValor.Text = "0";
             // 
             // panelGrafico
             // 
-            this.panelGrafico.BackColor = System.Drawing.Color.Black;
+            this.panelGrafico.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(25)))), ((int)(((byte)(34)))));
             this.panelGrafico.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelGrafico.Controls.Add(this.chartPagos);
             this.panelGrafico.Location = new System.Drawing.Point(36, 290);
@@ -258,12 +258,12 @@ namespace SistemaGestionNomina.UI
             // 
             // chartPagos
             // 
-            this.chartPagos.BackColor = System.Drawing.Color.Black;
+            this.chartPagos.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(25)))), ((int)(((byte)(34)))));
             chartArea1.AxisX.LabelStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
             chartArea1.AxisX.MajorGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(42)))), ((int)(((byte)(43)))), ((int)(((byte)(56)))));
             chartArea1.AxisY.LabelStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
             chartArea1.AxisY.MajorGrid.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(42)))), ((int)(((byte)(43)))), ((int)(((byte)(56)))));
-            chartArea1.BackColor = System.Drawing.Color.Black;
+            chartArea1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(25)))), ((int)(((byte)(34)))));
             chartArea1.Name = "Pagos";
             this.chartPagos.ChartAreas.Add(chartArea1);
             this.chartPagos.Location = new System.Drawing.Point(20, 42);
@@ -281,7 +281,7 @@ namespace SistemaGestionNomina.UI
             // 
             // panelActividad
             // 
-            this.panelActividad.BackColor = System.Drawing.Color.Black;
+            this.panelActividad.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(25)))), ((int)(((byte)(34)))));
             this.panelActividad.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelActividad.Controls.Add(this.lblActividadTitulo);
             this.panelActividad.Controls.Add(this.lblActividadUno);

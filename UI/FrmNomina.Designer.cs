@@ -67,7 +67,7 @@ namespace SistemaGestionNomina.UI
             this.lblTitulo.Name = "lblTitulo";
             this.lblTitulo.Size = new System.Drawing.Size(500, 42);
             this.lblTitulo.TabIndex = 0;
-            this.lblTitulo.Text = "Cálculo de Nómina";
+            this.lblTitulo.Text = "Cálculo de nómina";
             // 
             // panelParametros
             // 
@@ -130,7 +130,7 @@ namespace SistemaGestionNomina.UI
             this.btnCalcular.Name = "btnCalcular";
             this.btnCalcular.Size = new System.Drawing.Size(280, 38);
             this.btnCalcular.TabIndex = 4;
-            this.btnCalcular.Text = "Calcular Nómina";
+            this.btnCalcular.Text = "Calcular nómina";
             this.btnCalcular.UseVisualStyleBackColor = false;
             this.btnCalcular.Click += new System.EventHandler(this.btnCalcular_Click);
             this.lblPeriodo.ForeColor = System.Drawing.Color.FromArgb(170, 170, 185);
@@ -178,7 +178,7 @@ namespace SistemaGestionNomina.UI
             // lblTotalNeto
             // 
             this.lblTotalNeto.Font = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Bold);
-            this.lblTotalNeto.ForeColor = System.Drawing.Color.FromArgb(167, 139, 250);
+            this.lblTotalNeto.ForeColor = System.Drawing.Color.FromArgb(139, 92, 246);
             this.lblTotalNeto.Location = new System.Drawing.Point(24, 54);
             this.lblTotalNeto.Name = "lblTotalNeto";
             this.lblTotalNeto.Size = new System.Drawing.Size(280, 48);
@@ -196,7 +196,7 @@ namespace SistemaGestionNomina.UI
             // 
             // lblTotalIngresos
             // 
-            this.lblTotalIngresos.ForeColor = System.Drawing.Color.FromArgb(52, 211, 153);
+            this.lblTotalIngresos.ForeColor = System.Drawing.Color.FromArgb(34, 197, 94);
             this.lblTotalIngresos.Location = new System.Drawing.Point(28, 146);
             this.lblTotalIngresos.Name = "lblTotalIngresos";
             this.lblTotalIngresos.Size = new System.Drawing.Size(230, 26);
@@ -205,7 +205,7 @@ namespace SistemaGestionNomina.UI
             // 
             // lblTotalDeducciones
             // 
-            this.lblTotalDeducciones.ForeColor = System.Drawing.Color.FromArgb(249, 115, 134);
+            this.lblTotalDeducciones.ForeColor = System.Drawing.Color.FromArgb(239, 68, 68);
             this.lblTotalDeducciones.Location = new System.Drawing.Point(28, 180);
             this.lblTotalDeducciones.Name = "lblTotalDeducciones";
             this.lblTotalDeducciones.Size = new System.Drawing.Size(250, 26);
@@ -217,7 +217,7 @@ namespace SistemaGestionNomina.UI
             this.lblResumen.Name = "lblResumen";
             this.lblResumen.Size = new System.Drawing.Size(260, 26);
             this.lblResumen.TabIndex = 7;
-            this.lblResumen.Text = "Resumen del cálculo";
+            this.lblResumen.Text = "Neto a pagar";
             // 
             // btnConfirmarPago
             // 
@@ -227,7 +227,7 @@ namespace SistemaGestionNomina.UI
             this.btnConfirmarPago.Name = "btnConfirmarPago";
             this.btnConfirmarPago.Size = new System.Drawing.Size(150, 36);
             this.btnConfirmarPago.TabIndex = 4;
-            this.btnConfirmarPago.Text = "Confirmar Pago";
+            this.btnConfirmarPago.Text = "Confirmar pago";
             this.btnConfirmarPago.UseVisualStyleBackColor = false;
             this.btnConfirmarPago.Click += new System.EventHandler(this.btnConfirmarPago_Click);
             // 

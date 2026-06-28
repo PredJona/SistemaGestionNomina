@@ -42,7 +42,7 @@ namespace SistemaGestionNomina.UI
             this.lblTitulo.Name = "lblTitulo";
             this.lblTitulo.Size = new System.Drawing.Size(420, 42);
             this.lblTitulo.TabIndex = 0;
-            this.lblTitulo.Text = "Comprobantes";
+            this.lblTitulo.Text = "Comprobantes de pago";
             // 
             // txtBuscar
             // 
@@ -77,7 +77,7 @@ namespace SistemaGestionNomina.UI
             // 
             // panelVistaPrevia
             // 
-            this.panelVistaPrevia.BackColor = System.Drawing.Color.Black;
+            this.panelVistaPrevia.BackColor = System.Drawing.Color.FromArgb(243, 244, 246);
             this.panelVistaPrevia.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelVistaPrevia.Controls.Add(this.lblVistaPrevia);
             this.panelVistaPrevia.Location = new System.Drawing.Point(548, 144);
@@ -87,8 +87,8 @@ namespace SistemaGestionNomina.UI
             // 
             // lblVistaPrevia
             // 
-            this.lblVistaPrevia.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblVistaPrevia.ForeColor = System.Drawing.Color.FromArgb(229, 228, 245);
+            this.lblVistaPrevia.Font = new System.Drawing.Font("Consolas", 10F);
+            this.lblVistaPrevia.ForeColor = System.Drawing.Color.FromArgb(17, 24, 39);
             this.lblVistaPrevia.Location = new System.Drawing.Point(22, 22);
             this.lblVistaPrevia.Name = "lblVistaPrevia";
             this.lblVistaPrevia.Size = new System.Drawing.Size(390, 410);
@@ -104,7 +104,7 @@ namespace SistemaGestionNomina.UI
             this.btnExportarPdf.Name = "btnExportarPdf";
             this.btnExportarPdf.Size = new System.Drawing.Size(100, 34);
             this.btnExportarPdf.TabIndex = 4;
-            this.btnExportarPdf.Text = "Exportar PDF";
+            this.btnExportarPdf.Text = "PDF";
             this.btnExportarPdf.UseVisualStyleBackColor = false;
             this.btnExportarPdf.Click += new System.EventHandler(this.btnExportarPdf_Click);
             this.btnExportarExcel.BackColor = System.Drawing.Color.Black;
@@ -114,7 +114,7 @@ namespace SistemaGestionNomina.UI
             this.btnExportarExcel.Name = "btnExportarExcel";
             this.btnExportarExcel.Size = new System.Drawing.Size(110, 34);
             this.btnExportarExcel.TabIndex = 5;
-            this.btnExportarExcel.Text = "Exportar Excel";
+            this.btnExportarExcel.Text = "Excel";
             this.btnExportarExcel.UseVisualStyleBackColor = false;
             this.btnExportarExcel.Click += new System.EventHandler(this.btnExportarExcel_Click);
             this.btnImprimir.BackColor = System.Drawing.Color.Black;

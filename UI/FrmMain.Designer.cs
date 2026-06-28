@@ -53,7 +53,7 @@ namespace SistemaGestionNomina.UI
             // 
             // panelSidebar
             // 
-            this.panelSidebar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(5)))), ((int)(((byte)(5)))), ((int)(((byte)(7)))));
+            this.panelSidebar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(15)))), ((int)(((byte)(25)))));
             this.panelSidebar.Controls.Add(this.lblMarca);
             this.panelSidebar.Controls.Add(this.lblSubmarca);
             this.panelSidebar.Controls.Add(this.btnDashboard);
@@ -74,21 +74,21 @@ namespace SistemaGestionNomina.UI
             // lblMarca
             // 
             this.lblMarca.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
-            this.lblMarca.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(228)))), ((int)(((byte)(245)))));
-            this.lblMarca.Location = new System.Drawing.Point(24, 28);
+            this.lblMarca.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(244)))), ((int)(((byte)(246)))));
+            this.lblMarca.Location = new System.Drawing.Point(24, 30);
             this.lblMarca.Name = "lblMarca";
             this.lblMarca.Size = new System.Drawing.Size(210, 32);
             this.lblMarca.TabIndex = 0;
-            this.lblMarca.Text = "Gestión Nómina";
+            this.lblMarca.Text = "Nómina Pro";
             // 
             // lblSubmarca
             // 
             this.lblSubmarca.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
-            this.lblSubmarca.Location = new System.Drawing.Point(26, 62);
+            this.lblSubmarca.Location = new System.Drawing.Point(26, 64);
             this.lblSubmarca.Name = "lblSubmarca";
             this.lblSubmarca.Size = new System.Drawing.Size(210, 22);
             this.lblSubmarca.TabIndex = 1;
-            this.lblSubmarca.Text = "Administración Central";
+            this.lblSubmarca.Text = "Gestión empresarial";
             // 
             // btnDashboard
             // 
@@ -282,7 +282,7 @@ namespace SistemaGestionNomina.UI
             // 
             // panelTopbar
             // 
-            this.panelTopbar.BackColor = System.Drawing.Color.Black;
+            this.panelTopbar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(18)))), ((int)(((byte)(26)))));
             this.panelTopbar.Controls.Add(this.lblTituloTop);
             this.panelTopbar.Controls.Add(this.lblUsuarioActual);
             this.panelTopbar.Dock = System.Windows.Forms.DockStyle.Top;
@@ -294,8 +294,8 @@ namespace SistemaGestionNomina.UI
             // lblTituloTop
             // 
             this.lblTituloTop.Dock = System.Windows.Forms.DockStyle.Left;
-            this.lblTituloTop.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
-            this.lblTituloTop.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(167)))), ((int)(((byte)(139)))), ((int)(((byte)(250)))));
+            this.lblTituloTop.Font = new System.Drawing.Font("Segoe UI", 17F, System.Drawing.FontStyle.Bold);
+            this.lblTituloTop.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(244)))), ((int)(((byte)(246)))));
             this.lblTituloTop.Location = new System.Drawing.Point(0, 0);
             this.lblTituloTop.Name = "lblTituloTop";
             this.lblTituloTop.Padding = new System.Windows.Forms.Padding(28, 0, 0, 0);
@@ -307,8 +307,9 @@ namespace SistemaGestionNomina.UI
             // lblUsuarioActual
             // 
             this.lblUsuarioActual.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblUsuarioActual.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
-            this.lblUsuarioActual.Location = new System.Drawing.Point(708, 27);
+            this.lblUsuarioActual.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblUsuarioActual.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(161)))), ((int)(((byte)(161)))), ((int)(((byte)(170)))));
+            this.lblUsuarioActual.Location = new System.Drawing.Point(708, 25);
             this.lblUsuarioActual.Name = "lblUsuarioActual";
             this.lblUsuarioActual.Size = new System.Drawing.Size(282, 24);
             this.lblUsuarioActual.TabIndex = 1;

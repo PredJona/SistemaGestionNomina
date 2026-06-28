@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using SistemaGestionNomina.Helpers;
 using SistemaGestionNomina.Models;
@@ -27,7 +28,16 @@ namespace SistemaGestionNomina.UI
                 return;
             }
 
-            using (Pen pen = new Pen(Color.FromArgb(28, 30, 40)))
+            using (LinearGradientBrush brush = new LinearGradientBrush(
+                ClientRectangle,
+                Color.FromArgb(13, 14, 20),
+                Color.FromArgb(24, 18, 45),
+                LinearGradientMode.ForwardDiagonal))
+            {
+                e.Graphics.FillRectangle(brush, ClientRectangle);
+            }
+
+            using (Pen pen = new Pen(Color.FromArgb(24, 29, 42)))
             {
                 for (int x = 0; x < Width; x += 34)
                 {

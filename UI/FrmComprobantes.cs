@@ -69,14 +69,20 @@ namespace SistemaGestionNomina.UI
             lblVistaPrevia.Text =
                 "SISTEMA DE GESTIÓN DE NÓMINA\n" +
                 "COMPROBANTE DE PAGO\n\n" +
-                "N° Doc: " + selectedComprobante.NumeroComprobante + "\n" +
-                "Fecha emisión: " + selectedComprobante.FechaGeneracion.ToString("dd/MM/yyyy HH:mm") + "\n" +
-                "Periodo: " + selectedComprobante.PeriodoNombre + "\n\n" +
-                "Empleado: " + selectedComprobante.EmpleadoNombre + "\n" +
-                "Código: " + selectedComprobante.CodigoEmpleado + "\n\n" +
-                "Ingresos: B/. " + selectedComprobante.TotalIngresos.ToString("0.00") + "\n" +
-                "Deducciones: B/. " + selectedComprobante.TotalDeducciones.ToString("0.00") + "\n\n" +
-                "Neto a pagar: B/. " + selectedComprobante.NetoPagar.ToString("0.00");
+                "------------------------------------------------\n" +
+                "Documento:      " + selectedComprobante.NumeroComprobante + "\n" +
+                "Fecha emisión:  " + selectedComprobante.FechaGeneracion.ToString("dd/MM/yyyy HH:mm") + "\n" +
+                "Periodo:        " + selectedComprobante.PeriodoNombre + "\n" +
+                "------------------------------------------------\n" +
+                "Empleado:       " + selectedComprobante.EmpleadoNombre + "\n" +
+                "Código:         " + selectedComprobante.CodigoEmpleado + "\n" +
+                "------------------------------------------------\n" +
+                "Ingresos:       B/. " + selectedComprobante.TotalIngresos.ToString("0.00") + "\n" +
+                "Deducciones:    B/. " + selectedComprobante.TotalDeducciones.ToString("0.00") + "\n" +
+                "------------------------------------------------\n" +
+                "NETO A PAGAR:   B/. " + selectedComprobante.NetoPagar.ToString("0.00") + "\n" +
+                "------------------------------------------------\n\n" +
+                "Firma autorizada: __________________________";
         }
 
         private void btnExportarPdf_Click(object sender, EventArgs e)
