@@ -26,6 +26,7 @@ namespace SistemaGestionNomina.Services
     {
         private readonly EmpleadoRepository empleadoRepository = new EmpleadoRepository();
         private readonly DepartamentoRepository departamentoRepository = new DepartamentoRepository();
+        private readonly AuditTrailService auditTrailService = new AuditTrailService();
 
         public List<Empleado> GetAll(string search, int? departmentId, string status)
         {
@@ -49,6 +50,11 @@ namespace SistemaGestionNomina.Services
 
         public int Save(Empleado empleado)
         {
+            if (empleado == null)
+            {
+                throw new ArgumentException("Debe indicar los datos del empleado.");
+            }
+
             if (empleadoRepository.ExistsCode(empleado.Codigo, empleado.IdEmpleado))
             {
                 throw new InvalidOperationException("Ya existe un empleado con ese código.");
@@ -61,25 +67,35 @@ namespace SistemaGestionNomina.Services
 
             if (empleado.IdEmpleado == 0)
             {
-                return empleadoRepository.Add(empleado);
+                int id = empleadoRepository.Add(empleado);
+                auditTrailService.RegistrarCambio("admin", "Empleados", "Crear", empleado.Codigo);
+                return id;
             }
 
             empleadoRepository.Update(empleado);
+            auditTrailService.RegistrarCambio("admin", "Empleados", "Actualizar", empleado.Codigo);
             return empleado.IdEmpleado;
         }
 
         public void Deactivate(int id)
         {
             empleadoRepository.Deactivate(id);
+            auditTrailService.RegistrarCambio("admin", "Empleados", "Desactivar", "IdEmpleado=" + id);
         }
     }
 
     public class AsistenciaService
     {
         private readonly AsistenciaRepository asistenciaRepository = new AsistenciaRepository();
+        private readonly AuditTrailService auditTrailService = new AuditTrailService();
 
         public int Register(Asistencia asistencia)
         {
+            if (asistencia == null)
+            {
+                throw new ArgumentException("Debe indicar los datos de asistencia.");
+            }
+
             if (asistencia.Estado == "Falta" || asistencia.Estado == "Permiso")
             {
                 asistencia.HoraEntrada = null;
@@ -88,6 +104,7 @@ namespace SistemaGestionNomina.Services
             }
             else if (asistencia.HoraEntrada.HasValue && asistencia.HoraSalida.HasValue)
             {
+                // Para asistencia valida, la salida debe cerrar una jornada real.
                 if (asistencia.HoraSalida.Value <= asistencia.HoraEntrada.Value)
                 {
                     throw new InvalidOperationException("La hora de salida debe ser mayor que la hora de entrada.");
@@ -100,7 +117,10 @@ namespace SistemaGestionNomina.Services
                 throw new InvalidOperationException("Debe registrar hora de entrada y salida.");
             }
 
-            return asistenciaRepository.Add(asistencia);
+            int id = asistenciaRepository.Add(asistencia);
+            auditTrailService.RegistrarCambio("admin", "Asistencia", "Registrar",
+                "IdEmpleado=" + asistencia.IdEmpleado + ", Fecha=" + asistencia.Fecha.ToString("yyyy-MM-dd"));
+            return id;
         }
 
         public List<Asistencia> GetAll(DateTime? start, DateTime? end, int? employeeId, string status)
@@ -140,6 +160,7 @@ namespace SistemaGestionNomina.Services
         private readonly ConfiguracionRepository configuracionRepository = new ConfiguracionRepository();
         private readonly NominaRepository nominaRepository = new NominaRepository();
         private readonly ComprobanteRepository comprobanteRepository = new ComprobanteRepository();
+        private readonly AuditTrailService auditTrailService = new AuditTrailService();
 
         public Nomina CalcularNomina(DateTime fechaInicio, DateTime fechaFin, int? departamentoId)
         {
@@ -167,6 +188,7 @@ namespace SistemaGestionNomina.Services
 
             foreach (Empleado empleado in empleados)
             {
+                // Formula academica: sueldo base + bono + horas extra - deducciones configurables.
                 decimal horasExtra = asistenciaRepository.GetExtraHours(empleado.IdEmpleado, fechaInicio, fechaFin);
                 decimal pagoHora = horasMensualesBase <= 0 ? 0 : empleado.SalarioBase / horasMensualesBase;
                 decimal montoHorasExtra = Math.Round(horasExtra * pagoHora * recargoHoraExtra, 2);
@@ -220,6 +242,7 @@ namespace SistemaGestionNomina.Services
 
             for (int i = 0; i < nomina.Detalles.Count; i++)
             {
+                // Cada detalle confirmado genera un comprobante trazable para impresion y exportacion.
                 NominaDetalle detalle = nomina.Detalles[i];
                 Comprobante comprobante = new Comprobante();
                 comprobante.IdNomina = idNomina;
@@ -230,6 +253,8 @@ namespace SistemaGestionNomina.Services
                 comprobanteRepository.Add(comprobante);
             }
 
+            auditTrailService.RegistrarCambio("admin", "Nomina", "Confirmar",
+                "IdNomina=" + idNomina + ", Empleados=" + nomina.Detalles.Count);
             return idNomina;
         }
 
@@ -247,6 +272,7 @@ namespace SistemaGestionNomina.Services
     public class ComprobanteService
     {
         private readonly ComprobanteRepository comprobanteRepository = new ComprobanteRepository();
+        private readonly AuditTrailService auditTrailService = new AuditTrailService();
 
         public List<Comprobante> GetAll(string search)
         {
@@ -261,12 +287,15 @@ namespace SistemaGestionNomina.Services
         public void SaveRutaPdf(int idComprobante, string ruta)
         {
             comprobanteRepository.UpdateRutaPdf(idComprobante, ruta);
+            auditTrailService.RegistrarCambio("admin", "Comprobantes", "Guardar PDF",
+                "IdComprobante=" + idComprobante);
         }
     }
 
     public class ReporteService
     {
         private readonly ReporteRepository reporteRepository = new ReporteRepository();
+        private readonly AuditTrailService auditTrailService = new AuditTrailService();
 
         public List<ReporteGenerado> GetAll()
         {
@@ -282,6 +311,7 @@ namespace SistemaGestionNomina.Services
             reporte.FechaGeneracion = DateTime.Now;
             reporte.RutaArchivo = path;
             reporte.IdReporte = reporteRepository.Add(reporte);
+            auditTrailService.RegistrarCambio("admin", "Reportes", "Generar", name + " - " + type);
             return reporte;
         }
     }

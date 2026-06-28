@@ -18,6 +18,7 @@ namespace SistemaGestionNomina.UI
         public FontAwesome.Sharp.IconButton btnReportes;
         public FontAwesome.Sharp.IconButton btnConfiguracion;
         public FontAwesome.Sharp.IconButton btnAcercaDe;
+        public FontAwesome.Sharp.IconButton btnSalir;
         public FontAwesome.Sharp.IconButton btnCerrarSesion;
 
         protected override void Dispose(bool disposing)
@@ -42,6 +43,7 @@ namespace SistemaGestionNomina.UI
             this.btnReportes = new FontAwesome.Sharp.IconButton();
             this.btnConfiguracion = new FontAwesome.Sharp.IconButton();
             this.btnAcercaDe = new FontAwesome.Sharp.IconButton();
+            this.btnSalir = new FontAwesome.Sharp.IconButton();
             this.btnCerrarSesion = new FontAwesome.Sharp.IconButton();
             this.panelTopbar = new System.Windows.Forms.Panel();
             this.lblTituloTop = new System.Windows.Forms.Label();
@@ -64,6 +66,7 @@ namespace SistemaGestionNomina.UI
             this.panelSidebar.Controls.Add(this.btnReportes);
             this.panelSidebar.Controls.Add(this.btnConfiguracion);
             this.panelSidebar.Controls.Add(this.btnAcercaDe);
+            this.panelSidebar.Controls.Add(this.btnSalir);
             this.panelSidebar.Controls.Add(this.btnCerrarSesion);
             this.panelSidebar.Dock = System.Windows.Forms.DockStyle.Left;
             this.panelSidebar.Location = new System.Drawing.Point(0, 0);
@@ -258,6 +261,28 @@ namespace SistemaGestionNomina.UI
             this.btnAcercaDe.UseVisualStyleBackColor = true;
             this.btnAcercaDe.Click += new System.EventHandler(this.btnAcercaDe_Click);
             // 
+            // btnSalir
+            // 
+            this.btnSalir.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnSalir.FlatAppearance.BorderSize = 0;
+            this.btnSalir.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSalir.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnSalir.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
+            this.btnSalir.IconChar = FontAwesome.Sharp.IconChar.PowerOff;
+            this.btnSalir.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
+            this.btnSalir.IconSize = 20;
+            this.btnSalir.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnSalir.Location = new System.Drawing.Point(16, 688);
+            this.btnSalir.Name = "btnSalir";
+            this.btnSalir.Padding = new System.Windows.Forms.Padding(14, 0, 0, 0);
+            this.btnSalir.Size = new System.Drawing.Size(228, 44);
+            this.btnSalir.TabIndex = 10;
+            this.btnSalir.Text = "  Salir";
+            this.btnSalir.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnSalir.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnSalir.UseVisualStyleBackColor = true;
+            this.btnSalir.Click += new System.EventHandler(this.btnSalir_Click);
+            // 
             // btnCerrarSesion
             // 
             this.btnCerrarSesion.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -273,7 +298,7 @@ namespace SistemaGestionNomina.UI
             this.btnCerrarSesion.Name = "btnCerrarSesion";
             this.btnCerrarSesion.Padding = new System.Windows.Forms.Padding(14, 0, 0, 0);
             this.btnCerrarSesion.Size = new System.Drawing.Size(228, 44);
-            this.btnCerrarSesion.TabIndex = 10;
+            this.btnCerrarSesion.TabIndex = 11;
             this.btnCerrarSesion.Text = "  Cerrar sesión";
             this.btnCerrarSesion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnCerrarSesion.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;

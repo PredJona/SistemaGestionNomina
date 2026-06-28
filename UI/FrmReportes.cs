@@ -66,19 +66,47 @@ namespace SistemaGestionNomina.UI
                 string path;
                 if (name == "Empleados activos" && format == "Excel")
                 {
-                    path = excelExportService.ExportarEmpleados(empleadoService.GetActive(null));
+                    List<Empleado> empleados = empleadoService.GetActive(null);
+                    if (empleados.Count == 0)
+                    {
+                        MessageBox.Show("No hay empleados activos para generar el reporte.", "Reportes", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        return;
+                    }
+
+                    path = excelExportService.ExportarEmpleados(empleados);
                 }
                 else if (name == "Empleados activos")
                 {
-                    path = pdfExportService.ExportarEmpleados(empleadoService.GetActive(null));
+                    List<Empleado> empleados = empleadoService.GetActive(null);
+                    if (empleados.Count == 0)
+                    {
+                        MessageBox.Show("No hay empleados activos para generar el reporte.", "Reportes", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        return;
+                    }
+
+                    path = pdfExportService.ExportarEmpleados(empleados);
                 }
                 else if (format == "Excel")
                 {
-                    path = excelExportService.ExportarReportes(reporteService.GetAll());
+                    List<ReporteGenerado> reportes = reporteService.GetAll();
+                    if (name == "Reportes administrativos" && reportes.Count == 0)
+                    {
+                        MessageBox.Show("No hay reportes registrados para exportar.", "Reportes", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        return;
+                    }
+
+                    path = excelExportService.ExportarReportes(reportes);
                 }
                 else
                 {
-                    path = pdfExportService.ExportarReportes(reporteService.GetAll());
+                    List<ReporteGenerado> reportes = reporteService.GetAll();
+                    if (name == "Reportes administrativos" && reportes.Count == 0)
+                    {
+                        MessageBox.Show("No hay reportes registrados para exportar.", "Reportes", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        return;
+                    }
+
+                    path = pdfExportService.ExportarReportes(reportes);
                 }
 
                 reporteService.Register(name, type + " / " + format, path);

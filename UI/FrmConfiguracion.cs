@@ -10,6 +10,7 @@ namespace SistemaGestionNomina.UI
     public partial class FrmConfiguracion : Form
     {
         private readonly ConfiguracionService configuracionService = new ConfiguracionService();
+        private readonly BackupService backupService = new BackupService();
 
         public FrmConfiguracion()
         {
@@ -49,6 +50,30 @@ namespace SistemaGestionNomina.UI
         private void btnDescartar_Click(object sender, EventArgs e)
         {
             LoadSettings();
+        }
+
+        private void btnBackup_Click(object sender, EventArgs e)
+        {
+            using (FolderBrowserDialog dialog = new FolderBrowserDialog())
+            {
+                dialog.Description = "Seleccione la carpeta donde se guardará el backup.";
+                if (dialog.ShowDialog(this) != DialogResult.OK)
+                {
+                    return;
+                }
+
+                try
+                {
+                    string path = backupService.CrearBackup(dialog.SelectedPath);
+                    bool verified = backupService.VerificarBackup(path);
+                    MessageBox.Show("Backup generado correctamente:\n" + path + "\n\nVerificación SHA-256: " +
+                        (verified ? "correcta" : "no disponible"), "Backup", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Backup", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
         }
 
         private static decimal Clamp(decimal value, NumericUpDown control)

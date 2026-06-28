@@ -128,6 +128,15 @@ namespace SistemaGestionNomina.Data
                 FechaGeneracion TEXT NOT NULL,
                 RutaArchivo TEXT
             );");
+
+            Execute(connection, @"CREATE TABLE IF NOT EXISTS Auditoria (
+                IdAuditoria INTEGER PRIMARY KEY AUTOINCREMENT,
+                Usuario TEXT NOT NULL,
+                Modulo TEXT NOT NULL,
+                Accion TEXT NOT NULL,
+                Detalle TEXT,
+                Fecha TEXT NOT NULL
+            );");
         }
 
         private static void SeedData(SQLiteConnection connection)

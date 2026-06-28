@@ -18,6 +18,7 @@ namespace SistemaGestionNomina.UI
         private System.Windows.Forms.Label lblDescripcion;
         private System.Windows.Forms.Button btnGuardar;
         private System.Windows.Forms.Button btnDescartar;
+        private System.Windows.Forms.Button btnBackup;
 
         protected override void Dispose(bool disposing)
         {
@@ -42,6 +43,7 @@ namespace SistemaGestionNomina.UI
             this.lblDescripcion = new System.Windows.Forms.Label();
             this.btnGuardar = new System.Windows.Forms.Button();
             this.btnDescartar = new System.Windows.Forms.Button();
+            this.btnBackup = new System.Windows.Forms.Button();
             this.panelConfiguracion.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudSeguroSocial)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudISR)).BeginInit();
@@ -77,6 +79,7 @@ namespace SistemaGestionNomina.UI
             this.panelConfiguracion.Controls.Add(this.nudHorasMensualesBase);
             this.panelConfiguracion.Controls.Add(this.btnGuardar);
             this.panelConfiguracion.Controls.Add(this.btnDescartar);
+            this.panelConfiguracion.Controls.Add(this.btnBackup);
             this.panelConfiguracion.Location = new System.Drawing.Point(210, 116);
             this.panelConfiguracion.Name = "panelConfiguracion";
             this.panelConfiguracion.Size = new System.Drawing.Size(600, 390);
@@ -181,6 +184,16 @@ namespace SistemaGestionNomina.UI
             this.btnDescartar.Text = "Descartar";
             this.btnDescartar.UseVisualStyleBackColor = false;
             this.btnDescartar.Click += new System.EventHandler(this.btnDescartar_Click);
+            this.btnBackup.BackColor = System.Drawing.Color.Black;
+            this.btnBackup.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBackup.ForeColor = System.Drawing.Color.FromArgb(229, 228, 245);
+            this.btnBackup.Location = new System.Drawing.Point(42, 304);
+            this.btnBackup.Name = "btnBackup";
+            this.btnBackup.Size = new System.Drawing.Size(150, 34);
+            this.btnBackup.TabIndex = 7;
+            this.btnBackup.Text = "Crear backup";
+            this.btnBackup.UseVisualStyleBackColor = false;
+            this.btnBackup.Click += new System.EventHandler(this.btnBackup_Click);
             // 
             // FrmConfiguracion
             // 

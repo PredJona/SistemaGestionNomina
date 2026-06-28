@@ -14,6 +14,7 @@ namespace SistemaGestionNomina.UI
         private readonly AsistenciaService asistenciaService = new AsistenciaService();
         private readonly ExcelExportService excelExportService = new ExcelExportService();
         private readonly PdfExportService pdfExportService = new PdfExportService();
+        private readonly AttendanceDeviceImportService attendanceDeviceImportService = new AttendanceDeviceImportService();
         private List<Asistencia> currentItems = new List<Asistencia>();
 
         public FrmAsistencia()
@@ -46,6 +47,12 @@ namespace SistemaGestionNomina.UI
 
         private void LoadAttendance()
         {
+            if (dtpFiltroInicio.Value.Date > dtpFiltroFin.Value.Date)
+            {
+                MessageBox.Show("La fecha inicial no puede ser mayor que la fecha final.", "Asistencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             int? employeeId = null;
             if (cmbFiltroEmpleado.SelectedValue is int && (int)cmbFiltroEmpleado.SelectedValue > 0)
             {
@@ -108,6 +115,12 @@ namespace SistemaGestionNomina.UI
                 return;
             }
 
+            if (cmbEstado.SelectedItem == null)
+            {
+                MessageBox.Show("Seleccione el estado de asistencia.", "Asistencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             try
             {
                 Asistencia asistencia = new Asistencia();
@@ -133,18 +146,49 @@ namespace SistemaGestionNomina.UI
 
         private void btnExportarExcel_Click(object sender, EventArgs e)
         {
+            if (currentItems.Count == 0)
+            {
+                MessageBox.Show("No hay asistencias para exportar.", "Asistencia", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             UiFactory.ShowExported(excelExportService.ExportarAsistencias(currentItems));
         }
 
         private void btnExportarPdf_Click(object sender, EventArgs e)
         {
+            if (currentItems.Count == 0)
+            {
+                MessageBox.Show("No hay asistencias para exportar.", "Asistencia", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             UiFactory.ShowExported(pdfExportService.ExportarAsistencias(currentItems));
         }
 
         private void btnCargarReloj_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Funcionalidad pendiente para completar por otro integrante.",
-                "Asistencia", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            using (OpenFileDialog dialog = new OpenFileDialog())
+            {
+                dialog.Filter = "Archivos CSV (*.csv)|*.csv|Todos los archivos (*.*)|*.*";
+                dialog.Title = "Importar asistencia desde archivo";
+                if (dialog.ShowDialog(this) != DialogResult.OK)
+                {
+                    return;
+                }
+
+                try
+                {
+                    int imported = attendanceDeviceImportService.ImportarDesdeArchivo(dialog.FileName);
+                    MessageBox.Show("Importación completada. Registros procesados: " + imported,
+                        "Asistencia", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadAttendance();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Importar asistencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
         }
     }
 }

@@ -9,6 +9,7 @@ namespace SistemaGestionNomina.UI
         private System.Windows.Forms.Label lblCurso;
         private System.Windows.Forms.Label lblIntegrantes;
         private System.Windows.Forms.Label lblDescripcion;
+        private System.Windows.Forms.Button btnCerrar;
 
         protected override void Dispose(bool disposing)
         {
@@ -24,6 +25,7 @@ namespace SistemaGestionNomina.UI
             this.lblCurso = new System.Windows.Forms.Label();
             this.lblIntegrantes = new System.Windows.Forms.Label();
             this.lblDescripcion = new System.Windows.Forms.Label();
+            this.btnCerrar = new System.Windows.Forms.Button();
             this.panelInfo.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -36,6 +38,7 @@ namespace SistemaGestionNomina.UI
             this.panelInfo.Controls.Add(this.lblCurso);
             this.panelInfo.Controls.Add(this.lblIntegrantes);
             this.panelInfo.Controls.Add(this.lblDescripcion);
+            this.panelInfo.Controls.Add(this.btnCerrar);
             this.panelInfo.Location = new System.Drawing.Point(120, 108);
             this.panelInfo.Name = "panelInfo";
             this.panelInfo.Size = new System.Drawing.Size(780, 460);
@@ -56,39 +59,56 @@ namespace SistemaGestionNomina.UI
             this.lblProyecto.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(228)))), ((int)(((byte)(245)))));
             this.lblProyecto.Location = new System.Drawing.Point(36, 104);
             this.lblProyecto.Name = "lblProyecto";
-            this.lblProyecto.Size = new System.Drawing.Size(680, 76);
+            this.lblProyecto.Size = new System.Drawing.Size(680, 90);
             this.lblProyecto.TabIndex = 1;
-            this.lblProyecto.Text = "Proyecto N° 2\r\nWindows Forms App (.NET Framework 4.8)\r\nVisual Studio 2022 Communi" +
-    "ty";
+            this.lblProyecto.Text = "Proyecto N° 2\r\nTema H: Manejo de los campos en las clases + PrintDocument\r\nProble" +
+    "ma: Sistema de Nómina Empresarial con Generación e Impresión de Comprobantes de P" +
+    "ago";
             // 
             // lblCurso
             // 
             this.lblCurso.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
-            this.lblCurso.Location = new System.Drawing.Point(36, 198);
+            this.lblCurso.Location = new System.Drawing.Point(36, 208);
             this.lblCurso.Name = "lblCurso";
-            this.lblCurso.Size = new System.Drawing.Size(680, 64);
+            this.lblCurso.Size = new System.Drawing.Size(680, 82);
             this.lblCurso.TabIndex = 2;
             this.lblCurso.Text = "Universidad Tecnológica de Panamá\r\nFacultad de Ingeniería de Sistemas Computacion" +
-    "ales\r\nLenguaje de Programación I";
+    "ales\r\nLenguaje de Programación I\r\nProfesora: Anna Araba de Ruiz | Grupo: 1SF121";
             // 
             // lblIntegrantes
             // 
             this.lblIntegrantes.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(228)))), ((int)(((byte)(245)))));
-            this.lblIntegrantes.Location = new System.Drawing.Point(36, 284);
+            this.lblIntegrantes.Location = new System.Drawing.Point(36, 304);
             this.lblIntegrantes.Name = "lblIntegrantes";
-            this.lblIntegrantes.Size = new System.Drawing.Size(680, 42);
+            this.lblIntegrantes.Size = new System.Drawing.Size(680, 50);
             this.lblIntegrantes.TabIndex = 3;
-            this.lblIntegrantes.Text = "Equipo / Integrantes\r\nJonathan Romero, Jose Martinez, Karen Wen, Davis Batista\r\n";
+            this.lblIntegrantes.Text = "Equipo: Eq__\r\nIntegrantes: Jonathan Romero, Jose Martinez, Karen Wen, Davis Batist" +
+    "a";
             // 
             // lblDescripcion
             // 
             this.lblDescripcion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
-            this.lblDescripcion.Location = new System.Drawing.Point(36, 352);
+            this.lblDescripcion.Location = new System.Drawing.Point(36, 366);
             this.lblDescripcion.Name = "lblDescripcion";
-            this.lblDescripcion.Size = new System.Drawing.Size(680, 72);
+            this.lblDescripcion.Size = new System.Drawing.Size(520, 72);
             this.lblDescripcion.TabIndex = 4;
-            this.lblDescripcion.Text = "Aplicación académica para administrar empleados, asistencia, cálculo básico de nó" +
-    "mina, comprobantes y reportes administrativos con separación por capas.";
+            this.lblDescripcion.Text = "Windows Forms App (.NET Framework 4.8)\r\nVisual Studio 2022 | Versión académica 1." +
+    "0 | Año 2026\r\nIncluye SQLite, servicios, repositorios, exportación e impresión.";
+            // 
+            // btnCerrar
+            // 
+            this.btnCerrar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(58)))), ((int)(((byte)(237)))));
+            this.btnCerrar.FlatAppearance.BorderSize = 0;
+            this.btnCerrar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCerrar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnCerrar.ForeColor = System.Drawing.Color.White;
+            this.btnCerrar.Location = new System.Drawing.Point(600, 386);
+            this.btnCerrar.Name = "btnCerrar";
+            this.btnCerrar.Size = new System.Drawing.Size(116, 38);
+            this.btnCerrar.TabIndex = 5;
+            this.btnCerrar.Text = "Cerrar";
+            this.btnCerrar.UseVisualStyleBackColor = false;
+            this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
             // 
             // FrmAcercaDe
             // 

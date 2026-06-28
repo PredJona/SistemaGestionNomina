@@ -112,6 +112,16 @@ namespace SistemaGestionNomina.UI
             Close();
         }
 
+        private void btnSalir_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("¿Desea salir de la aplicación?",
+                "Salir", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result == DialogResult.Yes)
+            {
+                Application.Exit();
+            }
+        }
+
         private void OpenDashboard()
         {
             SetActiveButton(btnDashboard);

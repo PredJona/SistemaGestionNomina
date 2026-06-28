@@ -112,6 +112,18 @@ namespace SistemaGestionNomina.UI
                 return;
             }
 
+            if (cmbDepartamento.SelectedValue == null)
+            {
+                MessageBox.Show("Seleccione un departamento.", "Empleados", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (cmbEstado.SelectedItem == null)
+            {
+                MessageBox.Show("Seleccione el estado del empleado.", "Empleados", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             try
             {
                 Empleado empleado = new Empleado();
@@ -155,11 +167,23 @@ namespace SistemaGestionNomina.UI
 
         private void btnExportarExcel_Click(object sender, EventArgs e)
         {
+            if (currentEmployees.Count == 0)
+            {
+                MessageBox.Show("No hay empleados para exportar.", "Empleados", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             UiFactory.ShowExported(excelExportService.ExportarEmpleados(currentEmployees));
         }
 
         private void btnExportarPdf_Click(object sender, EventArgs e)
         {
+            if (currentEmployees.Count == 0)
+            {
+                MessageBox.Show("No hay empleados para exportar.", "Empleados", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             UiFactory.ShowExported(pdfExportService.ExportarEmpleados(currentEmployees));
         }
 
