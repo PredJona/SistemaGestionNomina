@@ -26,6 +26,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Update="UI\FrmLogin.cs"><SubType>Form</SubType></Compile>
     <Compile Update="UI\FrmMain.cs"><SubType>Form</SubType></Compile>
     <Compile Update="UI\FrmDashboard.cs"><SubType>Form</SubType></Compile>
@@ -46,6 +51,10 @@
     <Compile Update="UI\FrmReportes.Designer.cs"><DependentUpon>FrmReportes.cs</DependentUpon></Compile>
     <Compile Update="UI\FrmConfiguracion.Designer.cs"><DependentUpon>FrmConfiguracion.cs</DependentUpon></Compile>
     <Compile Update="UI\FrmAcercaDe.Designer.cs"><DependentUpon>FrmAcercaDe.cs</DependentUpon></Compile>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="UI\FrmLogin.resx"><DependentUpon>FrmLogin.cs</DependentUpon></EmbeddedResource>
     <EmbeddedResource Update="UI\FrmMain.resx"><DependentUpon>FrmMain.cs</DependentUpon></EmbeddedResource>
     <EmbeddedResource Update="UI\FrmDashboard.resx"><DependentUpon>FrmDashboard.cs</DependentUpon></EmbeddedResource>

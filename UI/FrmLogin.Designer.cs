@@ -4,7 +4,6 @@ namespace SistemaGestionNomina.UI
     {
         private System.ComponentModel.IContainer components = null;
         private System.Windows.Forms.Panel panelLogin;
-        private System.Windows.Forms.Label lblTitulo;
         private System.Windows.Forms.Label lblSubtitulo;
         private System.Windows.Forms.Label lblUsuario;
         private System.Windows.Forms.Label lblPassword;
@@ -13,7 +12,6 @@ namespace SistemaGestionNomina.UI
         private System.Windows.Forms.CheckBox chkRecordar;
         private System.Windows.Forms.Button btnIngresar;
         private System.Windows.Forms.Label lblMensaje;
-        private System.Windows.Forms.Label lblIcono;
 
         protected override void Dispose(bool disposing)
         {
@@ -27,8 +25,6 @@ namespace SistemaGestionNomina.UI
         private void InitializeComponent()
         {
             this.panelLogin = new System.Windows.Forms.Panel();
-            this.lblIcono = new System.Windows.Forms.Label();
-            this.lblTitulo = new System.Windows.Forms.Label();
             this.lblSubtitulo = new System.Windows.Forms.Label();
             this.lblUsuario = new System.Windows.Forms.Label();
             this.lblPassword = new System.Windows.Forms.Label();
@@ -37,6 +33,7 @@ namespace SistemaGestionNomina.UI
             this.chkRecordar = new System.Windows.Forms.CheckBox();
             this.btnIngresar = new System.Windows.Forms.Button();
             this.lblMensaje = new System.Windows.Forms.Label();
+            this.foxBigLabel1 = new ReaLTaiizor.Controls.FoxBigLabel();
             this.panelLogin.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -45,8 +42,7 @@ namespace SistemaGestionNomina.UI
             this.panelLogin.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.panelLogin.BackColor = System.Drawing.Color.Black;
             this.panelLogin.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelLogin.Controls.Add(this.lblIcono);
-            this.panelLogin.Controls.Add(this.lblTitulo);
+            this.panelLogin.Controls.Add(this.foxBigLabel1);
             this.panelLogin.Controls.Add(this.lblSubtitulo);
             this.panelLogin.Controls.Add(this.lblUsuario);
             this.panelLogin.Controls.Add(this.lblPassword);
@@ -60,34 +56,11 @@ namespace SistemaGestionNomina.UI
             this.panelLogin.Size = new System.Drawing.Size(430, 520);
             this.panelLogin.TabIndex = 0;
             // 
-            // lblIcono
-            // 
-            this.lblIcono.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(25)))), ((int)(((byte)(34)))));
-            this.lblIcono.Font = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Bold);
-            this.lblIcono.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(167)))), ((int)(((byte)(139)))), ((int)(((byte)(250)))));
-            this.lblIcono.Location = new System.Drawing.Point(183, 34);
-            this.lblIcono.Name = "lblIcono";
-            this.lblIcono.Size = new System.Drawing.Size(64, 64);
-            this.lblIcono.TabIndex = 0;
-            this.lblIcono.Text = "N";
-            this.lblIcono.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // lblTitulo
-            // 
-            this.lblTitulo.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
-            this.lblTitulo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(228)))), ((int)(((byte)(245)))));
-            this.lblTitulo.Location = new System.Drawing.Point(36, 118);
-            this.lblTitulo.Name = "lblTitulo";
-            this.lblTitulo.Size = new System.Drawing.Size(358, 42);
-            this.lblTitulo.TabIndex = 1;
-            this.lblTitulo.Text = "Sistema de Gestión de Nómina";
-            this.lblTitulo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // lblSubtitulo
             // 
             this.lblSubtitulo.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.lblSubtitulo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
-            this.lblSubtitulo.Location = new System.Drawing.Point(40, 166);
+            this.lblSubtitulo.Location = new System.Drawing.Point(56, 125);
             this.lblSubtitulo.Name = "lblSubtitulo";
             this.lblSubtitulo.Size = new System.Drawing.Size(350, 24);
             this.lblSubtitulo.TabIndex = 2;
@@ -101,7 +74,7 @@ namespace SistemaGestionNomina.UI
             this.lblUsuario.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(228)))), ((int)(((byte)(245)))));
             this.lblUsuario.Location = new System.Drawing.Point(40, 224);
             this.lblUsuario.Name = "lblUsuario";
-            this.lblUsuario.Size = new System.Drawing.Size(50, 15);
+            this.lblUsuario.Size = new System.Drawing.Size(63, 20);
             this.lblUsuario.TabIndex = 3;
             this.lblUsuario.Text = "Usuario";
             // 
@@ -112,7 +85,7 @@ namespace SistemaGestionNomina.UI
             this.lblPassword.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(228)))), ((int)(((byte)(245)))));
             this.lblPassword.Location = new System.Drawing.Point(40, 302);
             this.lblPassword.Name = "lblPassword";
-            this.lblPassword.Size = new System.Drawing.Size(70, 15);
+            this.lblPassword.Size = new System.Drawing.Size(88, 20);
             this.lblPassword.TabIndex = 5;
             this.lblPassword.Text = "Contraseña";
             // 
@@ -124,7 +97,7 @@ namespace SistemaGestionNomina.UI
             this.txtUsuario.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(228)))), ((int)(((byte)(245)))));
             this.txtUsuario.Location = new System.Drawing.Point(40, 252);
             this.txtUsuario.Name = "txtUsuario";
-            this.txtUsuario.Size = new System.Drawing.Size(350, 25);
+            this.txtUsuario.Size = new System.Drawing.Size(350, 30);
             this.txtUsuario.TabIndex = 4;
             this.txtUsuario.Text = "admin";
             // 
@@ -136,7 +109,7 @@ namespace SistemaGestionNomina.UI
             this.txtPassword.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(228)))), ((int)(((byte)(245)))));
             this.txtPassword.Location = new System.Drawing.Point(40, 330);
             this.txtPassword.Name = "txtPassword";
-            this.txtPassword.Size = new System.Drawing.Size(350, 25);
+            this.txtPassword.Size = new System.Drawing.Size(350, 30);
             this.txtPassword.TabIndex = 6;
             this.txtPassword.Text = "admin123";
             this.txtPassword.UseSystemPasswordChar = true;
@@ -148,7 +121,7 @@ namespace SistemaGestionNomina.UI
             this.chkRecordar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
             this.chkRecordar.Location = new System.Drawing.Point(40, 378);
             this.chkRecordar.Name = "chkRecordar";
-            this.chkRecordar.Size = new System.Drawing.Size(138, 19);
+            this.chkRecordar.Size = new System.Drawing.Size(177, 24);
             this.chkRecordar.TabIndex = 7;
             this.chkRecordar.Text = "Recordar credenciales";
             this.chkRecordar.UseVisualStyleBackColor = false;
@@ -178,10 +151,24 @@ namespace SistemaGestionNomina.UI
             this.lblMensaje.Text = "Usuario inicial: admin / admin123";
             this.lblMensaje.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // foxBigLabel1
+            // 
+            this.foxBigLabel1.BackColor = System.Drawing.Color.Transparent;
+            this.foxBigLabel1.Font = new System.Drawing.Font("Segoe UI Semibold", 20F);
+            this.foxBigLabel1.ForeColor = System.Drawing.Color.Indigo;
+            this.foxBigLabel1.Line = ReaLTaiizor.Controls.FoxBigLabel.Direction.Top;
+            this.foxBigLabel1.LineColor = System.Drawing.Color.Transparent;
+            this.foxBigLabel1.Location = new System.Drawing.Point(152, 66);
+            this.foxBigLabel1.Name = "foxBigLabel1";
+            this.foxBigLabel1.Size = new System.Drawing.Size(165, 41);
+            this.foxBigLabel1.TabIndex = 10;
+            this.foxBigLabel1.Text = "NomiCore";
+            this.foxBigLabel1.Click += new System.EventHandler(this.foxBigLabel1_Click);
+            // 
             // FrmLogin
             // 
             this.AcceptButton = this.btnIngresar;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(13)))), ((int)(((byte)(14)))), ((int)(((byte)(20)))));
             this.ClientSize = new System.Drawing.Size(980, 700);
@@ -198,6 +185,9 @@ namespace SistemaGestionNomina.UI
             this.panelLogin.ResumeLayout(false);
             this.panelLogin.PerformLayout();
             this.ResumeLayout(false);
+
         }
+
+        private ReaLTaiizor.Controls.FoxBigLabel foxBigLabel1;
     }
 }

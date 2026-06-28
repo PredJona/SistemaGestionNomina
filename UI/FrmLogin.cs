@@ -80,5 +80,10 @@ namespace SistemaGestionNomina.UI
                     "Login", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void foxBigLabel1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
