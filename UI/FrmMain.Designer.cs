@@ -82,7 +82,7 @@ namespace SistemaGestionNomina.UI
             this.lblMarca.Name = "lblMarca";
             this.lblMarca.Size = new System.Drawing.Size(210, 32);
             this.lblMarca.TabIndex = 0;
-            this.lblMarca.Text = "Nómina Pro";
+            this.lblMarca.Text = "NomiCore";
             // 
             // lblSubmarca
             // 
@@ -101,6 +101,7 @@ namespace SistemaGestionNomina.UI
             this.btnDashboard.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(228)))), ((int)(((byte)(245)))));
             this.btnDashboard.IconChar = FontAwesome.Sharp.IconChar.BorderAll;
             this.btnDashboard.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(167)))), ((int)(((byte)(139)))), ((int)(((byte)(250)))));
+            this.btnDashboard.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnDashboard.IconSize = 20;
             this.btnDashboard.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnDashboard.Location = new System.Drawing.Point(16, 128);
@@ -122,6 +123,7 @@ namespace SistemaGestionNomina.UI
             this.btnEmpleados.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
             this.btnEmpleados.IconChar = FontAwesome.Sharp.IconChar.Users;
             this.btnEmpleados.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
+            this.btnEmpleados.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnEmpleados.IconSize = 20;
             this.btnEmpleados.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnEmpleados.Location = new System.Drawing.Point(16, 184);
@@ -143,6 +145,7 @@ namespace SistemaGestionNomina.UI
             this.btnAsistencia.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
             this.btnAsistencia.IconChar = FontAwesome.Sharp.IconChar.CalendarCheck;
             this.btnAsistencia.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
+            this.btnAsistencia.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnAsistencia.IconSize = 20;
             this.btnAsistencia.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnAsistencia.Location = new System.Drawing.Point(16, 240);
@@ -164,6 +167,7 @@ namespace SistemaGestionNomina.UI
             this.btnNomina.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
             this.btnNomina.IconChar = FontAwesome.Sharp.IconChar.MoneyCheckDollar;
             this.btnNomina.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
+            this.btnNomina.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnNomina.IconSize = 20;
             this.btnNomina.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnNomina.Location = new System.Drawing.Point(16, 296);
@@ -185,6 +189,7 @@ namespace SistemaGestionNomina.UI
             this.btnComprobantes.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
             this.btnComprobantes.IconChar = FontAwesome.Sharp.IconChar.Receipt;
             this.btnComprobantes.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
+            this.btnComprobantes.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnComprobantes.IconSize = 20;
             this.btnComprobantes.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnComprobantes.Location = new System.Drawing.Point(16, 352);
@@ -206,6 +211,7 @@ namespace SistemaGestionNomina.UI
             this.btnReportes.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
             this.btnReportes.IconChar = FontAwesome.Sharp.IconChar.ChartSimple;
             this.btnReportes.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
+            this.btnReportes.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnReportes.IconSize = 20;
             this.btnReportes.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnReportes.Location = new System.Drawing.Point(16, 408);
@@ -225,8 +231,9 @@ namespace SistemaGestionNomina.UI
             this.btnConfiguracion.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnConfiguracion.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnConfiguracion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
-            this.btnConfiguracion.IconChar = FontAwesome.Sharp.IconChar.Gear;
+            this.btnConfiguracion.IconChar = FontAwesome.Sharp.IconChar.Cog;
             this.btnConfiguracion.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
+            this.btnConfiguracion.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnConfiguracion.IconSize = 20;
             this.btnConfiguracion.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnConfiguracion.Location = new System.Drawing.Point(16, 464);
@@ -248,6 +255,7 @@ namespace SistemaGestionNomina.UI
             this.btnAcercaDe.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
             this.btnAcercaDe.IconChar = FontAwesome.Sharp.IconChar.CircleInfo;
             this.btnAcercaDe.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
+            this.btnAcercaDe.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnAcercaDe.IconSize = 20;
             this.btnAcercaDe.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnAcercaDe.Location = new System.Drawing.Point(16, 520);
@@ -270,6 +278,7 @@ namespace SistemaGestionNomina.UI
             this.btnSalir.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
             this.btnSalir.IconChar = FontAwesome.Sharp.IconChar.PowerOff;
             this.btnSalir.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
+            this.btnSalir.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnSalir.IconSize = 20;
             this.btnSalir.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnSalir.Location = new System.Drawing.Point(16, 688);
@@ -292,6 +301,7 @@ namespace SistemaGestionNomina.UI
             this.btnCerrarSesion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
             this.btnCerrarSesion.IconChar = FontAwesome.Sharp.IconChar.RightFromBracket;
             this.btnCerrarSesion.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
+            this.btnCerrarSesion.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnCerrarSesion.IconSize = 20;
             this.btnCerrarSesion.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnCerrarSesion.Location = new System.Drawing.Point(16, 744);
@@ -352,7 +362,7 @@ namespace SistemaGestionNomina.UI
             // 
             // FrmMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(13)))), ((int)(((byte)(14)))), ((int)(((byte)(20)))));
             this.ClientSize = new System.Drawing.Size(1280, 820);
@@ -368,6 +378,7 @@ namespace SistemaGestionNomina.UI
             this.panelSidebar.ResumeLayout(false);
             this.panelTopbar.ResumeLayout(false);
             this.ResumeLayout(false);
+
         }
     }
 }
