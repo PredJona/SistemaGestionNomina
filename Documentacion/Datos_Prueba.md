@@ -1,0 +1,20 @@
+# Datos De Prueba
+
+| N° | Modulo | Datos ingresados | Resultado esperado | Resultado obtenido | Estado |
+| --- | --- | --- | --- | --- | --- |
+| 1 | Login | Usuario `admin`, contrasena `admin123` | Acceso al sistema y apertura del dashboard | Pendiente de validacion manual | Revisar |
+| 2 | Empleados | Codigo `EMP-2001`, nombre `Laura Perez`, cedula `8-200-100`, cargo `Analista`, salario `1200.00` | Empleado guardado y visible en tabla | Pendiente de validacion manual | Revisar |
+| 3 | Empleados | Empleado con salario alto `3500.00` | El sistema acepta salario positivo y permite calcular nomina | Pendiente de validacion manual | Revisar |
+| 4 | Empleados | Empleado con salario bajo `650.00` | El sistema acepta salario positivo y muestra valores correctos | Pendiente de validacion manual | Revisar |
+| 5 | Asistencia | Estado `Puntual`, entrada `08:00`, salida `17:00` | Registro con 9 horas y estado puntual | Pendiente de validacion manual | Revisar |
+| 6 | Asistencia | Estado `Tardanza`, entrada `08:45`, salida `17:00` | Registro con tardanza y horas calculadas | Pendiente de validacion manual | Revisar |
+| 7 | Asistencia | Estado `Falta` sin horas | Registro sin horas trabajadas | Pendiente de validacion manual | Revisar |
+| 8 | Nomina | Periodo mensual, empleados activos | Calculo de ingresos, deducciones y neto | Pendiente de validacion manual | Revisar |
+| 9 | Comprobantes | Confirmar nomina y abrir comprobantes | Comprobante generado por empleado | Pendiente de validacion manual | Revisar |
+| 10 | Impresion | Seleccionar comprobante y presionar Imprimir | Se abre `PrintPreviewDialog` con recibo legible | Pendiente de validacion manual | Revisar |
+| 11 | Reportes | Generar reporte de empleados o nomina | Archivo PDF/Excel generado | Pendiente de validacion manual | Revisar |
+| 12 | Salir | Presionar `Salir` en sidebar | Se muestra confirmacion y al aceptar se cierra la app | Pendiente de validacion manual | Revisar |
+
+## Nota
+
+Los resultados obtenidos deben actualizarse despues de ejecutar la aplicacion graficamente y tomar capturas reales.

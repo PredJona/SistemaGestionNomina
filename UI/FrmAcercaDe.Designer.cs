@@ -52,7 +52,7 @@ namespace SistemaGestionNomina.UI
             this.lblTitulo.Name = "lblTitulo";
             this.lblTitulo.Size = new System.Drawing.Size(650, 44);
             this.lblTitulo.TabIndex = 0;
-            this.lblTitulo.Text = "Sistema de Gestión de Nómina";
+            this.lblTitulo.Text = "NomiCore — Sistema de Gestión de Nómina";
             // 
             // lblProyecto
             // 
@@ -61,9 +61,9 @@ namespace SistemaGestionNomina.UI
             this.lblProyecto.Name = "lblProyecto";
             this.lblProyecto.Size = new System.Drawing.Size(680, 90);
             this.lblProyecto.TabIndex = 1;
-            this.lblProyecto.Text = "Proyecto N° 2\r\nTema H: Manejo de los campos en las clases + PrintDocument\r\nProble" +
-    "ma: Sistema de Nómina Empresarial con Generación e Impresión de Comprobantes de P" +
-    "ago";
+            this.lblProyecto.Text = "Proyecto N° 2\r\nTema H: Manejo de los campos en las clases + PrintDocument\r\nAplica" +
+    "ción: NomiCore — Sistema de Gestión de Nómina\r\nProblema: control de empleados, a" +
+    "sistencia, nómina y comprobantes";
             // 
             // lblCurso
             // 
@@ -82,8 +82,9 @@ namespace SistemaGestionNomina.UI
             this.lblIntegrantes.Name = "lblIntegrantes";
             this.lblIntegrantes.Size = new System.Drawing.Size(680, 50);
             this.lblIntegrantes.TabIndex = 3;
-            this.lblIntegrantes.Text = "Equipo: Eq__\r\nIntegrantes: Jonathan Romero, Jose Martinez, Karen Wen, Davis Batist" +
-    "a";
+            this.lblIntegrantes.Text = "Equipo: Eq01\r\nIntegrantes: Jonathan Romero, Jose Martinez, Karen Wen, Davis Batis" +
+    "ta";
+            this.lblIntegrantes.Click += new System.EventHandler(this.lblIntegrantes_Click);
             // 
             // lblDescripcion
             // 

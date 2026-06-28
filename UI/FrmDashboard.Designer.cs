@@ -327,7 +327,7 @@ namespace SistemaGestionNomina.UI
             this.lblActividadTres.Name = "lblActividadTres";
             this.lblActividadTres.Size = new System.Drawing.Size(230, 42);
             this.lblActividadTres.TabIndex = 3;
-            this.lblActividadTres.Text = "Validar asistencia pendiente\r\nRevisar tardanzas";
+            this.lblActividadTres.Text = "Validar asistencia\r\nRevisar tardanzas";
             // 
             // FrmDashboard
             // 

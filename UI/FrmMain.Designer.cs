@@ -91,7 +91,7 @@ namespace SistemaGestionNomina.UI
             this.lblSubmarca.Name = "lblSubmarca";
             this.lblSubmarca.Size = new System.Drawing.Size(210, 22);
             this.lblSubmarca.TabIndex = 1;
-            this.lblSubmarca.Text = "Gestión empresarial";
+            this.lblSubmarca.Text = "Sistema de nómina";
             // 
             // btnDashboard
             // 
@@ -336,7 +336,7 @@ namespace SistemaGestionNomina.UI
             this.lblTituloTop.Padding = new System.Windows.Forms.Padding(28, 0, 0, 0);
             this.lblTituloTop.Size = new System.Drawing.Size(520, 78);
             this.lblTituloTop.TabIndex = 0;
-            this.lblTituloTop.Text = "Sistema de Gestión de Nómina";
+            this.lblTituloTop.Text = "NomiCore — Sistema de Gestión de Nómina";
             this.lblTituloTop.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblUsuarioActual
@@ -374,7 +374,7 @@ namespace SistemaGestionNomina.UI
             this.MinimumSize = new System.Drawing.Size(1120, 720);
             this.Name = "FrmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Sistema de Gestión de Nómina";
+            this.Text = "NomiCore — Sistema de Gestión de Nómina";
             this.panelSidebar.ResumeLayout(false);
             this.panelTopbar.ResumeLayout(false);
             this.ResumeLayout(false);

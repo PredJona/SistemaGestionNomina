@@ -16,5 +16,10 @@ namespace SistemaGestionNomina.UI
         {
             Close();
         }
+
+        private void lblIntegrantes_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

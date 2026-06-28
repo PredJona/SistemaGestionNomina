@@ -3,7 +3,7 @@ $ErrorActionPreference = "Stop"
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $binDir = Join-Path $projectRoot "bin\Debug\net48"
 $exePath = Join-Path $binDir "SistemaGestionNomina.exe"
-$backupDir = Join-Path $projectRoot "CodigosFuentePDF\TestBackups"
+$backupDir = Join-Path ([System.IO.Path]::GetTempPath()) "SistemaGestionNominaSmokeBackups"
 
 [AppDomain]::CurrentDomain.add_AssemblyResolve({
     param($sender, $args)

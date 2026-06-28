@@ -1,5 +1,6 @@
 param(
-    [string]$Salida = "CodigosFuentePDF"
+    [string]$Salida = "CodigosFuentePDF",
+    [switch]$Abrir
 )
 
 $ErrorActionPreference = "Stop"
@@ -10,10 +11,18 @@ $htmlPath = Join-Path $outputDir "CodigoFuente.html"
 
 New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
 
+$ignoredFolders = @("\bin\", "\obj\", "\.git\", "\.vs\", "\packages\")
+
 $files = Get-ChildItem -Path $projectRoot -Recurse -File -Include *.cs |
     Where-Object {
-        $_.FullName -notmatch "\\bin\\" -and
-        $_.FullName -notmatch "\\obj\\"
+        $include = $true
+        foreach ($folder in $ignoredFolders) {
+            if ($_.FullName -like "*$folder*") {
+                $include = $false
+            }
+        }
+
+        $include
     } |
     Sort-Object FullName
 
@@ -28,7 +37,7 @@ $html = @"
 <html lang="es">
 <head>
     <meta charset="utf-8">
-    <title>Codigo Fuente - SistemaGestionNomina</title>
+    <title>Codigo Fuente - NomiCore</title>
     <style>
         body { font-family: Segoe UI, Arial, sans-serif; margin: 32px; color: #111827; }
         h1 { font-size: 24px; margin-bottom: 8px; }
@@ -38,8 +47,8 @@ $html = @"
     </style>
 </head>
 <body>
-    <h1>Codigo Fuente - SistemaGestionNomina</h1>
-    <p>Archivo generado para impresion o conversion a PDF.</p>
+    <h1>Codigo Fuente - NomiCore</h1>
+    <p>Archivo generado para impresion o conversion a PDF. Use Imprimir > Guardar como PDF.</p>
     $($sections -join "`n")
 </body>
 </html>
@@ -49,3 +58,7 @@ Set-Content -LiteralPath $htmlPath -Value $html -Encoding UTF8
 
 Write-Host "Salida generada: $htmlPath"
 Write-Host "Abra el HTML en un navegador y use Imprimir > Guardar como PDF."
+
+if ($Abrir) {
+    Start-Process -FilePath $htmlPath
+}
