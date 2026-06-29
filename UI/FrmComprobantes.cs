@@ -148,7 +148,7 @@ namespace SistemaGestionNomina.UI
             using (Pen linePen = new Pen(Color.Black, 1F))
             {
                 // El comprobante se dibuja directamente con GDI+ para demostrar PrintDocument en la sustentación.
-                e.Graphics.DrawString("Sistema de Gestión de Nómina", titleFont, Brushes.Black, bounds.Left, y);
+                e.Graphics.DrawString("Proy2_Eq01_CamposPD", titleFont, Brushes.Black, bounds.Left, y);
                 y += 42;
                 e.Graphics.DrawString("Comprobante de Pago", headerFont, Brushes.Black, bounds.Left, y);
                 y += 34;

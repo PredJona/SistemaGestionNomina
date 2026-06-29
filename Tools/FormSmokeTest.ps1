@@ -4,7 +4,7 @@ Add-Type -AssemblyName System.Windows.Forms
 
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $binDir = Join-Path $projectRoot "bin\Debug\net48"
-$exePath = Join-Path $binDir "SistemaGestionNomina.exe"
+$exePath = Join-Path $binDir "Proy2_Eq01_CamposPD.exe"
 
 [AppDomain]::CurrentDomain.add_AssemblyResolve({
     param($sender, $args)

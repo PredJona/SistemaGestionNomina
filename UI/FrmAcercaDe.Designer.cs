@@ -52,7 +52,7 @@ namespace SistemaGestionNomina.UI
             this.lblTitulo.Name = "lblTitulo";
             this.lblTitulo.Size = new System.Drawing.Size(650, 44);
             this.lblTitulo.TabIndex = 0;
-            this.lblTitulo.Text = "NomiCore — Sistema de Gestión de Nómina";
+            this.lblTitulo.Text = "Proy2_Eq01_CamposPD";
             // 
             // lblProyecto
             // 
@@ -62,7 +62,7 @@ namespace SistemaGestionNomina.UI
             this.lblProyecto.Size = new System.Drawing.Size(680, 90);
             this.lblProyecto.TabIndex = 1;
             this.lblProyecto.Text = "Proyecto N° 2\r\nTema H: Manejo de los campos en las clases + PrintDocument\r\nAplica" +
-    "ción: NomiCore — Sistema de Gestión de Nómina\r\nProblema: control de empleados, a" +
+    "ción: Proy2_Eq01_CamposPD\r\nProblema: control de empleados, a" +
     "sistencia, nómina y comprobantes";
             // 
             // lblCurso

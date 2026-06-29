@@ -37,7 +37,7 @@ $html = @"
 <html lang="es">
 <head>
     <meta charset="utf-8">
-    <title>Codigo Fuente - NomiCore</title>
+    <title>Codigo Fuente - Proy2_Eq01_CamposPD</title>
     <style>
         body { font-family: Segoe UI, Arial, sans-serif; margin: 32px; color: #111827; }
         h1 { font-size: 24px; margin-bottom: 8px; }
@@ -47,7 +47,7 @@ $html = @"
     </style>
 </head>
 <body>
-    <h1>Codigo Fuente - NomiCore</h1>
+    <h1>Codigo Fuente - Proy2_Eq01_CamposPD</h1>
     <p>Archivo generado para impresion o conversion a PDF. Use Imprimir > Guardar como PDF.</p>
     $($sections -join "`n")
 </body>

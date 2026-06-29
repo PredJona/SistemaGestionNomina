@@ -2,7 +2,7 @@
 
 ## Aplicacion
 
-NomiCore - Sistema de Gestion de Nomina es una aplicacion Windows Forms que permite administrar empleados, registrar asistencia, calcular nomina, generar comprobantes, imprimir recibos y exportar reportes.
+Proy2_Eq01_CamposPD es una aplicacion Windows Forms que permite administrar empleados, registrar asistencia, calcular nomina, generar comprobantes, imprimir recibos y exportar reportes.
 
 ## Problema Resuelto
 

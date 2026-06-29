@@ -82,7 +82,7 @@ namespace SistemaGestionNomina.UI
             this.lblMarca.Name = "lblMarca";
             this.lblMarca.Size = new System.Drawing.Size(210, 32);
             this.lblMarca.TabIndex = 0;
-            this.lblMarca.Text = "NomiCore";
+            this.lblMarca.Text = "Proy2_Eq01";
             // 
             // lblSubmarca
             // 
@@ -336,7 +336,7 @@ namespace SistemaGestionNomina.UI
             this.lblTituloTop.Padding = new System.Windows.Forms.Padding(28, 0, 0, 0);
             this.lblTituloTop.Size = new System.Drawing.Size(520, 78);
             this.lblTituloTop.TabIndex = 0;
-            this.lblTituloTop.Text = "NomiCore — Sistema de Gestión de Nómina";
+            this.lblTituloTop.Text = "Proy2_Eq01_CamposPD";
             this.lblTituloTop.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblUsuarioActual
@@ -374,7 +374,7 @@ namespace SistemaGestionNomina.UI
             this.MinimumSize = new System.Drawing.Size(1120, 720);
             this.Name = "FrmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "NomiCore — Sistema de Gestión de Nómina";
+            this.Text = "Proy2_Eq01_CamposPD";
             this.panelSidebar.ResumeLayout(false);
             this.panelTopbar.ResumeLayout(false);
             this.ResumeLayout(false);

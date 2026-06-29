@@ -162,7 +162,7 @@ namespace SistemaGestionNomina.UI
             this.foxBigLabel1.Name = "foxBigLabel1";
             this.foxBigLabel1.Size = new System.Drawing.Size(165, 41);
             this.foxBigLabel1.TabIndex = 10;
-            this.foxBigLabel1.Text = "NomiCore";
+            this.foxBigLabel1.Text = "Proy2_Eq01_CamposPD";
             this.foxBigLabel1.Click += new System.EventHandler(this.foxBigLabel1_Click);
             // 
             // FrmLogin
@@ -180,7 +180,7 @@ namespace SistemaGestionNomina.UI
             this.MinimumSize = new System.Drawing.Size(900, 640);
             this.Name = "FrmLogin";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Sistema de Gestión de Nómina - Login";
+            this.Text = "Proy2_Eq01_CamposPD - Login";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.FrmLogin_Paint);
             this.panelLogin.ResumeLayout(false);
             this.panelLogin.PerformLayout();
