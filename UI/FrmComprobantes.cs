@@ -93,6 +93,8 @@ namespace SistemaGestionNomina.UI
         {
             if (!EnsureSelected()) return;
             string path = pdfExportService.ExportarComprobante(selectedComprobante);
+            if (string.IsNullOrWhiteSpace(path)) return;
+
             comprobanteService.SaveRutaPdf(selectedComprobante.IdComprobante, path);
             UiFactory.ShowExported(path);
         }
@@ -206,6 +208,8 @@ namespace SistemaGestionNomina.UI
                 if (string.IsNullOrWhiteSpace(pdfPath) || !File.Exists(pdfPath))
                 {
                     pdfPath = pdfExportService.ExportarComprobante(selectedComprobante);
+                    if (string.IsNullOrWhiteSpace(pdfPath)) return;
+
                     comprobanteService.SaveRutaPdf(selectedComprobante.IdComprobante, pdfPath);
                     selectedComprobante.RutaPdf = pdfPath;
                 }

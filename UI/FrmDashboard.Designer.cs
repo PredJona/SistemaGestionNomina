@@ -176,11 +176,11 @@ namespace SistemaGestionNomina.UI
             // 
             // lblNominaActualValor
             // 
-            this.lblNominaActualValor.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold);
+            this.lblNominaActualValor.Font = new System.Drawing.Font("Segoe UI", 17F, System.Drawing.FontStyle.Bold);
             this.lblNominaActualValor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(197)))), ((int)(((byte)(94)))));
             this.lblNominaActualValor.Location = new System.Drawing.Point(18, 56);
             this.lblNominaActualValor.Name = "lblNominaActualValor";
-            this.lblNominaActualValor.Size = new System.Drawing.Size(200, 44);
+            this.lblNominaActualValor.Size = new System.Drawing.Size(206, 44);
             this.lblNominaActualValor.TabIndex = 1;
             this.lblNominaActualValor.Text = "B/. 0.00";
             // 
@@ -238,13 +238,13 @@ namespace SistemaGestionNomina.UI
             // 
             // lblAlertasValor
             // 
-            this.lblAlertasValor.Font = new System.Drawing.Font("Segoe UI", 22F, System.Drawing.FontStyle.Bold);
+            this.lblAlertasValor.Font = new System.Drawing.Font("Segoe UI", 17F, System.Drawing.FontStyle.Bold);
             this.lblAlertasValor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(115)))), ((int)(((byte)(134)))));
             this.lblAlertasValor.Location = new System.Drawing.Point(18, 56);
             this.lblAlertasValor.Name = "lblAlertasValor";
-            this.lblAlertasValor.Size = new System.Drawing.Size(200, 44);
+            this.lblAlertasValor.Size = new System.Drawing.Size(206, 44);
             this.lblAlertasValor.TabIndex = 1;
-            this.lblAlertasValor.Text = "0";
+            this.lblAlertasValor.Text = "B/. 0.00";
             // 
             // panelGrafico
             // 

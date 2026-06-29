@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using ClosedXML.Excel;
 using SistemaGestionNomina.Helpers;
 using SistemaGestionNomina.Models;
@@ -11,7 +10,9 @@ namespace SistemaGestionNomina.Services
     {
         public string ExportarEmpleados(List<Empleado> empleados)
         {
-            string path = BuildPath("Exports\\Excel", "Empleados", ".xlsx");
+            string path = BuildPath("Empleados");
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
             using (XLWorkbook workbook = new XLWorkbook())
             {
                 IXLWorksheet sheet = workbook.Worksheets.Add("Empleados");
@@ -37,7 +38,9 @@ namespace SistemaGestionNomina.Services
 
         public string ExportarAsistencias(List<Asistencia> asistencias)
         {
-            string path = BuildPath("Exports\\Excel", "Asistencia", ".xlsx");
+            string path = BuildPath("Asistencia");
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
             using (XLWorkbook workbook = new XLWorkbook())
             {
                 IXLWorksheet sheet = workbook.Worksheets.Add("Asistencia");
@@ -62,7 +65,9 @@ namespace SistemaGestionNomina.Services
 
         public string ExportarNomina(Nomina nomina)
         {
-            string path = BuildPath("Exports\\Excel", "Nomina", ".xlsx");
+            string path = BuildPath("Nomina");
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
             using (XLWorkbook workbook = new XLWorkbook())
             {
                 IXLWorksheet sheet = workbook.Worksheets.Add("Nómina");
@@ -96,7 +101,9 @@ namespace SistemaGestionNomina.Services
 
         public string ExportarComprobantes(List<Comprobante> comprobantes)
         {
-            string path = BuildPath("Exports\\Excel", "Comprobantes", ".xlsx");
+            string path = BuildPath("Comprobantes");
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
             using (XLWorkbook workbook = new XLWorkbook())
             {
                 IXLWorksheet sheet = workbook.Worksheets.Add("Comprobantes");
@@ -122,7 +129,9 @@ namespace SistemaGestionNomina.Services
 
         public string ExportarReportes(List<ReporteGenerado> reportes)
         {
-            string path = BuildPath("Exports\\Excel", "Reportes", ".xlsx");
+            string path = BuildPath("Reportes");
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
             using (XLWorkbook workbook = new XLWorkbook())
             {
                 IXLWorksheet sheet = workbook.Worksheets.Add("Reportes");
@@ -144,9 +153,9 @@ namespace SistemaGestionNomina.Services
             return path;
         }
 
-        private static string BuildPath(string folder, string prefix, string extension)
+        private static string BuildPath(string prefix)
         {
-            return Path.Combine(PathHelper.EnsureExportFolder(folder), prefix + "_" + PathHelper.Timestamp() + extension);
+            return PathHelper.RequestExportPath(prefix, ".xlsx", "Libro de Excel (*.xlsx)|*.xlsx");
         }
 
         private static void WriteHeader(IXLWorksheet sheet, params string[] headers)

@@ -109,6 +109,8 @@ namespace SistemaGestionNomina.UI
                     path = pdfExportService.ExportarReportes(reportes);
                 }
 
+                if (string.IsNullOrWhiteSpace(path)) return;
+
                 reporteService.Register(name, type + " / " + format, path);
                 UiFactory.ShowExported(path);
                 LoadReports();

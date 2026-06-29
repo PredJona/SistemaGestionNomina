@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using SistemaGestionNomina.Helpers;
@@ -12,7 +11,9 @@ namespace SistemaGestionNomina.Services
     {
         public string ExportarEmpleados(List<Empleado> empleados)
         {
-            string path = BuildPath("Exports\\PDF", "Empleados");
+            string path = BuildPath("Empleados");
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
             PdfDocument document = CreateDocument("Empleados");
             PdfPage page = document.AddPage();
             XGraphics gfx = XGraphics.FromPdfPage(page);
@@ -30,7 +31,9 @@ namespace SistemaGestionNomina.Services
 
         public string ExportarAsistencias(List<Asistencia> asistencias)
         {
-            string path = BuildPath("Exports\\PDF", "Asistencia");
+            string path = BuildPath("Asistencia");
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
             PdfDocument document = CreateDocument("Asistencia");
             PdfPage page = document.AddPage();
             XGraphics gfx = XGraphics.FromPdfPage(page);
@@ -48,7 +51,9 @@ namespace SistemaGestionNomina.Services
 
         public string ExportarNomina(Nomina nomina)
         {
-            string path = BuildPath("Exports\\PDF", "Nomina");
+            string path = BuildPath("Nomina");
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
             PdfDocument document = CreateDocument("Nómina");
             PdfPage page = document.AddPage();
             XGraphics gfx = XGraphics.FromPdfPage(page);
@@ -68,12 +73,13 @@ namespace SistemaGestionNomina.Services
 
         public string ExportarComprobante(Comprobante comprobante)
         {
-            string path = Path.Combine(PathHelper.EnsureExportFolder("Exports\\Comprobantes"),
-                comprobante.NumeroComprobante + "_" + PathHelper.Timestamp() + ".pdf");
+            string path = PathHelper.RequestExportPath(comprobante.NumeroComprobante, ".pdf", "Documento PDF (*.pdf)|*.pdf");
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
             PdfDocument document = CreateDocument("Comprobante");
             PdfPage page = document.AddPage();
             XGraphics gfx = XGraphics.FromPdfPage(page);
-            DrawTitle(gfx, "Sistema de Gestión de Nómina");
+            DrawTitle(gfx, "Proy2_Eq01_CamposPD");
             DrawLine(gfx, 40, 82, "COMPROBANTE DE PAGO");
             DrawLine(gfx, 40, 120, "Número: " + comprobante.NumeroComprobante);
             DrawLine(gfx, 40, 145, "Empleado: " + comprobante.EmpleadoNombre + " (" + comprobante.CodigoEmpleado + ")");
@@ -88,7 +94,9 @@ namespace SistemaGestionNomina.Services
 
         public string ExportarReportes(List<ReporteGenerado> reportes)
         {
-            string path = BuildPath("Exports\\PDF", "Reportes");
+            string path = BuildPath("Reportes");
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
             PdfDocument document = CreateDocument("Reportes");
             PdfPage page = document.AddPage();
             XGraphics gfx = XGraphics.FromPdfPage(page);
@@ -112,9 +120,9 @@ namespace SistemaGestionNomina.Services
             return document;
         }
 
-        private static string BuildPath(string folder, string prefix)
+        private static string BuildPath(string prefix)
         {
-            return Path.Combine(PathHelper.EnsureExportFolder(folder), prefix + "_" + PathHelper.Timestamp() + ".pdf");
+            return PathHelper.RequestExportPath(prefix, ".pdf", "Documento PDF (*.pdf)|*.pdf");
         }
 
         private static void DrawTitle(XGraphics gfx, string title)

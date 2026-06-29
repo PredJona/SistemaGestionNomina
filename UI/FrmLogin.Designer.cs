@@ -25,6 +25,7 @@ namespace SistemaGestionNomina.UI
         private void InitializeComponent()
         {
             this.panelLogin = new System.Windows.Forms.Panel();
+            this.foxBigLabel1 = new ReaLTaiizor.Controls.FoxBigLabel();
             this.lblSubtitulo = new System.Windows.Forms.Label();
             this.lblUsuario = new System.Windows.Forms.Label();
             this.lblPassword = new System.Windows.Forms.Label();
@@ -33,7 +34,6 @@ namespace SistemaGestionNomina.UI
             this.chkRecordar = new System.Windows.Forms.CheckBox();
             this.btnIngresar = new System.Windows.Forms.Button();
             this.lblMensaje = new System.Windows.Forms.Label();
-            this.foxBigLabel1 = new ReaLTaiizor.Controls.FoxBigLabel();
             this.panelLogin.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -56,11 +56,25 @@ namespace SistemaGestionNomina.UI
             this.panelLogin.Size = new System.Drawing.Size(430, 520);
             this.panelLogin.TabIndex = 0;
             // 
+            // foxBigLabel1
+            // 
+            this.foxBigLabel1.BackColor = System.Drawing.Color.Transparent;
+            this.foxBigLabel1.Font = new System.Drawing.Font("Segoe UI Semibold", 20F);
+            this.foxBigLabel1.ForeColor = System.Drawing.Color.Indigo;
+            this.foxBigLabel1.Line = ReaLTaiizor.Controls.FoxBigLabel.Direction.Top;
+            this.foxBigLabel1.LineColor = System.Drawing.Color.Transparent;
+            this.foxBigLabel1.Location = new System.Drawing.Point(135, 81);
+            this.foxBigLabel1.Name = "foxBigLabel1";
+            this.foxBigLabel1.Size = new System.Drawing.Size(165, 41);
+            this.foxBigLabel1.TabIndex = 10;
+            this.foxBigLabel1.Text = "NomiCore";
+            this.foxBigLabel1.Click += new System.EventHandler(this.foxBigLabel1_Click);
+            // 
             // lblSubtitulo
             // 
             this.lblSubtitulo.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.lblSubtitulo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
-            this.lblSubtitulo.Location = new System.Drawing.Point(56, 125);
+            this.lblSubtitulo.Location = new System.Drawing.Point(40, 125);
             this.lblSubtitulo.Name = "lblSubtitulo";
             this.lblSubtitulo.Size = new System.Drawing.Size(350, 24);
             this.lblSubtitulo.TabIndex = 2;
@@ -150,20 +164,6 @@ namespace SistemaGestionNomina.UI
             this.lblMensaje.TabIndex = 9;
             this.lblMensaje.Text = "Usuario inicial: admin / admin123";
             this.lblMensaje.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // foxBigLabel1
-            // 
-            this.foxBigLabel1.BackColor = System.Drawing.Color.Transparent;
-            this.foxBigLabel1.Font = new System.Drawing.Font("Segoe UI Semibold", 20F);
-            this.foxBigLabel1.ForeColor = System.Drawing.Color.Indigo;
-            this.foxBigLabel1.Line = ReaLTaiizor.Controls.FoxBigLabel.Direction.Top;
-            this.foxBigLabel1.LineColor = System.Drawing.Color.Transparent;
-            this.foxBigLabel1.Location = new System.Drawing.Point(152, 66);
-            this.foxBigLabel1.Name = "foxBigLabel1";
-            this.foxBigLabel1.Size = new System.Drawing.Size(165, 41);
-            this.foxBigLabel1.TabIndex = 10;
-            this.foxBigLabel1.Text = "Proy2_Eq01_CamposPD";
-            this.foxBigLabel1.Click += new System.EventHandler(this.foxBigLabel1_Click);
             // 
             // FrmLogin
             // 

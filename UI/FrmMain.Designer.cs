@@ -8,7 +8,6 @@ namespace SistemaGestionNomina.UI
         public System.Windows.Forms.Panel panelContent;
         private System.Windows.Forms.Label lblMarca;
         private System.Windows.Forms.Label lblSubmarca;
-        private System.Windows.Forms.Label lblTituloTop;
         private System.Windows.Forms.Label lblUsuarioActual;
         public FontAwesome.Sharp.IconButton btnDashboard;
         public FontAwesome.Sharp.IconButton btnEmpleados;
@@ -46,7 +45,6 @@ namespace SistemaGestionNomina.UI
             this.btnSalir = new FontAwesome.Sharp.IconButton();
             this.btnCerrarSesion = new FontAwesome.Sharp.IconButton();
             this.panelTopbar = new System.Windows.Forms.Panel();
-            this.lblTituloTop = new System.Windows.Forms.Label();
             this.lblUsuarioActual = new System.Windows.Forms.Label();
             this.panelContent = new System.Windows.Forms.Panel();
             this.panelSidebar.SuspendLayout();
@@ -82,7 +80,7 @@ namespace SistemaGestionNomina.UI
             this.lblMarca.Name = "lblMarca";
             this.lblMarca.Size = new System.Drawing.Size(210, 32);
             this.lblMarca.TabIndex = 0;
-            this.lblMarca.Text = "Proy2_Eq01";
+            this.lblMarca.Text = "NomiCore";
             // 
             // lblSubmarca
             // 
@@ -318,26 +316,12 @@ namespace SistemaGestionNomina.UI
             // panelTopbar
             // 
             this.panelTopbar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(18)))), ((int)(((byte)(26)))));
-            this.panelTopbar.Controls.Add(this.lblTituloTop);
             this.panelTopbar.Controls.Add(this.lblUsuarioActual);
             this.panelTopbar.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelTopbar.Location = new System.Drawing.Point(260, 0);
             this.panelTopbar.Name = "panelTopbar";
             this.panelTopbar.Size = new System.Drawing.Size(1020, 78);
             this.panelTopbar.TabIndex = 1;
-            // 
-            // lblTituloTop
-            // 
-            this.lblTituloTop.Dock = System.Windows.Forms.DockStyle.Left;
-            this.lblTituloTop.Font = new System.Drawing.Font("Segoe UI", 17F, System.Drawing.FontStyle.Bold);
-            this.lblTituloTop.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(244)))), ((int)(((byte)(246)))));
-            this.lblTituloTop.Location = new System.Drawing.Point(0, 0);
-            this.lblTituloTop.Name = "lblTituloTop";
-            this.lblTituloTop.Padding = new System.Windows.Forms.Padding(28, 0, 0, 0);
-            this.lblTituloTop.Size = new System.Drawing.Size(520, 78);
-            this.lblTituloTop.TabIndex = 0;
-            this.lblTituloTop.Text = "Proy2_Eq01_CamposPD";
-            this.lblTituloTop.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblUsuarioActual
             // 

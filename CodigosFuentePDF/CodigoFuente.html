@@ -1302,32 +1302,76 @@ namespace SistemaGestionNomina.Helpers
 </code></pre>
 <h2>Helpers\PathHelper.cs</h2><pre><code>using System;
 using System.IO;
+using System.Windows.Forms;
 
 namespace SistemaGestionNomina.Helpers
 {
     public static class PathHelper
     {
-        public static string EnsureExportFolder(string relativeFolder)
-        {
-            string folder = Path.Combine(GetApplicationFolder(), relativeFolder);
-            Directory.CreateDirectory(folder);
-            return folder;
-        }
-
         public static string Timestamp()
         {
             return DateTime.Now.ToString(&quot;yyyy_MM_dd_HHmm&quot;);
         }
 
-        private static string GetApplicationFolder()
+        public static string RequestExportPath(string prefix, string extension, string filter)
         {
-            string location = typeof(PathHelper).Assembly.Location;
-            if (!string.IsNullOrWhiteSpace(location))
+            string cleanExtension = NormalizeExtension(extension);
+            using (SaveFileDialog dialog = new SaveFileDialog())
             {
-                return Path.GetDirectoryName(location);
+                dialog.Title = &quot;Guardar exportaci&#195;&#179;n&quot;;
+                dialog.FileName = BuildExportFileName(prefix, cleanExtension);
+                dialog.Filter = filter + &quot;|Todos los archivos (*.*)|*.*&quot;;
+                dialog.DefaultExt = cleanExtension.TrimStart(&#39;.&#39;);
+                dialog.AddExtension = true;
+                dialog.OverwritePrompt = true;
+                dialog.InitialDirectory = GetSafeInitialDirectory();
+
+                return dialog.ShowDialog() == DialogResult.OK ? dialog.FileName : string.Empty;
+            }
+        }
+
+        public static string BuildUserDocumentPath(string prefix, string extension)
+        {
+            string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            if (string.IsNullOrWhiteSpace(folder))
+            {
+                folder = Path.GetTempPath();
             }
 
-            return AppDomain.CurrentDomain.BaseDirectory;
+            Directory.CreateDirectory(folder);
+            return Path.Combine(folder, BuildExportFileName(prefix, NormalizeExtension(extension)));
+        }
+
+        private static string BuildExportFileName(string prefix, string extension)
+        {
+            return SanitizeFileName(prefix) + &quot;_&quot; + Timestamp() + extension;
+        }
+
+        private static string NormalizeExtension(string extension)
+        {
+            if (string.IsNullOrWhiteSpace(extension))
+            {
+                return &quot;.dat&quot;;
+            }
+
+            return extension.StartsWith(&quot;.&quot;) ? extension : &quot;.&quot; + extension;
+        }
+
+        private static string GetSafeInitialDirectory()
+        {
+            string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            return Directory.Exists(documents) ? documents : Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+        }
+
+        private static string SanitizeFileName(string value)
+        {
+            string safe = string.IsNullOrWhiteSpace(value) ? &quot;Exportacion&quot; : value.Trim();
+            foreach (char c in Path.GetInvalidFileNameChars())
+            {
+                safe = safe.Replace(c, &#39;_&#39;);
+            }
+
+            return safe.Replace(&#39; &#39;, &#39;_&#39;);
         }
     }
 }
@@ -2363,6 +2407,7 @@ using System.Data.SQLite;
 using System.IO;
 using System.Text;
 using SistemaGestionNomina.Data;
+using SistemaGestionNomina.Helpers;
 
 namespace SistemaGestionNomina.Services
 {
@@ -2449,9 +2494,9 @@ namespace SistemaGestionNomina.Services
         public string ExportarReportePersonalizado(string nombreReporte)
         {
             string content = ConstruirReportePersonalizado(nombreReporte);
-            string folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, &quot;Exports&quot;, &quot;PDF&quot;);
-            Directory.CreateDirectory(folder);
-            string path = Path.Combine(folder, SanitizeFileName(nombreReporte) + &quot;_&quot; + DateTime.Now.ToString(&quot;yyyyMMdd_HHmmss&quot;) + &quot;.md&quot;);
+            string path = PathHelper.RequestExportPath(SanitizeFileName(nombreReporte), &quot;.md&quot;, &quot;Archivo Markdown (*.md)|*.md&quot;);
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
             File.WriteAllText(path, content, Encoding.UTF8);
             return path;
         }
@@ -3258,6 +3303,7 @@ namespace SistemaGestionNomina.Services
 <h2>Services\EmailService.cs</h2><pre><code>using System;
 using System.IO;
 using System.Text;
+using SistemaGestionNomina.Helpers;
 
 namespace SistemaGestionNomina.Services
 {
@@ -3294,11 +3340,10 @@ namespace SistemaGestionNomina.Services
                 throw new FileNotFoundException(&quot;No se encontr&#195;&#179; el PDF del comprobante.&quot;, rutaPdf);
             }
 
-            string folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, &quot;Exports&quot;, &quot;Comprobantes&quot;, &quot;Emails&quot;);
-            Directory.CreateDirectory(folder);
-
             string fileName = &quot;EmailComprobante_&quot; + DateTime.Now.ToString(&quot;yyyyMMdd_HHmmss&quot;) + &quot;.eml&quot;;
-            string path = Path.Combine(folder, fileName);
+            string path = PathHelper.RequestExportPath(Path.GetFileNameWithoutExtension(fileName), &quot;.eml&quot;, &quot;Mensaje de correo (*.eml)|*.eml&quot;);
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
             string boundary = &quot;----=_Nomina_&quot; + Guid.NewGuid().ToString(&quot;N&quot;);
             string subject = string.IsNullOrWhiteSpace(asunto) ? &quot;Comprobante de pago&quot; : asunto.Trim();
 
@@ -3351,7 +3396,6 @@ namespace SistemaGestionNomina.Services
 </code></pre>
 <h2>Services\ExcelExportService.cs</h2><pre><code>using System;
 using System.Collections.Generic;
-using System.IO;
 using ClosedXML.Excel;
 using SistemaGestionNomina.Helpers;
 using SistemaGestionNomina.Models;
@@ -3362,7 +3406,9 @@ namespace SistemaGestionNomina.Services
     {
         public string ExportarEmpleados(List&lt;Empleado&gt; empleados)
         {
-            string path = BuildPath(&quot;Exports\\Excel&quot;, &quot;Empleados&quot;, &quot;.xlsx&quot;);
+            string path = BuildPath(&quot;Empleados&quot;);
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
             using (XLWorkbook workbook = new XLWorkbook())
             {
                 IXLWorksheet sheet = workbook.Worksheets.Add(&quot;Empleados&quot;);
@@ -3388,7 +3434,9 @@ namespace SistemaGestionNomina.Services
 
         public string ExportarAsistencias(List&lt;Asistencia&gt; asistencias)
         {
-            string path = BuildPath(&quot;Exports\\Excel&quot;, &quot;Asistencia&quot;, &quot;.xlsx&quot;);
+            string path = BuildPath(&quot;Asistencia&quot;);
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
             using (XLWorkbook workbook = new XLWorkbook())
             {
                 IXLWorksheet sheet = workbook.Worksheets.Add(&quot;Asistencia&quot;);
@@ -3413,7 +3461,9 @@ namespace SistemaGestionNomina.Services
 
         public string ExportarNomina(Nomina nomina)
         {
-            string path = BuildPath(&quot;Exports\\Excel&quot;, &quot;Nomina&quot;, &quot;.xlsx&quot;);
+            string path = BuildPath(&quot;Nomina&quot;);
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
             using (XLWorkbook workbook = new XLWorkbook())
             {
                 IXLWorksheet sheet = workbook.Worksheets.Add(&quot;N&#195;&#179;mina&quot;);
@@ -3447,7 +3497,9 @@ namespace SistemaGestionNomina.Services
 
         public string ExportarComprobantes(List&lt;Comprobante&gt; comprobantes)
         {
-            string path = BuildPath(&quot;Exports\\Excel&quot;, &quot;Comprobantes&quot;, &quot;.xlsx&quot;);
+            string path = BuildPath(&quot;Comprobantes&quot;);
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
             using (XLWorkbook workbook = new XLWorkbook())
             {
                 IXLWorksheet sheet = workbook.Worksheets.Add(&quot;Comprobantes&quot;);
@@ -3473,7 +3525,9 @@ namespace SistemaGestionNomina.Services
 
         public string ExportarReportes(List&lt;ReporteGenerado&gt; reportes)
         {
-            string path = BuildPath(&quot;Exports\\Excel&quot;, &quot;Reportes&quot;, &quot;.xlsx&quot;);
+            string path = BuildPath(&quot;Reportes&quot;);
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
             using (XLWorkbook workbook = new XLWorkbook())
             {
                 IXLWorksheet sheet = workbook.Worksheets.Add(&quot;Reportes&quot;);
@@ -3495,9 +3549,9 @@ namespace SistemaGestionNomina.Services
             return path;
         }
 
-        private static string BuildPath(string folder, string prefix, string extension)
+        private static string BuildPath(string prefix)
         {
-            return Path.Combine(PathHelper.EnsureExportFolder(folder), prefix + &quot;_&quot; + PathHelper.Timestamp() + extension);
+            return PathHelper.RequestExportPath(prefix, &quot;.xlsx&quot;, &quot;Libro de Excel (*.xlsx)|*.xlsx&quot;);
         }
 
         private static void WriteHeader(IXLWorksheet sheet, params string[] headers)
@@ -3524,7 +3578,6 @@ namespace SistemaGestionNomina.Services
 </code></pre>
 <h2>Services\PdfExportService.cs</h2><pre><code>using System;
 using System.Collections.Generic;
-using System.IO;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using SistemaGestionNomina.Helpers;
@@ -3536,7 +3589,9 @@ namespace SistemaGestionNomina.Services
     {
         public string ExportarEmpleados(List&lt;Empleado&gt; empleados)
         {
-            string path = BuildPath(&quot;Exports\\PDF&quot;, &quot;Empleados&quot;);
+            string path = BuildPath(&quot;Empleados&quot;);
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
             PdfDocument document = CreateDocument(&quot;Empleados&quot;);
             PdfPage page = document.AddPage();
             XGraphics gfx = XGraphics.FromPdfPage(page);
@@ -3554,7 +3609,9 @@ namespace SistemaGestionNomina.Services
 
         public string ExportarAsistencias(List&lt;Asistencia&gt; asistencias)
         {
-            string path = BuildPath(&quot;Exports\\PDF&quot;, &quot;Asistencia&quot;);
+            string path = BuildPath(&quot;Asistencia&quot;);
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
             PdfDocument document = CreateDocument(&quot;Asistencia&quot;);
             PdfPage page = document.AddPage();
             XGraphics gfx = XGraphics.FromPdfPage(page);
@@ -3572,7 +3629,9 @@ namespace SistemaGestionNomina.Services
 
         public string ExportarNomina(Nomina nomina)
         {
-            string path = BuildPath(&quot;Exports\\PDF&quot;, &quot;Nomina&quot;);
+            string path = BuildPath(&quot;Nomina&quot;);
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
             PdfDocument document = CreateDocument(&quot;N&#195;&#179;mina&quot;);
             PdfPage page = document.AddPage();
             XGraphics gfx = XGraphics.FromPdfPage(page);
@@ -3592,12 +3651,13 @@ namespace SistemaGestionNomina.Services
 
         public string ExportarComprobante(Comprobante comprobante)
         {
-            string path = Path.Combine(PathHelper.EnsureExportFolder(&quot;Exports\\Comprobantes&quot;),
-                comprobante.NumeroComprobante + &quot;_&quot; + PathHelper.Timestamp() + &quot;.pdf&quot;);
+            string path = PathHelper.RequestExportPath(comprobante.NumeroComprobante, &quot;.pdf&quot;, &quot;Documento PDF (*.pdf)|*.pdf&quot;);
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
             PdfDocument document = CreateDocument(&quot;Comprobante&quot;);
             PdfPage page = document.AddPage();
             XGraphics gfx = XGraphics.FromPdfPage(page);
-            DrawTitle(gfx, &quot;Sistema de Gesti&#195;&#179;n de N&#195;&#179;mina&quot;);
+            DrawTitle(gfx, &quot;Proy2_Eq01_CamposPD&quot;);
             DrawLine(gfx, 40, 82, &quot;COMPROBANTE DE PAGO&quot;);
             DrawLine(gfx, 40, 120, &quot;N&#195;&#186;mero: &quot; + comprobante.NumeroComprobante);
             DrawLine(gfx, 40, 145, &quot;Empleado: &quot; + comprobante.EmpleadoNombre + &quot; (&quot; + comprobante.CodigoEmpleado + &quot;)&quot;);
@@ -3612,7 +3672,9 @@ namespace SistemaGestionNomina.Services
 
         public string ExportarReportes(List&lt;ReporteGenerado&gt; reportes)
         {
-            string path = BuildPath(&quot;Exports\\PDF&quot;, &quot;Reportes&quot;);
+            string path = BuildPath(&quot;Reportes&quot;);
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
             PdfDocument document = CreateDocument(&quot;Reportes&quot;);
             PdfPage page = document.AddPage();
             XGraphics gfx = XGraphics.FromPdfPage(page);
@@ -3636,9 +3698,9 @@ namespace SistemaGestionNomina.Services
             return document;
         }
 
-        private static string BuildPath(string folder, string prefix)
+        private static string BuildPath(string prefix)
         {
-            return Path.Combine(PathHelper.EnsureExportFolder(folder), prefix + &quot;_&quot; + PathHelper.Timestamp() + &quot;.pdf&quot;);
+            return PathHelper.RequestExportPath(prefix, &quot;.pdf&quot;, &quot;Documento PDF (*.pdf)|*.pdf&quot;);
         }
 
         private static void DrawTitle(XGraphics gfx, string title)
@@ -4937,6 +4999,8 @@ namespace SistemaGestionNomina.UI
         {
             if (!EnsureSelected()) return;
             string path = pdfExportService.ExportarComprobante(selectedComprobante);
+            if (string.IsNullOrWhiteSpace(path)) return;
+
             comprobanteService.SaveRutaPdf(selectedComprobante.IdComprobante, path);
             UiFactory.ShowExported(path);
         }
@@ -5050,6 +5114,8 @@ namespace SistemaGestionNomina.UI
                 if (string.IsNullOrWhiteSpace(pdfPath) || !File.Exists(pdfPath))
                 {
                     pdfPath = pdfExportService.ExportarComprobante(selectedComprobante);
+                    if (string.IsNullOrWhiteSpace(pdfPath)) return;
+
                     comprobanteService.SaveRutaPdf(selectedComprobante.IdComprobante, pdfPath);
                     selectedComprobante.RutaPdf = pdfPath;
                 }
@@ -5593,6 +5659,7 @@ namespace SistemaGestionNomina.UI
 <h2>UI\FrmDashboard.cs</h2><pre><code>using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
 using SistemaGestionNomina.Helpers;
 using SistemaGestionNomina.Models;
@@ -5654,9 +5721,9 @@ namespace SistemaGestionNomina.UI
             decimal totalDeducciones = nominas.Count &gt; 0 ? nominas[0].TotalDeducciones : 0;
 
             lblEmpleadosActivosValor.Text = activos.Count.ToString();
-            lblNominaActualValor.Text = &quot;B/. &quot; + totalNomina.ToString(&quot;0.00&quot;);
+            SetMoneyLabel(lblNominaActualValor, totalNomina);
             lblComprobantesValor.Text = comprobantes.Count.ToString();
-            lblAlertasValor.Text = &quot;B/. &quot; + totalDeducciones.ToString(&quot;0.00&quot;);
+            SetMoneyLabel(lblAlertasValor, totalDeducciones);
 
             chartPagos.Series[&quot;Neto&quot;].Points.Clear();
             string[] months = { &quot;Ene&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Abr&quot;, &quot;May&quot;, &quot;Jun&quot; };
@@ -5665,6 +5732,15 @@ namespace SistemaGestionNomina.UI
             {
                 chartPagos.Series[&quot;Neto&quot;].Points.AddXY(months[i], Convert.ToDouble(baseValue + (i * 420)));
             }
+        }
+
+        private static void SetMoneyLabel(Label label, decimal amount)
+        {
+            string value = &quot;B/. &quot; + amount.ToString(&quot;#,##0.00&quot;);
+            float size = value.Length &gt; 13 ? 15F : value.Length &gt; 11 ? 17F : 20F;
+
+            label.Font = new Font(&quot;Segoe UI&quot;, size, FontStyle.Bold);
+            label.Text = value;
         }
     }
 }
@@ -5847,11 +5923,11 @@ namespace SistemaGestionNomina.UI
             // 
             // lblNominaActualValor
             // 
-            this.lblNominaActualValor.Font = new System.Drawing.Font(&quot;Segoe UI&quot;, 20F, System.Drawing.FontStyle.Bold);
+            this.lblNominaActualValor.Font = new System.Drawing.Font(&quot;Segoe UI&quot;, 17F, System.Drawing.FontStyle.Bold);
             this.lblNominaActualValor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(197)))), ((int)(((byte)(94)))));
             this.lblNominaActualValor.Location = new System.Drawing.Point(18, 56);
             this.lblNominaActualValor.Name = &quot;lblNominaActualValor&quot;;
-            this.lblNominaActualValor.Size = new System.Drawing.Size(200, 44);
+            this.lblNominaActualValor.Size = new System.Drawing.Size(206, 44);
             this.lblNominaActualValor.TabIndex = 1;
             this.lblNominaActualValor.Text = &quot;B/. 0.00&quot;;
             // 
@@ -5909,13 +5985,13 @@ namespace SistemaGestionNomina.UI
             // 
             // lblAlertasValor
             // 
-            this.lblAlertasValor.Font = new System.Drawing.Font(&quot;Segoe UI&quot;, 22F, System.Drawing.FontStyle.Bold);
+            this.lblAlertasValor.Font = new System.Drawing.Font(&quot;Segoe UI&quot;, 17F, System.Drawing.FontStyle.Bold);
             this.lblAlertasValor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(115)))), ((int)(((byte)(134)))));
             this.lblAlertasValor.Location = new System.Drawing.Point(18, 56);
             this.lblAlertasValor.Name = &quot;lblAlertasValor&quot;;
-            this.lblAlertasValor.Size = new System.Drawing.Size(200, 44);
+            this.lblAlertasValor.Size = new System.Drawing.Size(206, 44);
             this.lblAlertasValor.TabIndex = 1;
-            this.lblAlertasValor.Text = &quot;0&quot;;
+            this.lblAlertasValor.Text = &quot;B/. 0.00&quot;;
             // 
             // panelGrafico
             // 
@@ -6816,6 +6892,7 @@ namespace SistemaGestionNomina.UI
         private void InitializeComponent()
         {
             this.panelLogin = new System.Windows.Forms.Panel();
+            this.foxBigLabel1 = new ReaLTaiizor.Controls.FoxBigLabel();
             this.lblSubtitulo = new System.Windows.Forms.Label();
             this.lblUsuario = new System.Windows.Forms.Label();
             this.lblPassword = new System.Windows.Forms.Label();
@@ -6824,7 +6901,6 @@ namespace SistemaGestionNomina.UI
             this.chkRecordar = new System.Windows.Forms.CheckBox();
             this.btnIngresar = new System.Windows.Forms.Button();
             this.lblMensaje = new System.Windows.Forms.Label();
-            this.foxBigLabel1 = new ReaLTaiizor.Controls.FoxBigLabel();
             this.panelLogin.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -6847,11 +6923,25 @@ namespace SistemaGestionNomina.UI
             this.panelLogin.Size = new System.Drawing.Size(430, 520);
             this.panelLogin.TabIndex = 0;
             // 
+            // foxBigLabel1
+            // 
+            this.foxBigLabel1.BackColor = System.Drawing.Color.Transparent;
+            this.foxBigLabel1.Font = new System.Drawing.Font(&quot;Segoe UI Semibold&quot;, 20F);
+            this.foxBigLabel1.ForeColor = System.Drawing.Color.Indigo;
+            this.foxBigLabel1.Line = ReaLTaiizor.Controls.FoxBigLabel.Direction.Top;
+            this.foxBigLabel1.LineColor = System.Drawing.Color.Transparent;
+            this.foxBigLabel1.Location = new System.Drawing.Point(135, 81);
+            this.foxBigLabel1.Name = &quot;foxBigLabel1&quot;;
+            this.foxBigLabel1.Size = new System.Drawing.Size(165, 41);
+            this.foxBigLabel1.TabIndex = 10;
+            this.foxBigLabel1.Text = &quot;NomiCore&quot;;
+            this.foxBigLabel1.Click += new System.EventHandler(this.foxBigLabel1_Click);
+            // 
             // lblSubtitulo
             // 
             this.lblSubtitulo.Font = new System.Drawing.Font(&quot;Segoe UI&quot;, 10F);
             this.lblSubtitulo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
-            this.lblSubtitulo.Location = new System.Drawing.Point(56, 125);
+            this.lblSubtitulo.Location = new System.Drawing.Point(40, 125);
             this.lblSubtitulo.Name = &quot;lblSubtitulo&quot;;
             this.lblSubtitulo.Size = new System.Drawing.Size(350, 24);
             this.lblSubtitulo.TabIndex = 2;
@@ -6941,20 +7031,6 @@ namespace SistemaGestionNomina.UI
             this.lblMensaje.TabIndex = 9;
             this.lblMensaje.Text = &quot;Usuario inicial: admin / admin123&quot;;
             this.lblMensaje.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // foxBigLabel1
-            // 
-            this.foxBigLabel1.BackColor = System.Drawing.Color.Transparent;
-            this.foxBigLabel1.Font = new System.Drawing.Font(&quot;Segoe UI Semibold&quot;, 20F);
-            this.foxBigLabel1.ForeColor = System.Drawing.Color.Indigo;
-            this.foxBigLabel1.Line = ReaLTaiizor.Controls.FoxBigLabel.Direction.Top;
-            this.foxBigLabel1.LineColor = System.Drawing.Color.Transparent;
-            this.foxBigLabel1.Location = new System.Drawing.Point(152, 66);
-            this.foxBigLabel1.Name = &quot;foxBigLabel1&quot;;
-            this.foxBigLabel1.Size = new System.Drawing.Size(165, 41);
-            this.foxBigLabel1.TabIndex = 10;
-            this.foxBigLabel1.Text = &quot;Proy2_Eq01_CamposPD&quot;;
-            this.foxBigLabel1.Click += new System.EventHandler(this.foxBigLabel1_Click);
             // 
             // FrmLogin
             // 
@@ -7132,7 +7208,6 @@ namespace SistemaGestionNomina.UI
         public System.Windows.Forms.Panel panelContent;
         private System.Windows.Forms.Label lblMarca;
         private System.Windows.Forms.Label lblSubmarca;
-        private System.Windows.Forms.Label lblTituloTop;
         private System.Windows.Forms.Label lblUsuarioActual;
         public FontAwesome.Sharp.IconButton btnDashboard;
         public FontAwesome.Sharp.IconButton btnEmpleados;
@@ -7170,7 +7245,6 @@ namespace SistemaGestionNomina.UI
             this.btnSalir = new FontAwesome.Sharp.IconButton();
             this.btnCerrarSesion = new FontAwesome.Sharp.IconButton();
             this.panelTopbar = new System.Windows.Forms.Panel();
-            this.lblTituloTop = new System.Windows.Forms.Label();
             this.lblUsuarioActual = new System.Windows.Forms.Label();
             this.panelContent = new System.Windows.Forms.Panel();
             this.panelSidebar.SuspendLayout();
@@ -7206,7 +7280,7 @@ namespace SistemaGestionNomina.UI
             this.lblMarca.Name = &quot;lblMarca&quot;;
             this.lblMarca.Size = new System.Drawing.Size(210, 32);
             this.lblMarca.TabIndex = 0;
-            this.lblMarca.Text = &quot;Proy2_Eq01&quot;;
+            this.lblMarca.Text = &quot;NomiCore&quot;;
             // 
             // lblSubmarca
             // 
@@ -7442,26 +7516,12 @@ namespace SistemaGestionNomina.UI
             // panelTopbar
             // 
             this.panelTopbar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(18)))), ((int)(((byte)(26)))));
-            this.panelTopbar.Controls.Add(this.lblTituloTop);
             this.panelTopbar.Controls.Add(this.lblUsuarioActual);
             this.panelTopbar.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelTopbar.Location = new System.Drawing.Point(260, 0);
             this.panelTopbar.Name = &quot;panelTopbar&quot;;
             this.panelTopbar.Size = new System.Drawing.Size(1020, 78);
             this.panelTopbar.TabIndex = 1;
-            // 
-            // lblTituloTop
-            // 
-            this.lblTituloTop.Dock = System.Windows.Forms.DockStyle.Left;
-            this.lblTituloTop.Font = new System.Drawing.Font(&quot;Segoe UI&quot;, 17F, System.Drawing.FontStyle.Bold);
-            this.lblTituloTop.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(244)))), ((int)(((byte)(246)))));
-            this.lblTituloTop.Location = new System.Drawing.Point(0, 0);
-            this.lblTituloTop.Name = &quot;lblTituloTop&quot;;
-            this.lblTituloTop.Padding = new System.Windows.Forms.Padding(28, 0, 0, 0);
-            this.lblTituloTop.Size = new System.Drawing.Size(520, 78);
-            this.lblTituloTop.TabIndex = 0;
-            this.lblTituloTop.Text = &quot;Proy2_Eq01_CamposPD&quot;;
-            this.lblTituloTop.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblUsuarioActual
             // 
@@ -8044,6 +8104,8 @@ namespace SistemaGestionNomina.UI
                     path = pdfExportService.ExportarReportes(reportes);
                 }
 
+                if (string.IsNullOrWhiteSpace(path)) return;
+
                 reporteService.Register(name, type + &quot; / &quot; + format, path);
                 UiFactory.ShowExported(path);
                 LoadReports();
@@ -8460,6 +8522,11 @@ namespace SistemaGestionNomina.UI
 
         public static void ShowExported(string path)
         {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return;
+            }
+
             MessageBox.Show(&quot;Archivo generado correctamente:\n&quot; + path, &quot;Exportaci&#195;&#179;n&quot;,
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }

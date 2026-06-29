@@ -3,6 +3,7 @@ using System.Data.SQLite;
 using System.IO;
 using System.Text;
 using SistemaGestionNomina.Data;
+using SistemaGestionNomina.Helpers;
 
 namespace SistemaGestionNomina.Services
 {
@@ -89,9 +90,9 @@ namespace SistemaGestionNomina.Services
         public string ExportarReportePersonalizado(string nombreReporte)
         {
             string content = ConstruirReportePersonalizado(nombreReporte);
-            string folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Exports", "PDF");
-            Directory.CreateDirectory(folder);
-            string path = Path.Combine(folder, SanitizeFileName(nombreReporte) + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".md");
+            string path = PathHelper.RequestExportPath(SanitizeFileName(nombreReporte), ".md", "Archivo Markdown (*.md)|*.md");
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
             File.WriteAllText(path, content, Encoding.UTF8);
             return path;
         }

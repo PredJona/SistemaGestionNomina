@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
 using SistemaGestionNomina.Helpers;
 using SistemaGestionNomina.Models;
@@ -62,9 +63,9 @@ namespace SistemaGestionNomina.UI
             decimal totalDeducciones = nominas.Count > 0 ? nominas[0].TotalDeducciones : 0;
 
             lblEmpleadosActivosValor.Text = activos.Count.ToString();
-            lblNominaActualValor.Text = "B/. " + totalNomina.ToString("0.00");
+            SetMoneyLabel(lblNominaActualValor, totalNomina);
             lblComprobantesValor.Text = comprobantes.Count.ToString();
-            lblAlertasValor.Text = "B/. " + totalDeducciones.ToString("0.00");
+            SetMoneyLabel(lblAlertasValor, totalDeducciones);
 
             chartPagos.Series["Neto"].Points.Clear();
             string[] months = { "Ene", "Feb", "Mar", "Abr", "May", "Jun" };
@@ -73,6 +74,15 @@ namespace SistemaGestionNomina.UI
             {
                 chartPagos.Series["Neto"].Points.AddXY(months[i], Convert.ToDouble(baseValue + (i * 420)));
             }
+        }
+
+        private static void SetMoneyLabel(Label label, decimal amount)
+        {
+            string value = "B/. " + amount.ToString("#,##0.00");
+            float size = value.Length > 13 ? 15F : value.Length > 11 ? 17F : 20F;
+
+            label.Font = new Font("Segoe UI", size, FontStyle.Bold);
+            label.Text = value;
         }
     }
 }

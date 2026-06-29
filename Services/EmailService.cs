@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using SistemaGestionNomina.Helpers;
 
 namespace SistemaGestionNomina.Services
 {
@@ -37,11 +38,10 @@ namespace SistemaGestionNomina.Services
                 throw new FileNotFoundException("No se encontró el PDF del comprobante.", rutaPdf);
             }
 
-            string folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Exports", "Comprobantes", "Emails");
-            Directory.CreateDirectory(folder);
-
             string fileName = "EmailComprobante_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".eml";
-            string path = Path.Combine(folder, fileName);
+            string path = PathHelper.RequestExportPath(Path.GetFileNameWithoutExtension(fileName), ".eml", "Mensaje de correo (*.eml)|*.eml");
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
             string boundary = "----=_Nomina_" + Guid.NewGuid().ToString("N");
             string subject = string.IsNullOrWhiteSpace(asunto) ? "Comprobante de pago" : asunto.Trim();
 

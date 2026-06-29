@@ -69,6 +69,11 @@ namespace SistemaGestionNomina.UI
 
         public static void ShowExported(string path)
         {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return;
+            }
+
             MessageBox.Show("Archivo generado correctamente:\n" + path, "Exportación",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
