@@ -70,6 +70,7 @@ try {
     $sqliteType = $sqliteAssembly.GetType("System.Data.SQLite.SQLiteConnection")
     $connection = [Activator]::CreateInstance($sqliteType, [object[]]@("Data Source=$dbPath;Version=3;Foreign Keys=True;"))
     $connection.Open()
+    Invoke-NonQuery $connection "DELETE FROM Usuarios WHERE NombreUsuario IN ('supervisor','trabajador');"
 
     Invoke-NonQuery $connection @"
 INSERT INTO Asistencias (IdEmpleado,Fecha,HoraEntrada,HoraSalida,HorasTrabajadas,Estado) VALUES

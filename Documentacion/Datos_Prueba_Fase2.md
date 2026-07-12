@@ -2,7 +2,17 @@
 
 ## Preparación
 
-Use `Tools/PrepararUsuariosPruebaFase1.ps1` para crear un usuario con rol `Trabajador`, contraseña definida durante la ejecución y asociación a un empleado activo. No escriba credenciales en archivos del proyecto.
+El inicializador crea las siguientes cuentas académicas cuando todavía no existen:
+
+| Rol | Usuario | Contraseña | Acceso inicial |
+|---|---|---|---|
+| Administrador | `admin` | `admin123` | Dashboard y todos los módulos |
+| Recursos Humanos | `rrhh` | `Rrhh2026*` | Empleados, asistencia y reportes de personal |
+| Contabilidad | `contador` | `Conta2026*` | Nómina, comprobantes y reportes financieros |
+| Supervisor | `supervisor` | `Super2026*` | Asistencia del departamento de `EMP-1004` |
+| Trabajador | `trabajador` | `Trabaja2026*` | Portal personal de `EMP-1001` |
+
+Las contraseñas se almacenan como hashes PBKDF2. Si una cuenta ya existe, el inicializador no reemplaza su contraseña. `Tools/PrepararUsuariosPruebaFase1.ps1` permanece disponible para crear otras cuentas con contraseñas elegidas durante la ejecución.
 
 ## Casos manuales
 

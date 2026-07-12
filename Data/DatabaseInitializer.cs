@@ -189,6 +189,11 @@ namespace SistemaGestionNomina.Data
             SeedEmployee(connection, "EMP-1003", "Sofía", "Gómez", "9-111-222", "Analista de RRHH", "Recursos Humanos", 1700);
             SeedEmployee(connection, "EMP-1004", "Javier", "Ramírez", "4-555-321", "Supervisor de Operaciones", "Operaciones", 2100);
 
+            SeedDemoUser(connection, "rrhh", "Rrhh2026*", "RRHH", null);
+            SeedDemoUser(connection, "contador", "Conta2026*", "Contabilidad", null);
+            SeedDemoUser(connection, "supervisor", "Super2026*", "Supervisor", "EMP-1004");
+            SeedDemoUser(connection, "trabajador", "Trabaja2026*", "Trabajador", "EMP-1001");
+
             SeedConfig(connection, "SeguroSocial", 9.75m, "Porcentaje académico de seguro social.");
             SeedConfig(connection, "ISR", 10, "Porcentaje académico de impuesto sobre la renta.");
             SeedConfig(connection, "SeguroEducativo", 1.25m, "Porcentaje académico de seguro educativo.");
@@ -221,6 +226,39 @@ namespace SistemaGestionNomina.Data
                 new SQLiteParameter("@n", name),
                 new SQLiteParameter("@v", value),
                 new SQLiteParameter("@d", description));
+        }
+
+        private static void SeedDemoUser(SQLiteConnection connection, string username, string password,
+            string role, string employeeCode)
+        {
+            object existing = ExecuteScalar(connection,
+                "SELECT COUNT(1) FROM Usuarios WHERE NombreUsuario = @usuario;",
+                new SQLiteParameter("@usuario", username));
+            if (Convert.ToInt32(existing) > 0) return;
+
+            object employeeId = DBNull.Value;
+            if (!string.IsNullOrWhiteSpace(employeeCode))
+            {
+                employeeId = ExecuteScalar(connection,
+                    "SELECT IdEmpleado FROM Empleados WHERE Codigo = @codigo AND Estado = 'Activo' LIMIT 1;",
+                    new SQLiteParameter("@codigo", employeeCode));
+                if (employeeId == null) employeeId = DBNull.Value;
+                if (employeeId != DBNull.Value)
+                {
+                    object associated = ExecuteScalar(connection,
+                        "SELECT COUNT(1) FROM Usuarios WHERE IdEmpleado = @empleado;",
+                        new SQLiteParameter("@empleado", employeeId));
+                    if (Convert.ToInt32(associated) > 0) return;
+                }
+            }
+
+            ExecuteWithParameters(connection, @"INSERT OR IGNORE INTO Usuarios
+                (NombreUsuario, PasswordHash, Rol, Estado, IdEmpleado, IntentosFallidos, Bloqueado)
+                VALUES (@usuario, @password, @rol, 'Activo', @empleado, 0, 0);",
+                new SQLiteParameter("@usuario", username),
+                new SQLiteParameter("@password", PasswordHelper.HashPassword(password)),
+                new SQLiteParameter("@rol", role),
+                new SQLiteParameter("@empleado", employeeId));
         }
 
         private static void Execute(SQLiteConnection connection, string sql)
