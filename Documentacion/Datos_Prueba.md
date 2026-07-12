@@ -1,5 +1,17 @@
 # Datos De Prueba
 
+## Usuarios de demostracion
+
+| Rol | Usuario | Contrasena | Empleado asociado |
+| --- | --- | --- | --- |
+| Administrador | `admin` | `admin123` | No aplica |
+| Recursos Humanos | `rrhh` | `Rrhh2026*` | No aplica |
+| Contabilidad | `contador` | `Conta2026*` | No aplica |
+| Supervisor | `supervisor` | `Super2026*` | `EMP-1004 - Javier Ramirez` |
+| Trabajador | `trabajador` | `Trabaja2026*` | `EMP-1001 - Carlos Mendoza` |
+
+Estas cuentas son exclusivamente academicas. Se crean si el nombre de usuario todavia no existe y las contrasenas se almacenan mediante PBKDF2. El inicializador no reemplaza posteriormente una cuenta existente ni restablece una contrasena cambiada desde la aplicacion.
+
 | N° | Modulo | Datos ingresados | Resultado esperado | Resultado obtenido | Estado |
 | --- | --- | --- | --- | --- | --- |
 | 1 | Login | Usuario `admin`, contrasena `admin123` | Acceso al sistema y apertura del dashboard | Pendiente de validacion manual | Revisar |
