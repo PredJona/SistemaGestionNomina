@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using SistemaGestionNomina.Helpers;
 using SistemaGestionNomina.Models;
 using SistemaGestionNomina.Services;
+using SistemaGestionNomina.Security;
 
 namespace SistemaGestionNomina.UI
 {
@@ -14,6 +15,7 @@ namespace SistemaGestionNomina.UI
         private readonly EmpleadoService empleadoService = new EmpleadoService();
         private readonly ExcelExportService excelExportService = new ExcelExportService();
         private readonly PdfExportService pdfExportService = new PdfExportService();
+        private readonly AuthorizationService authorizationService = new AuthorizationService();
 
         public FrmReportes()
         {
@@ -25,27 +27,39 @@ namespace SistemaGestionNomina.UI
         {
             if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
             {
+                bool personal = authorizationService.HasPermission(Permissions.ReportsPersonal);
+                bool financial = authorizationService.HasPermission(Permissions.ReportsFinancial);
+                cardEmpleados.Visible = personal;
+                cardNomina.Visible = financial;
+                cardPagos.Visible = financial;
+                cardDeducciones.Visible = financial;
+                btnExportarExcel.Visible = personal && financial;
+                btnExportarPdf.Visible = personal && financial;
                 LoadReports();
             }
         }
 
         private void btnReporteNomina_Click(object sender, EventArgs e)
         {
+            authorizationService.DemandPermission(Permissions.ReportsFinancial);
             GenerateReport("Reporte general de nómina", "General", "PDF");
         }
 
         private void btnReporteEmpleados_Click(object sender, EventArgs e)
         {
+            authorizationService.DemandPermission(Permissions.ReportsPersonal);
             GenerateReport("Empleados activos", "Personal", "PDF");
         }
 
         private void btnReportePagos_Click(object sender, EventArgs e)
         {
+            authorizationService.DemandPermission(Permissions.ReportsFinancial);
             GenerateReport("Historial de pagos", "Histórico", "PDF");
         }
 
         private void btnReporteDeducciones_Click(object sender, EventArgs e)
         {
+            authorizationService.DemandPermission(Permissions.ReportsFinancial);
             GenerateReport("Resumen de deducciones", "Deducciones", "PDF");
         }
 

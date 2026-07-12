@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SistemaGestionNomina.Security;
 
 namespace SistemaGestionNomina.Services
 {
@@ -13,23 +14,31 @@ namespace SistemaGestionNomina.Services
         public RolePermissionService()
         {
             permisosPorRol = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
-            permisosPorRol["Admin"] = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "*" };
-            permisosPorRol["RRHH"] = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            permisosPorRol[Roles.Admin] = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "*" };
+            permisosPorRol[Roles.RRHH] = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "empleados.ver", "empleados.crear", "empleados.editar", "empleados.desactivar",
-                "asistencia.ver", "asistencia.crear", "asistencia.importar",
-                "reportes.ver", "reportes.exportar", "comprobantes.ver", "comprobantes.exportar"
+                Permissions.EmployeesView, Permissions.EmployeesCreate, Permissions.EmployeesEdit,
+                Permissions.EmployeesDeactivate, Permissions.EmployeesExport,
+                Permissions.AttendanceView, Permissions.AttendanceRegister, Permissions.AttendanceImport,
+                Permissions.AttendanceExport, Permissions.PayslipsView, Permissions.PayslipsExport,
+                Permissions.PayslipsPrint, Permissions.PayslipsEmail,
+                Permissions.ReportsView, Permissions.ReportsPersonal, Permissions.ReportsExport
             };
-            permisosPorRol["Contabilidad"] = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            permisosPorRol[Roles.Contabilidad] = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "nomina.ver", "nomina.calcular", "nomina.confirmar",
-                "comprobantes.ver", "comprobantes.exportar", "comprobantes.imprimir", "comprobantes.email",
-                "reportes.ver", "reportes.exportar", "configuracion.ver"
+                Permissions.PayrollView, Permissions.PayrollCalculate, Permissions.PayrollConfirm,
+                Permissions.PayrollExport, Permissions.PayslipsView, Permissions.PayslipsExport,
+                Permissions.PayslipsPrint, Permissions.PayslipsEmail,
+                Permissions.ReportsView, Permissions.ReportsFinancial, Permissions.ReportsExport
             };
-            permisosPorRol["Consulta"] = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            permisosPorRol[Roles.Supervisor] = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "dashboard.ver", "empleados.ver", "asistencia.ver", "nomina.ver", "comprobantes.ver", "reportes.ver"
+                Permissions.AttendanceView, Permissions.AttendanceRegister, Permissions.AttendanceExport
             };
+            permisosPorRol[Roles.Trabajador] = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            HashSet<string> admin = permisosPorRol[Roles.Admin];
+            admin.Add(Permissions.DashboardView);
         }
 
         /// <summary>
@@ -74,6 +83,11 @@ namespace SistemaGestionNomina.Services
 
             string key = (modulo ?? string.Empty).Trim().ToLowerInvariant() + "." + (accion ?? string.Empty).Trim().ToLowerInvariant();
             return permisos.Contains(key);
+        }
+
+        public bool EsRolValido(string rol)
+        {
+            return !string.IsNullOrWhiteSpace(rol) && permisosPorRol.ContainsKey(rol.Trim());
         }
 
         /// <summary>

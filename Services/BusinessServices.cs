@@ -3,22 +3,75 @@ using System.Collections.Generic;
 using SistemaGestionNomina.Data;
 using SistemaGestionNomina.Helpers;
 using SistemaGestionNomina.Models;
+using SistemaGestionNomina.Security;
 
 namespace SistemaGestionNomina.Services
 {
     public class AuthService
     {
-        private readonly UsuarioRepository usuarioRepository = new UsuarioRepository();
+        private const int MaximumAttempts = 5;
+        private static readonly TimeSpan LockDuration = TimeSpan.FromMinutes(15);
+        private readonly AuthenticationRepository authenticationRepository = new AuthenticationRepository();
+        private readonly AuditTrailService auditTrailService = new AuditTrailService();
 
-        public Usuario Login(string username, string password)
+        public AuthenticationResult Authenticate(string username, string password)
         {
-            Usuario usuario = usuarioRepository.GetByUsername(username);
-            if (usuario == null || !PasswordHelper.Verify(password, usuario.PasswordHash))
+            string normalizedUsername = (username ?? string.Empty).Trim();
+            if (normalizedUsername.Length == 0 || string.IsNullOrEmpty(password))
             {
-                return null;
+                return AuthenticationResult.Invalid();
             }
 
-            return usuario;
+            Usuario usuario = authenticationRepository.GetByUsername(normalizedUsername);
+            if (usuario == null || !string.Equals(usuario.Estado, "Activo", StringComparison.OrdinalIgnoreCase) ||
+                !Roles.IsValid(usuario.Rol))
+            {
+                auditTrailService.RegistrarCambio(normalizedUsername, "Seguridad", "Inicio de sesión fallido",
+                    "Credenciales no válidas.");
+                return AuthenticationResult.Invalid();
+            }
+
+            DateTime now = DateTime.Now;
+            if (usuario.Bloqueado && usuario.FechaBloqueo.HasValue)
+            {
+                DateTime blockedUntil = usuario.FechaBloqueo.Value.Add(LockDuration);
+                if (now < blockedUntil)
+                {
+                    auditTrailService.RegistrarCambio(normalizedUsername, "Seguridad", "Acceso bloqueado",
+                        "Intento durante bloqueo temporal.");
+                    return AuthenticationResult.Blocked(blockedUntil);
+                }
+
+                authenticationRepository.RegisterFailedAttempt(usuario.IdUsuario, 0, false, null);
+                usuario.IntentosFallidos = 0;
+                usuario.Bloqueado = false;
+                usuario.FechaBloqueo = null;
+            }
+
+            if (!PasswordHelper.Verify(password, usuario.PasswordHash))
+            {
+                int attempts = usuario.IntentosFallidos + 1;
+                bool blocked = attempts >= MaximumAttempts;
+                DateTime? blockedAt = blocked ? now : (DateTime?)null;
+                authenticationRepository.RegisterFailedAttempt(usuario.IdUsuario, attempts, blocked, blockedAt);
+                auditTrailService.RegistrarCambio(normalizedUsername, "Seguridad",
+                    blocked ? "Usuario bloqueado" : "Inicio de sesión fallido",
+                    blocked ? "Se alcanzó el máximo de intentos." : "Intento " + attempts + " de " + MaximumAttempts + ".");
+                return blocked ? AuthenticationResult.Blocked(now.Add(LockDuration)) : AuthenticationResult.Invalid();
+            }
+
+            bool upgradeLegacyHash = PasswordHelper.IsLegacyHash(usuario.PasswordHash);
+            string upgradedHash = upgradeLegacyHash ? PasswordHelper.HashPassword(password) : string.Empty;
+            authenticationRepository.CompleteLogin(usuario.IdUsuario, now, upgradedHash);
+            if (upgradeLegacyHash) usuario.PasswordHash = upgradedHash;
+            usuario.UltimoAcceso = now;
+            usuario.IntentosFallidos = 0;
+            usuario.Bloqueado = false;
+            usuario.FechaBloqueo = null;
+            SessionContext.Begin(usuario);
+            auditTrailService.RegistrarCambio(usuario.NombreUsuario, "Seguridad", "Inicio de sesión correcto",
+                upgradeLegacyHash ? "Contraseña actualizada a PBKDF2." : string.Empty);
+            return AuthenticationResult.Successful(usuario);
         }
     }
 
@@ -27,24 +80,34 @@ namespace SistemaGestionNomina.Services
         private readonly EmpleadoRepository empleadoRepository = new EmpleadoRepository();
         private readonly DepartamentoRepository departamentoRepository = new DepartamentoRepository();
         private readonly AuditTrailService auditTrailService = new AuditTrailService();
+        private readonly AuthorizationService authorizationService = new AuthorizationService();
+        private readonly EmployeeScopeService employeeScopeService = new EmployeeScopeService();
 
         public List<Empleado> GetAll(string search, int? departmentId, string status)
         {
-            return empleadoRepository.GetAll(search, departmentId, status);
+            authorizationService.DemandPermission(Permissions.EmployeesView);
+            return empleadoRepository.GetAll(search, departmentId, status, employeeScopeService.GetDepartmentScope());
         }
 
         public List<Empleado> GetActive(int? departmentId)
         {
-            return empleadoRepository.GetActiveByDepartment(departmentId);
+            authorizationService.DemandAny(Permissions.EmployeesView, Permissions.AttendanceView,
+                Permissions.PayrollView, Permissions.ReportsPersonal);
+            int? scope = employeeScopeService.GetDepartmentScope();
+            return empleadoRepository.GetActiveByDepartment(scope ?? departmentId, scope);
         }
 
         public Empleado GetById(int id)
         {
+            authorizationService.DemandPermission(Permissions.EmployeesView);
+            employeeScopeService.DemandEmployeeInScope(id);
             return empleadoRepository.GetById(id);
         }
 
         public List<Departamento> GetDepartments()
         {
+            authorizationService.DemandAny(Permissions.EmployeesView, Permissions.AttendanceView,
+                Permissions.PayrollView);
             return departamentoRepository.GetAll();
         }
 
@@ -53,6 +116,19 @@ namespace SistemaGestionNomina.Services
             if (empleado == null)
             {
                 throw new ArgumentException("Debe indicar los datos del empleado.");
+            }
+
+            authorizationService.DemandPermission(empleado.IdEmpleado == 0
+                ? Permissions.EmployeesCreate : Permissions.EmployeesEdit);
+
+            if (empleado.IdDepartamento <= 0)
+            {
+                throw new ArgumentException("Debe seleccionar un departamento válido.");
+            }
+
+            if (empleado.SalarioBase <= 0)
+            {
+                throw new ArgumentException("El salario base debe ser mayor que cero.");
             }
 
             if (empleadoRepository.ExistsCode(empleado.Codigo, empleado.IdEmpleado))
@@ -68,19 +144,20 @@ namespace SistemaGestionNomina.Services
             if (empleado.IdEmpleado == 0)
             {
                 int id = empleadoRepository.Add(empleado);
-                auditTrailService.RegistrarCambio("admin", "Empleados", "Crear", empleado.Codigo);
+                auditTrailService.RegistrarAccion("Empleados", "Crear", empleado.Codigo);
                 return id;
             }
 
             empleadoRepository.Update(empleado);
-            auditTrailService.RegistrarCambio("admin", "Empleados", "Actualizar", empleado.Codigo);
+            auditTrailService.RegistrarAccion("Empleados", "Actualizar", empleado.Codigo);
             return empleado.IdEmpleado;
         }
 
         public void Deactivate(int id)
         {
+            authorizationService.DemandPermission(Permissions.EmployeesDeactivate);
             empleadoRepository.Deactivate(id);
-            auditTrailService.RegistrarCambio("admin", "Empleados", "Desactivar", "IdEmpleado=" + id);
+            auditTrailService.RegistrarAccion("Empleados", "Desactivar", "IdEmpleado=" + id);
         }
     }
 
@@ -88,12 +165,22 @@ namespace SistemaGestionNomina.Services
     {
         private readonly AsistenciaRepository asistenciaRepository = new AsistenciaRepository();
         private readonly AuditTrailService auditTrailService = new AuditTrailService();
+        private readonly AuthorizationService authorizationService = new AuthorizationService();
+        private readonly EmployeeScopeService employeeScopeService = new EmployeeScopeService();
 
         public int Register(Asistencia asistencia)
         {
             if (asistencia == null)
             {
                 throw new ArgumentException("Debe indicar los datos de asistencia.");
+            }
+
+            authorizationService.DemandPermission(Permissions.AttendanceRegister);
+            employeeScopeService.DemandEmployeeInScope(asistencia.IdEmpleado);
+
+            if (asistenciaRepository.Exists(asistencia.IdEmpleado, asistencia.Fecha.Date))
+            {
+                throw new InvalidOperationException("Ya existe una asistencia para el empleado en esa fecha.");
             }
 
             if (asistencia.Estado == "Falta" || asistencia.Estado == "Permiso")
@@ -118,38 +205,58 @@ namespace SistemaGestionNomina.Services
             }
 
             int id = asistenciaRepository.Add(asistencia);
-            auditTrailService.RegistrarCambio("admin", "Asistencia", "Registrar",
+            auditTrailService.RegistrarAccion("Asistencia", "Registrar",
                 "IdEmpleado=" + asistencia.IdEmpleado + ", Fecha=" + asistencia.Fecha.ToString("yyyy-MM-dd"));
             return id;
         }
 
         public List<Asistencia> GetAll(DateTime? start, DateTime? end, int? employeeId, string status)
         {
-            return asistenciaRepository.GetAll(start, end, employeeId, status);
+            authorizationService.DemandPermission(Permissions.AttendanceView);
+            if (start.HasValue && end.HasValue && start.Value.Date > end.Value.Date)
+            {
+                throw new ArgumentException("La fecha inicial no puede ser mayor que la fecha final.");
+            }
+
+            if (employeeId.HasValue) employeeScopeService.DemandEmployeeInScope(employeeId.Value);
+            return asistenciaRepository.GetAll(start, end, employeeId, status,
+                employeeScopeService.GetDepartmentScope());
         }
     }
 
     public class ConfiguracionService
     {
         private readonly ConfiguracionRepository configuracionRepository = new ConfiguracionRepository();
+        private readonly AuthorizationService authorizationService = new AuthorizationService();
+        private readonly AuditTrailService auditTrailService = new AuditTrailService();
 
         public List<ConfiguracionNomina> GetAll()
         {
+            authorizationService.DemandPermission(Permissions.ConfigurationView);
             return configuracionRepository.GetAll();
         }
 
         public decimal GetValue(string name, decimal fallback)
         {
+            authorizationService.DemandPermission(Permissions.ConfigurationView);
             return configuracionRepository.GetValue(name, fallback);
         }
 
         public void SaveDefaults(Dictionary<string, decimal> values)
         {
+            authorizationService.DemandPermission(Permissions.ConfigurationEdit);
+            if (values == null || !values.ContainsKey("SeguroSocial") || !values.ContainsKey("ISR") ||
+                !values.ContainsKey("SeguroEducativo") || !values.ContainsKey("RecargoHoraExtra") ||
+                !values.ContainsKey("HorasMensualesBase"))
+            {
+                throw new ArgumentException("La configuración de nómina está incompleta.");
+            }
             configuracionRepository.Save("SeguroSocial", values["SeguroSocial"], "Porcentaje académico de seguro social.");
             configuracionRepository.Save("ISR", values["ISR"], "Porcentaje académico de impuesto sobre la renta.");
             configuracionRepository.Save("SeguroEducativo", values["SeguroEducativo"], "Porcentaje académico de seguro educativo.");
             configuracionRepository.Save("RecargoHoraExtra", values["RecargoHoraExtra"], "Multiplicador académico de horas extra.");
             configuracionRepository.Save("HorasMensualesBase", values["HorasMensualesBase"], "Horas mensuales base para cálculo por hora.");
+            auditTrailService.RegistrarAccion("Configuración", "Actualizar", "Parámetros de nómina.");
         }
     }
 
@@ -161,9 +268,11 @@ namespace SistemaGestionNomina.Services
         private readonly NominaRepository nominaRepository = new NominaRepository();
         private readonly ComprobanteRepository comprobanteRepository = new ComprobanteRepository();
         private readonly AuditTrailService auditTrailService = new AuditTrailService();
+        private readonly AuthorizationService authorizationService = new AuthorizationService();
 
         public Nomina CalcularNomina(DateTime fechaInicio, DateTime fechaFin, int? departamentoId)
         {
+            authorizationService.DemandPermission(Permissions.PayrollCalculate);
             if (fechaInicio.Date > fechaFin.Date)
             {
                 throw new InvalidOperationException("La fecha de inicio debe ser menor o igual que la fecha fin.");
@@ -219,11 +328,16 @@ namespace SistemaGestionNomina.Services
                 nomina.TotalNeto += neto;
             }
 
+            auditTrailService.RegistrarAccion("Nómina", "Calcular",
+                fechaInicio.ToString("yyyy-MM-dd") + " a " + fechaFin.ToString("yyyy-MM-dd") +
+                ", Empleados=" + nomina.Detalles.Count);
+
             return nomina;
         }
 
         public int ConfirmarPago(Nomina nomina, DateTime fechaInicio, DateTime fechaFin)
         {
+            authorizationService.DemandPermission(Permissions.PayrollConfirm);
             if (nomina == null || nomina.Detalles.Count == 0)
             {
                 throw new InvalidOperationException("No hay una nómina calculada para confirmar.");
@@ -253,18 +367,22 @@ namespace SistemaGestionNomina.Services
                 comprobanteRepository.Add(comprobante);
             }
 
-            auditTrailService.RegistrarCambio("admin", "Nomina", "Confirmar",
+            auditTrailService.RegistrarAccion("Nómina", "Confirmar",
                 "IdNomina=" + idNomina + ", Empleados=" + nomina.Detalles.Count);
+            auditTrailService.RegistrarAccion("Comprobantes", "Generar",
+                "IdNomina=" + idNomina + ", Cantidad=" + nomina.Detalles.Count);
             return idNomina;
         }
 
         public List<Nomina> GetNominas()
         {
+            authorizationService.DemandPermission(Permissions.PayrollView);
             return nominaRepository.GetAll();
         }
 
         public List<NominaDetalle> GetDetalles(int idNomina)
         {
+            authorizationService.DemandPermission(Permissions.PayrollView);
             return nominaRepository.GetDetalles(idNomina);
         }
     }
@@ -273,21 +391,25 @@ namespace SistemaGestionNomina.Services
     {
         private readonly ComprobanteRepository comprobanteRepository = new ComprobanteRepository();
         private readonly AuditTrailService auditTrailService = new AuditTrailService();
+        private readonly AuthorizationService authorizationService = new AuthorizationService();
 
         public List<Comprobante> GetAll(string search)
         {
+            authorizationService.DemandPermission(Permissions.PayslipsView);
             return comprobanteRepository.GetAll(search);
         }
 
         public Comprobante GetById(int id)
         {
+            authorizationService.DemandPermission(Permissions.PayslipsView);
             return comprobanteRepository.GetById(id);
         }
 
         public void SaveRutaPdf(int idComprobante, string ruta)
         {
+            authorizationService.DemandPermission(Permissions.PayslipsExport);
             comprobanteRepository.UpdateRutaPdf(idComprobante, ruta);
-            auditTrailService.RegistrarCambio("admin", "Comprobantes", "Guardar PDF",
+            auditTrailService.RegistrarAccion("Comprobantes", "Guardar PDF",
                 "IdComprobante=" + idComprobante);
         }
     }
@@ -296,22 +418,37 @@ namespace SistemaGestionNomina.Services
     {
         private readonly ReporteRepository reporteRepository = new ReporteRepository();
         private readonly AuditTrailService auditTrailService = new AuditTrailService();
+        private readonly AuthorizationService authorizationService = new AuthorizationService();
 
         public List<ReporteGenerado> GetAll()
         {
-            return reporteRepository.GetAll();
+            authorizationService.DemandPermission(Permissions.ReportsView);
+            List<ReporteGenerado> reports = reporteRepository.GetAll();
+            if (string.Equals(SessionContext.Role, Roles.Admin, StringComparison.OrdinalIgnoreCase)) return reports;
+
+            List<ReporteGenerado> filtered = new List<ReporteGenerado>();
+            bool personalOnly = authorizationService.HasPermission(Permissions.ReportsPersonal) &&
+                !authorizationService.HasPermission(Permissions.ReportsFinancial);
+            for (int i = 0; i < reports.Count; i++)
+            {
+                bool isPersonal = (reports[i].Tipo ?? string.Empty).IndexOf("Personal",
+                    StringComparison.OrdinalIgnoreCase) >= 0;
+                if ((personalOnly && isPersonal) || (!personalOnly && !isPersonal)) filtered.Add(reports[i]);
+            }
+            return filtered;
         }
 
         public ReporteGenerado Register(string name, string type, string path)
         {
+            authorizationService.DemandPermission(Permissions.ReportsExport);
             ReporteGenerado reporte = new ReporteGenerado();
             reporte.NombreReporte = name;
             reporte.Tipo = type;
-            reporte.GeneradoPor = "admin";
+            reporte.GeneradoPor = SessionContext.Username;
             reporte.FechaGeneracion = DateTime.Now;
             reporte.RutaArchivo = path;
             reporte.IdReporte = reporteRepository.Add(reporte);
-            auditTrailService.RegistrarCambio("admin", "Reportes", "Generar", name + " - " + type);
+            auditTrailService.RegistrarAccion("Reportes", "Generar", name + " - " + type);
             return reporte;
         }
     }

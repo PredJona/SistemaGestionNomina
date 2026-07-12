@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using SistemaGestionNomina.Data;
 using SistemaGestionNomina.Helpers;
+using SistemaGestionNomina.Security;
 
 namespace SistemaGestionNomina.Services
 {
@@ -12,11 +13,15 @@ namespace SistemaGestionNomina.Services
     /// </summary>
     public class AdvancedReportBuilder
     {
+        private readonly AuthorizationService authorizationService = new AuthorizationService();
+        private readonly AuditTrailService auditTrailService = new AuditTrailService();
+
         /// <summary>
         /// Construye un reporte personalizado según filtros dinámicos.
         /// </summary>
         public string ConstruirReportePersonalizado(string nombreReporte)
         {
+            authorizationService.DemandPermission(Permissions.ReportsView);
             if (string.IsNullOrWhiteSpace(nombreReporte))
             {
                 throw new ArgumentException("Debe indicar el nombre del reporte.");
@@ -89,11 +94,13 @@ namespace SistemaGestionNomina.Services
         /// </summary>
         public string ExportarReportePersonalizado(string nombreReporte)
         {
+            authorizationService.DemandPermission(Permissions.ReportsExport);
             string content = ConstruirReportePersonalizado(nombreReporte);
             string path = PathHelper.RequestExportPath(SanitizeFileName(nombreReporte), ".md", "Archivo Markdown (*.md)|*.md");
             if (string.IsNullOrWhiteSpace(path)) return string.Empty;
 
             File.WriteAllText(path, content, Encoding.UTF8);
+            auditTrailService.RegistrarAccion("Reportes", "Exportar personalizado", Path.GetFileName(path));
             return path;
         }
 

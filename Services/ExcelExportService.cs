@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using ClosedXML.Excel;
 using SistemaGestionNomina.Helpers;
 using SistemaGestionNomina.Models;
+using SistemaGestionNomina.Security;
 
 namespace SistemaGestionNomina.Services
 {
     public class ExcelExportService
     {
+        private readonly AuthorizationService authorizationService = new AuthorizationService();
+        private readonly AuditTrailService auditTrailService = new AuditTrailService();
+
         public string ExportarEmpleados(List<Empleado> empleados)
         {
+            authorizationService.DemandAny(Permissions.EmployeesExport, Permissions.ReportsPersonal);
             string path = BuildPath("Empleados");
             if (string.IsNullOrWhiteSpace(path)) return string.Empty;
 
@@ -33,11 +38,13 @@ namespace SistemaGestionNomina.Services
                 workbook.SaveAs(path);
             }
 
+            auditTrailService.RegistrarAccion("Exportaciones", "Excel empleados", System.IO.Path.GetFileName(path));
             return path;
         }
 
         public string ExportarAsistencias(List<Asistencia> asistencias)
         {
+            authorizationService.DemandPermission(Permissions.AttendanceExport);
             string path = BuildPath("Asistencia");
             if (string.IsNullOrWhiteSpace(path)) return string.Empty;
 
@@ -60,11 +67,13 @@ namespace SistemaGestionNomina.Services
                 workbook.SaveAs(path);
             }
 
+            auditTrailService.RegistrarAccion("Exportaciones", "Excel asistencia", System.IO.Path.GetFileName(path));
             return path;
         }
 
         public string ExportarNomina(Nomina nomina)
         {
+            authorizationService.DemandPermission(Permissions.PayrollExport);
             string path = BuildPath("Nomina");
             if (string.IsNullOrWhiteSpace(path)) return string.Empty;
 
@@ -96,11 +105,13 @@ namespace SistemaGestionNomina.Services
                 workbook.SaveAs(path);
             }
 
+            auditTrailService.RegistrarAccion("Exportaciones", "Excel nómina", System.IO.Path.GetFileName(path));
             return path;
         }
 
         public string ExportarComprobantes(List<Comprobante> comprobantes)
         {
+            authorizationService.DemandPermission(Permissions.PayslipsExport);
             string path = BuildPath("Comprobantes");
             if (string.IsNullOrWhiteSpace(path)) return string.Empty;
 
@@ -124,11 +135,13 @@ namespace SistemaGestionNomina.Services
                 workbook.SaveAs(path);
             }
 
+            auditTrailService.RegistrarAccion("Exportaciones", "Excel comprobantes", System.IO.Path.GetFileName(path));
             return path;
         }
 
         public string ExportarReportes(List<ReporteGenerado> reportes)
         {
+            authorizationService.DemandPermission(Permissions.ReportsExport);
             string path = BuildPath("Reportes");
             if (string.IsNullOrWhiteSpace(path)) return string.Empty;
 
@@ -150,6 +163,7 @@ namespace SistemaGestionNomina.Services
                 workbook.SaveAs(path);
             }
 
+            auditTrailService.RegistrarAccion("Exportaciones", "Excel reportes", System.IO.Path.GetFileName(path));
             return path;
         }
 

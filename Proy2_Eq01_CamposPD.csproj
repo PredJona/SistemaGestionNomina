@@ -43,6 +43,7 @@
     <Compile Update="UI\FrmReportes.cs"><SubType>Form</SubType></Compile>
     <Compile Update="UI\FrmConfiguracion.cs"><SubType>Form</SubType></Compile>
     <Compile Update="UI\FrmAcercaDe.cs"><SubType>Form</SubType></Compile>
+    <Compile Update="UI\FrmAuditoria.cs"><SubType>Form</SubType></Compile>
     <Compile Update="UI\FrmLogin.Designer.cs"><DependentUpon>FrmLogin.cs</DependentUpon></Compile>
     <Compile Update="UI\FrmMain.Designer.cs"><DependentUpon>FrmMain.cs</DependentUpon></Compile>
     <Compile Update="UI\FrmDashboard.Designer.cs"><DependentUpon>FrmDashboard.cs</DependentUpon></Compile>
@@ -53,6 +54,7 @@
     <Compile Update="UI\FrmReportes.Designer.cs"><DependentUpon>FrmReportes.cs</DependentUpon></Compile>
     <Compile Update="UI\FrmConfiguracion.Designer.cs"><DependentUpon>FrmConfiguracion.cs</DependentUpon></Compile>
     <Compile Update="UI\FrmAcercaDe.Designer.cs"><DependentUpon>FrmAcercaDe.cs</DependentUpon></Compile>
+    <Compile Update="UI\FrmAuditoria.Designer.cs"><DependentUpon>FrmAuditoria.cs</DependentUpon></Compile>
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -67,6 +69,7 @@
     <EmbeddedResource Update="UI\FrmReportes.resx"><DependentUpon>FrmReportes.cs</DependentUpon></EmbeddedResource>
     <EmbeddedResource Update="UI\FrmConfiguracion.resx"><DependentUpon>FrmConfiguracion.cs</DependentUpon></EmbeddedResource>
     <EmbeddedResource Update="UI\FrmAcercaDe.resx"><DependentUpon>FrmAcercaDe.cs</DependentUpon></EmbeddedResource>
+    <EmbeddedResource Update="UI\FrmAuditoria.resx"><DependentUpon>FrmAuditoria.cs</DependentUpon></EmbeddedResource>
   </ItemGroup>
 
 </Project>

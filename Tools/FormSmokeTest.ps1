@@ -32,6 +32,7 @@ $forms = @(
     "FrmComprobantes",
     "FrmReportes",
     "FrmConfiguracion",
+    "FrmAuditoria",
     "FrmAcercaDe"
 )
 

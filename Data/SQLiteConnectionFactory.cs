@@ -8,7 +8,13 @@ namespace SistemaGestionNomina.Data
     {
         public static string DatabasePath
         {
-            get { return Path.Combine(GetApplicationFolder(), "nomina.db"); }
+            get
+            {
+                string overridePath = Environment.GetEnvironmentVariable("NOMINA_DB_PATH");
+                return string.IsNullOrWhiteSpace(overridePath)
+                    ? Path.Combine(GetApplicationFolder(), "nomina.db")
+                    : Path.GetFullPath(overridePath);
+            }
         }
 
         public static SQLiteConnection CreateConnection()

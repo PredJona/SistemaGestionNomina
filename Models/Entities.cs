@@ -10,6 +10,11 @@ namespace SistemaGestionNomina.Models
         public string PasswordHash { get; set; }
         public string Rol { get; set; }
         public string Estado { get; set; }
+        public int? IdEmpleado { get; set; }
+        public DateTime? UltimoAcceso { get; set; }
+        public int IntentosFallidos { get; set; }
+        public bool Bloqueado { get; set; }
+        public DateTime? FechaBloqueo { get; set; }
     }
 
     public class Departamento

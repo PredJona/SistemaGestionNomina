@@ -4,6 +4,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using SistemaGestionNomina.Data;
+using SistemaGestionNomina.Security;
 
 namespace SistemaGestionNomina.Services
 {
@@ -13,12 +14,14 @@ namespace SistemaGestionNomina.Services
     public class BackupService
     {
         private readonly AuditTrailService auditTrailService = new AuditTrailService();
+        private readonly AuthorizationService authorizationService = new AuthorizationService();
 
         /// <summary>
         /// Crea una copia de seguridad de nomina.db en la ruta indicada.
         /// </summary>
         public string CrearBackup(string carpetaDestino)
         {
+            authorizationService.DemandPermission(Permissions.BackupsManage);
             string source = SQLiteConnectionFactory.DatabasePath;
             if (!File.Exists(source))
             {
@@ -35,7 +38,7 @@ namespace SistemaGestionNomina.Services
 
             string hash = ComputeSha256(destination);
             File.WriteAllText(destination + ".sha256", hash, Encoding.ASCII);
-            auditTrailService.RegistrarCambio("admin", "Backup", "Crear", Path.GetFileName(destination));
+            auditTrailService.RegistrarAccion("Backup", "Crear", Path.GetFileName(destination));
             return destination;
         }
 
@@ -44,6 +47,7 @@ namespace SistemaGestionNomina.Services
         /// </summary>
         public List<string> ListarBackups(string carpeta)
         {
+            authorizationService.DemandPermission(Permissions.BackupsManage);
             string folder = string.IsNullOrWhiteSpace(carpeta)
                 ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Backups")
                 : carpeta;
@@ -66,6 +70,7 @@ namespace SistemaGestionNomina.Services
         /// </summary>
         public bool VerificarBackup(string rutaBackup)
         {
+            authorizationService.DemandPermission(Permissions.BackupsManage);
             if (string.IsNullOrWhiteSpace(rutaBackup) || !File.Exists(rutaBackup))
             {
                 return false;

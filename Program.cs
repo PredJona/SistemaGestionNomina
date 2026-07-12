@@ -2,6 +2,8 @@ using System;
 using System.Windows.Forms;
 using SistemaGestionNomina.Data;
 using SistemaGestionNomina.UI;
+using SistemaGestionNomina.Security;
+using SistemaGestionNomina.Services;
 
 namespace SistemaGestionNomina
 {
@@ -38,6 +40,11 @@ namespace SistemaGestionNomina
                     {
                         Application.Run(main);
                         continueLogin = main.LogoutRequested;
+                        if (SessionContext.IsAuthenticated)
+                        {
+                            new AuditTrailService().RegistrarAccion("Seguridad", "Cerrar aplicación", string.Empty);
+                            SessionContext.Clear();
+                        }
                     }
                 }
             }

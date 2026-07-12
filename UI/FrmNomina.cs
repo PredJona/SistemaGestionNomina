@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using SistemaGestionNomina.Helpers;
 using SistemaGestionNomina.Models;
 using SistemaGestionNomina.Services;
+using SistemaGestionNomina.Security;
 
 namespace SistemaGestionNomina.UI
 {
@@ -14,6 +15,7 @@ namespace SistemaGestionNomina.UI
         private readonly EmpleadoService empleadoService = new EmpleadoService();
         private readonly ExcelExportService excelExportService = new ExcelExportService();
         private readonly PdfExportService pdfExportService = new PdfExportService();
+        private readonly AuthorizationService authorizationService = new AuthorizationService();
         private Nomina currentNomina;
 
         public FrmNomina()
@@ -25,6 +27,10 @@ namespace SistemaGestionNomina.UI
         private void FrmNomina_Load(object sender, EventArgs e)
         {
             if (LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
+            btnCalcular.Visible = authorizationService.HasPermission(Permissions.PayrollCalculate);
+            btnConfirmarPago.Visible = authorizationService.HasPermission(Permissions.PayrollConfirm);
+            btnExportarExcel.Visible = authorizationService.HasPermission(Permissions.PayrollExport);
+            btnExportarPdf.Visible = authorizationService.HasPermission(Permissions.PayrollExport);
             LoadDepartments();
         }
 
