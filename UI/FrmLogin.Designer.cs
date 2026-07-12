@@ -113,7 +113,6 @@ namespace SistemaGestionNomina.UI
             this.txtUsuario.Name = "txtUsuario";
             this.txtUsuario.Size = new System.Drawing.Size(350, 30);
             this.txtUsuario.TabIndex = 4;
-            this.txtUsuario.Text = "admin";
             // 
             // txtPassword
             // 
@@ -125,7 +124,6 @@ namespace SistemaGestionNomina.UI
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.Size = new System.Drawing.Size(350, 30);
             this.txtPassword.TabIndex = 6;
-            this.txtPassword.Text = "admin123";
             this.txtPassword.UseSystemPasswordChar = true;
             // 
             // chkRecordar
@@ -135,9 +133,9 @@ namespace SistemaGestionNomina.UI
             this.chkRecordar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
             this.chkRecordar.Location = new System.Drawing.Point(40, 378);
             this.chkRecordar.Name = "chkRecordar";
-            this.chkRecordar.Size = new System.Drawing.Size(177, 24);
+            this.chkRecordar.Size = new System.Drawing.Size(145, 24);
             this.chkRecordar.TabIndex = 7;
-            this.chkRecordar.Text = "Recordar credenciales";
+            this.chkRecordar.Text = "Recordar usuario";
             this.chkRecordar.UseVisualStyleBackColor = false;
             // 
             // btnIngresar
@@ -162,7 +160,7 @@ namespace SistemaGestionNomina.UI
             this.lblMensaje.Name = "lblMensaje";
             this.lblMensaje.Size = new System.Drawing.Size(350, 24);
             this.lblMensaje.TabIndex = 9;
-            this.lblMensaje.Text = "Usuario inicial: admin / admin123";
+            this.lblMensaje.Text = "Ingrese sus credenciales para continuar.";
             this.lblMensaje.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // FrmLogin

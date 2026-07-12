@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using SistemaGestionNomina.Helpers;
 using SistemaGestionNomina.Models;
 using SistemaGestionNomina.Services;
+using SistemaGestionNomina.Security;
 
 namespace SistemaGestionNomina.UI
 {
@@ -17,6 +18,7 @@ namespace SistemaGestionNomina.UI
         private readonly ExcelExportService excelExportService = new ExcelExportService();
         private readonly PdfExportService pdfExportService = new PdfExportService();
         private readonly EmailService emailService = new EmailService();
+        private readonly AuthorizationService authorizationService = new AuthorizationService();
         private readonly PrintDocument printDocument = new PrintDocument();
         private Comprobante selectedComprobante;
         private List<Comprobante> currentItems = new List<Comprobante>();
@@ -32,6 +34,10 @@ namespace SistemaGestionNomina.UI
         {
             if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
             {
+                btnExportarExcel.Visible = authorizationService.HasPermission(Permissions.PayslipsExport);
+                btnExportarPdf.Visible = authorizationService.HasPermission(Permissions.PayslipsExport);
+                btnImprimir.Visible = authorizationService.HasPermission(Permissions.PayslipsPrint);
+                btnEnviarEmail.Visible = authorizationService.HasPermission(Permissions.PayslipsEmail);
                 LoadReceipts();
             }
         }
@@ -112,6 +118,7 @@ namespace SistemaGestionNomina.UI
 
         private void btnImprimir_Click(object sender, EventArgs e)
         {
+            authorizationService.DemandPermission(Permissions.PayslipsPrint);
             if (!EnsureSelected()) return;
 
             try

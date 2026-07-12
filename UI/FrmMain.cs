@@ -4,6 +4,8 @@ using System.Windows.Forms;
 using FontAwesome.Sharp;
 using SistemaGestionNomina.Helpers;
 using SistemaGestionNomina.Models;
+using SistemaGestionNomina.Security;
+using SistemaGestionNomina.Services;
 
 namespace SistemaGestionNomina.UI
 {
@@ -11,19 +13,23 @@ namespace SistemaGestionNomina.UI
     {
         private Usuario currentUser;
         private Form activeChild;
+        private readonly AuthorizationService authorizationService = new AuthorizationService();
+        private readonly AuditTrailService auditTrailService = new AuditTrailService();
 
         public bool LogoutRequested { get; private set; }
 
         public FrmMain()
-            : this(new Usuario { NombreUsuario = "admin", Rol = "Admin" })
         {
+            InitializeComponent();
+            ControlStyleHelper.ApplyModernForm(this);
         }
 
         public FrmMain(Usuario usuario)
+            : this()
         {
+            if (usuario == null) throw new ArgumentNullException("usuario");
             currentUser = usuario;
-            InitializeComponent();
-            ControlStyleHelper.ApplyModernForm(this);
+            if (!SessionContext.IsAuthenticated) SessionContext.Begin(usuario);
             ConfigureRuntime();
         }
 
@@ -47,9 +53,35 @@ namespace SistemaGestionNomina.UI
         private void ConfigureRuntime()
         {
             lblUsuarioActual.Text = currentUser.NombreUsuario + " | " + currentUser.Rol;
+            ApplyPermissions();
             if (!IsDesignTime())
             {
-                OpenDashboard();
+                OpenInitialModule();
+            }
+        }
+
+        private void ApplyPermissions()
+        {
+            btnDashboard.Visible = authorizationService.HasPermission(Permissions.DashboardView);
+            btnEmpleados.Visible = authorizationService.HasPermission(Permissions.EmployeesView);
+            btnAsistencia.Visible = authorizationService.HasPermission(Permissions.AttendanceView);
+            btnNomina.Visible = authorizationService.HasPermission(Permissions.PayrollView);
+            btnComprobantes.Visible = authorizationService.HasPermission(Permissions.PayslipsView);
+            btnReportes.Visible = authorizationService.HasPermission(Permissions.ReportsView);
+            btnConfiguracion.Visible = authorizationService.HasPermission(Permissions.ConfigurationView);
+            btnAuditoria.Visible = authorizationService.HasPermission(Permissions.AuditView);
+        }
+
+        private void OpenInitialModule()
+        {
+            if (btnDashboard.Visible) OpenDashboard();
+            else if (btnEmpleados.Visible) OpenAuthorized(Permissions.EmployeesView, btnEmpleados, new FrmEmpleados());
+            else if (btnNomina.Visible) OpenAuthorized(Permissions.PayrollView, btnNomina, new FrmNomina());
+            else if (btnAsistencia.Visible) OpenAuthorized(Permissions.AttendanceView, btnAsistencia, new FrmAsistencia());
+            else
+            {
+                SetActiveButton(btnAcercaDe);
+                OpenChildForm(new FrmAcercaDe());
             }
         }
 
@@ -66,38 +98,32 @@ namespace SistemaGestionNomina.UI
 
         private void btnEmpleados_Click(object sender, EventArgs e)
         {
-            SetActiveButton(btnEmpleados);
-            OpenChildForm(new FrmEmpleados());
+            OpenAuthorized(Permissions.EmployeesView, btnEmpleados, new FrmEmpleados());
         }
 
         private void btnAsistencia_Click(object sender, EventArgs e)
         {
-            SetActiveButton(btnAsistencia);
-            OpenChildForm(new FrmAsistencia());
+            OpenAuthorized(Permissions.AttendanceView, btnAsistencia, new FrmAsistencia());
         }
 
         private void btnNomina_Click(object sender, EventArgs e)
         {
-            SetActiveButton(btnNomina);
-            OpenChildForm(new FrmNomina());
+            OpenAuthorized(Permissions.PayrollView, btnNomina, new FrmNomina());
         }
 
         private void btnComprobantes_Click(object sender, EventArgs e)
         {
-            SetActiveButton(btnComprobantes);
-            OpenChildForm(new FrmComprobantes());
+            OpenAuthorized(Permissions.PayslipsView, btnComprobantes, new FrmComprobantes());
         }
 
         private void btnReportes_Click(object sender, EventArgs e)
         {
-            SetActiveButton(btnReportes);
-            OpenChildForm(new FrmReportes());
+            OpenAuthorized(Permissions.ReportsView, btnReportes, new FrmReportes());
         }
 
         private void btnConfiguracion_Click(object sender, EventArgs e)
         {
-            SetActiveButton(btnConfiguracion);
-            OpenChildForm(new FrmConfiguracion());
+            OpenAuthorized(Permissions.ConfigurationView, btnConfiguracion, new FrmConfiguracion());
         }
 
         private void btnAcercaDe_Click(object sender, EventArgs e)
@@ -108,6 +134,8 @@ namespace SistemaGestionNomina.UI
 
         private void btnCerrarSesion_Click(object sender, EventArgs e)
         {
+            auditTrailService.RegistrarAccion("Seguridad", "Cerrar sesión", string.Empty);
+            SessionContext.Clear();
             LogoutRequested = true;
             Close();
         }
@@ -118,16 +146,39 @@ namespace SistemaGestionNomina.UI
                 "Salir", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (result == DialogResult.Yes)
             {
+                auditTrailService.RegistrarAccion("Seguridad", "Salir de la aplicación", string.Empty);
+                SessionContext.Clear();
                 Application.Exit();
             }
         }
 
+        private void btnAuditoria_Click(object sender, EventArgs e)
+        {
+            OpenAuthorized(Permissions.AuditView, btnAuditoria, new FrmAuditoria());
+        }
+
         private void OpenDashboard()
         {
+            authorizationService.DemandPermission(Permissions.DashboardView);
             SetActiveButton(btnDashboard);
             OpenChildForm(new FrmDashboard(
                 delegate { OpenChildForm(new FrmEmpleados()); },
                 delegate { OpenChildForm(new FrmNomina()); }));
+        }
+
+        private void OpenAuthorized(string permission, IconButton button, Form form)
+        {
+            try
+            {
+                authorizationService.DemandPermission(permission);
+                SetActiveButton(button);
+                OpenChildForm(form);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                form.Dispose();
+                MessageBox.Show(ex.Message, "Acceso restringido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void SetActiveButton(IconButton button)

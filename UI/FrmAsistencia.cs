@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using SistemaGestionNomina.Helpers;
 using SistemaGestionNomina.Models;
 using SistemaGestionNomina.Services;
+using SistemaGestionNomina.Security;
 
 namespace SistemaGestionNomina.UI
 {
@@ -15,6 +16,7 @@ namespace SistemaGestionNomina.UI
         private readonly ExcelExportService excelExportService = new ExcelExportService();
         private readonly PdfExportService pdfExportService = new PdfExportService();
         private readonly AttendanceDeviceImportService attendanceDeviceImportService = new AttendanceDeviceImportService();
+        private readonly AuthorizationService authorizationService = new AuthorizationService();
         private List<Asistencia> currentItems = new List<Asistencia>();
 
         public FrmAsistencia()
@@ -26,6 +28,10 @@ namespace SistemaGestionNomina.UI
         private void FrmAsistencia_Load(object sender, EventArgs e)
         {
             if (LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
+            btnRegistrar.Visible = authorizationService.HasPermission(Permissions.AttendanceRegister);
+            btnCargarReloj.Visible = authorizationService.HasPermission(Permissions.AttendanceImport);
+            btnExportarExcel.Visible = authorizationService.HasPermission(Permissions.AttendanceExport);
+            btnExportarPdf.Visible = authorizationService.HasPermission(Permissions.AttendanceExport);
             LoadEmployees();
             LoadAttendance();
         }

@@ -19,6 +19,13 @@ namespace SistemaGestionNomina.UI
         {
             InitializeComponent();
             ControlStyleHelper.ApplyModernForm(this);
+            string rememberedUsername = RememberedUsernameHelper.Load();
+            if (!string.IsNullOrWhiteSpace(rememberedUsername))
+            {
+                txtUsuario.Text = rememberedUsername;
+                chkRecordar.Checked = true;
+                txtPassword.Focus();
+            }
         }
 
         private void FrmLogin_Paint(object sender, PaintEventArgs e)
@@ -62,21 +69,32 @@ namespace SistemaGestionNomina.UI
 
             try
             {
-                Usuario usuario = authService.Login(txtUsuario.Text.Trim(), txtPassword.Text);
-                if (usuario == null)
+                AuthenticationResult result = authService.Authenticate(txtUsuario.Text.Trim(), txtPassword.Text);
+                if (!result.IsSuccess)
                 {
-                    lblMensaje.Text = "Credenciales incorrectas.";
+                    lblMensaje.Text = result.Message;
                     lblMensaje.ForeColor = ThemeHelper.Error;
+                    txtPassword.Clear();
+                    txtPassword.Focus();
                     return;
                 }
 
-                AuthenticatedUser = usuario;
+                if (chkRecordar.Checked)
+                {
+                    RememberedUsernameHelper.Save(result.User.NombreUsuario);
+                }
+                else
+                {
+                    RememberedUsernameHelper.Clear();
+                }
+
+                AuthenticatedUser = result.User;
                 DialogResult = DialogResult.OK;
                 Close();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                MessageBox.Show("No se pudo iniciar sesión.\n\n" + ex.Message,
+                MessageBox.Show("No se pudo iniciar sesión. Revise la conexión con la base de datos e intente nuevamente.",
                     "Login", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

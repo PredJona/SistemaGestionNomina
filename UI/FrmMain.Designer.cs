@@ -17,6 +17,7 @@ namespace SistemaGestionNomina.UI
         public FontAwesome.Sharp.IconButton btnReportes;
         public FontAwesome.Sharp.IconButton btnConfiguracion;
         public FontAwesome.Sharp.IconButton btnAcercaDe;
+        public FontAwesome.Sharp.IconButton btnAuditoria;
         public FontAwesome.Sharp.IconButton btnSalir;
         public FontAwesome.Sharp.IconButton btnCerrarSesion;
 
@@ -42,6 +43,7 @@ namespace SistemaGestionNomina.UI
             this.btnReportes = new FontAwesome.Sharp.IconButton();
             this.btnConfiguracion = new FontAwesome.Sharp.IconButton();
             this.btnAcercaDe = new FontAwesome.Sharp.IconButton();
+            this.btnAuditoria = new FontAwesome.Sharp.IconButton();
             this.btnSalir = new FontAwesome.Sharp.IconButton();
             this.btnCerrarSesion = new FontAwesome.Sharp.IconButton();
             this.panelTopbar = new System.Windows.Forms.Panel();
@@ -64,6 +66,7 @@ namespace SistemaGestionNomina.UI
             this.panelSidebar.Controls.Add(this.btnReportes);
             this.panelSidebar.Controls.Add(this.btnConfiguracion);
             this.panelSidebar.Controls.Add(this.btnAcercaDe);
+            this.panelSidebar.Controls.Add(this.btnAuditoria);
             this.panelSidebar.Controls.Add(this.btnSalir);
             this.panelSidebar.Controls.Add(this.btnCerrarSesion);
             this.panelSidebar.Dock = System.Windows.Forms.DockStyle.Left;
@@ -266,6 +269,28 @@ namespace SistemaGestionNomina.UI
             this.btnAcercaDe.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnAcercaDe.UseVisualStyleBackColor = true;
             this.btnAcercaDe.Click += new System.EventHandler(this.btnAcercaDe_Click);
+            //
+            // btnAuditoria
+            //
+            this.btnAuditoria.FlatAppearance.BorderSize = 0;
+            this.btnAuditoria.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAuditoria.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnAuditoria.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
+            this.btnAuditoria.IconChar = FontAwesome.Sharp.IconChar.Clipboard;
+            this.btnAuditoria.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
+            this.btnAuditoria.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            this.btnAuditoria.IconSize = 20;
+            this.btnAuditoria.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnAuditoria.Location = new System.Drawing.Point(16, 576);
+            this.btnAuditoria.Name = "btnAuditoria";
+            this.btnAuditoria.Padding = new System.Windows.Forms.Padding(14, 0, 0, 0);
+            this.btnAuditoria.Size = new System.Drawing.Size(228, 44);
+            this.btnAuditoria.TabIndex = 10;
+            this.btnAuditoria.Text = "  Auditoría";
+            this.btnAuditoria.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnAuditoria.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnAuditoria.UseVisualStyleBackColor = true;
+            this.btnAuditoria.Click += new System.EventHandler(this.btnAuditoria_Click);
             // 
             // btnSalir
             // 
@@ -332,7 +357,7 @@ namespace SistemaGestionNomina.UI
             this.lblUsuarioActual.Name = "lblUsuarioActual";
             this.lblUsuarioActual.Size = new System.Drawing.Size(282, 24);
             this.lblUsuarioActual.TabIndex = 1;
-            this.lblUsuarioActual.Text = "admin | Admin";
+            this.lblUsuarioActual.Text = "Sin sesión";
             this.lblUsuarioActual.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // panelContent

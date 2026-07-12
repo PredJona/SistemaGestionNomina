@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using SistemaGestionNomina.Helpers;
 using SistemaGestionNomina.Models;
 using SistemaGestionNomina.Services;
+using SistemaGestionNomina.Security;
 
 namespace SistemaGestionNomina.UI
 {
@@ -13,6 +14,7 @@ namespace SistemaGestionNomina.UI
         private readonly EmpleadoService empleadoService = new EmpleadoService();
         private readonly ExcelExportService excelExportService = new ExcelExportService();
         private readonly PdfExportService pdfExportService = new PdfExportService();
+        private readonly AuthorizationService authorizationService = new AuthorizationService();
         private int selectedId;
         private List<Empleado> currentEmployees = new List<Empleado>();
 
@@ -29,6 +31,11 @@ namespace SistemaGestionNomina.UI
                 return;
             }
 
+            btnNuevo.Visible = authorizationService.HasPermission(Permissions.EmployeesCreate);
+            btnEditar.Visible = authorizationService.HasPermission(Permissions.EmployeesEdit);
+            btnDesactivar.Visible = authorizationService.HasPermission(Permissions.EmployeesDeactivate);
+            btnExportarExcel.Visible = authorizationService.HasPermission(Permissions.EmployeesExport);
+            btnExportarPdf.Visible = authorizationService.HasPermission(Permissions.EmployeesExport);
             LoadDepartments();
             LoadEmployees();
         }
