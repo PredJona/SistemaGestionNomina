@@ -50,18 +50,18 @@ namespace SistemaGestionNomina.Services
         /// </summary>
         public bool TienePermiso(string rol, string accion)
         {
-            if (string.IsNullOrWhiteSpace(accion))
+            if (string.IsNullOrWhiteSpace(rol) || string.IsNullOrWhiteSpace(accion))
             {
                 return false;
             }
 
-            string[] parts = accion.Split('.');
-            if (parts.Length == 2)
+            HashSet<string> permisos;
+            if (!permisosPorRol.TryGetValue(rol.Trim(), out permisos))
             {
-                return TienePermiso(rol, parts[0], parts[1]);
+                return false;
             }
 
-            return TienePermiso(rol, "*", accion);
+            return permisos.Contains("*") || permisos.Contains(accion.Trim());
         }
 
         /// <summary>

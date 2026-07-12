@@ -142,7 +142,6 @@ namespace SistemaGestionNomina.Services
 
         private static PdfDocument CreateDocument(string title)
         {
-            PdfFontResolver.EnsureRegistered();
             PdfDocument document = new PdfDocument();
             document.Info.Title = title;
             return document;

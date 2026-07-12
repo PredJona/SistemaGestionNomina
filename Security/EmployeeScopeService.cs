@@ -7,29 +7,30 @@ namespace SistemaGestionNomina.Security
     public sealed class EmployeeScopeService
     {
         private readonly EmpleadoRepository employeeRepository = new EmpleadoRepository();
+        private readonly AuditRepository auditRepository = new AuditRepository();
 
         public int RequireCurrentEmployeeId()
         {
             if (!SessionContext.IsAuthenticated ||
                 !string.Equals(SessionContext.Role, Roles.Trabajador, StringComparison.OrdinalIgnoreCase))
             {
-                throw new UnauthorizedAccessException("Esta operacion requiere una sesion de trabajador.");
+                throw Reject("Esta operacion requiere una sesion de trabajador.", "Rol o sesion no validos");
             }
 
             if (!SessionContext.EmployeeId.HasValue || SessionContext.EmployeeId.Value <= 0)
             {
-                throw new UnauthorizedAccessException("El usuario no tiene un empleado asociado.");
+                throw Reject("El usuario no tiene un empleado asociado.", "Cuenta sin empleado asociado");
             }
 
             Empleado employee = employeeRepository.GetById(SessionContext.EmployeeId.Value);
             if (employee == null)
             {
-                throw new UnauthorizedAccessException("No se encontro el empleado asociado a la cuenta.");
+                throw Reject("No se encontro el empleado asociado a la cuenta.", "Empleado asociado inexistente");
             }
 
             if (!string.Equals(employee.Estado, "Activo", StringComparison.OrdinalIgnoreCase))
             {
-                throw new UnauthorizedAccessException("El empleado asociado no se encuentra activo.");
+                throw Reject("El empleado asociado no se encuentra activo.", "Empleado asociado inactivo");
             }
 
             return employee.IdEmpleado;
@@ -40,8 +41,21 @@ namespace SistemaGestionNomina.Security
             int currentEmployeeId = RequireCurrentEmployeeId();
             if (employeeId <= 0 || employeeId != currentEmployeeId)
             {
-                throw new UnauthorizedAccessException("Solo puede consultar su propia informacion laboral.");
+                throw Reject("Solo puede consultar su propia informacion laboral.", "Intento de acceso a otro empleado");
             }
+        }
+
+        private UnauthorizedAccessException Reject(string message, string detail)
+        {
+            auditRepository.Add(new AuditRecord
+            {
+                Usuario = SessionContext.IsAuthenticated ? SessionContext.Username : "anonimo",
+                Modulo = "Portal trabajador",
+                Accion = "Acceso rechazado",
+                Detalle = detail,
+                Fecha = DateTime.Now
+            });
+            return new UnauthorizedAccessException(message);
         }
 
         public int? GetDepartmentScope()

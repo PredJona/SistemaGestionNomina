@@ -13,9 +13,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Tools\Fase2PdfSmokeHost.cs" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.119" />
     <PackageReference Include="ClosedXML" Version="0.105.0" />
-    <PackageReference Include="PDFsharp" Version="6.2.4" />
+    <PackageReference Include="PDFsharp-GDI" Version="6.2.4" />
     <PackageReference Include="ScottPlot.WinForms" Version="5.1.58" />
     <PackageReference Include="FontAwesome.Sharp" Version="6.6.0" />
     <PackageReference Include="ReaLTaiizor" Version="3.8.1.8" />
