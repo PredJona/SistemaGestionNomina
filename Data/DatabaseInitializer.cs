@@ -15,15 +15,29 @@ namespace SistemaGestionNomina.Data
                 Directory.CreateDirectory(folder);
             }
 
-            if (!File.Exists(SQLiteConnectionFactory.DatabasePath))
+            bool existed = File.Exists(SQLiteConnectionFactory.DatabasePath);
+            if (!existed)
             {
                 SQLiteConnection.CreateFile(SQLiteConnectionFactory.DatabasePath);
+            }
+
+            if (existed)
+            {
+                using (SQLiteConnection versionConnection = SQLiteConnectionFactory.CreateConnection())
+                {
+                    if (DatabaseMigrationRunner.GetCurrentVersion(versionConnection) < DatabaseMigrationRunner.LatestVersion)
+                    {
+                        versionConnection.Close();
+                        DatabaseMigrationRunner.BackupBeforeMigration(SQLiteConnectionFactory.DatabasePath);
+                    }
+                }
             }
 
             using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
             {
                 Execute(connection, "PRAGMA foreign_keys = ON;");
                 CreateTables(connection);
+                DatabaseMigrationRunner.RunPending(connection);
                 SeedData(connection);
             }
         }
@@ -137,16 +151,30 @@ namespace SistemaGestionNomina.Data
                 Detalle TEXT,
                 Fecha TEXT NOT NULL
             );");
+
+            Execute(connection, @"CREATE TABLE IF NOT EXISTS MigracionesLog (
+                IdMigracion INTEGER PRIMARY KEY AUTOINCREMENT,
+                Version INTEGER NOT NULL,
+                Nombre TEXT NOT NULL,
+                FechaAplicacion TEXT NOT NULL,
+                Detalle TEXT
+            );");
         }
 
         private static void SeedData(SQLiteConnection connection)
         {
-            ExecuteWithParameters(connection,
-                "INSERT OR IGNORE INTO Usuarios (NombreUsuario, PasswordHash, Rol, Estado) VALUES (@u, @p, @r, @e);",
-                new SQLiteParameter("@u", "admin"),
-                new SQLiteParameter("@p", PasswordHelper.HashPassword("admin123")),
-                new SQLiteParameter("@r", "Admin"),
-                new SQLiteParameter("@e", "Activo"));
+            object adminExists = ExecuteScalar(connection,
+                "SELECT COUNT(1) FROM Usuarios WHERE NombreUsuario = @usuario;",
+                new SQLiteParameter("@usuario", "admin"));
+            if (Convert.ToInt32(adminExists) == 0)
+            {
+                ExecuteWithParameters(connection,
+                    "INSERT INTO Usuarios (NombreUsuario, PasswordHash, Rol, Estado) VALUES (@u, @p, @r, @e);",
+                    new SQLiteParameter("@u", "admin"),
+                    new SQLiteParameter("@p", PasswordHelper.HashPassword("admin123")),
+                    new SQLiteParameter("@r", "Admin"),
+                    new SQLiteParameter("@e", "Activo"));
+            }
 
             string[] departments = { "Tecnología", "Ventas", "Recursos Humanos", "Finanzas", "Operaciones" };
             for (int i = 0; i < departments.Length; i++)

@@ -23,13 +23,25 @@ namespace SistemaGestionNomina.Data
                             NombreUsuario = Convert.ToString(reader["NombreUsuario"]),
                             PasswordHash = Convert.ToString(reader["PasswordHash"]),
                             Rol = Convert.ToString(reader["Rol"]),
-                            Estado = Convert.ToString(reader["Estado"])
+                            Estado = Convert.ToString(reader["Estado"]),
+                            IdEmpleado = reader["IdEmpleado"] == DBNull.Value ? (int?)null : Convert.ToInt32(reader["IdEmpleado"]),
+                            UltimoAcceso = ParseNullableDate(reader["UltimoAcceso"]),
+                            IntentosFallidos = Convert.ToInt32(reader["IntentosFallidos"]),
+                            Bloqueado = Convert.ToInt32(reader["Bloqueado"]) == 1,
+                            FechaBloqueo = ParseNullableDate(reader["FechaBloqueo"])
                         };
                     }
                 }
             }
 
             return null;
+        }
+
+        private static DateTime? ParseNullableDate(object value)
+        {
+            if (value == null || value == DBNull.Value || string.IsNullOrWhiteSpace(Convert.ToString(value))) return null;
+            DateTime parsed;
+            return DateTime.TryParse(Convert.ToString(value), out parsed) ? parsed : (DateTime?)null;
         }
     }
 
@@ -60,6 +72,11 @@ namespace SistemaGestionNomina.Data
     {
         public List<Empleado> GetAll(string search, int? departmentId, string status)
         {
+            return GetAll(search, departmentId, status, null);
+        }
+
+        public List<Empleado> GetAll(string search, int? departmentId, string status, int? scopeDepartmentId)
+        {
             List<Empleado> items = new List<Empleado>();
             using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
             using (SQLiteCommand command = new SQLiteCommand(@"SELECT e.*, d.Nombre AS DepartamentoNombre
@@ -67,12 +84,14 @@ namespace SistemaGestionNomina.Data
                 INNER JOIN Departamentos d ON d.IdDepartamento = e.IdDepartamento
                 WHERE (@search = '' OR e.Codigo LIKE @like OR e.Nombre LIKE @like OR e.Apellido LIKE @like OR e.Cedula LIKE @like)
                   AND (@dep = 0 OR e.IdDepartamento = @dep)
+                  AND (@scopeDep = 0 OR e.IdDepartamento = @scopeDep)
                   AND (@estado = '' OR e.Estado = @estado)
                 ORDER BY e.Nombre, e.Apellido;", connection))
             {
                 command.Parameters.AddWithValue("@search", search ?? string.Empty);
                 command.Parameters.AddWithValue("@like", "%" + (search ?? string.Empty) + "%");
                 command.Parameters.AddWithValue("@dep", departmentId.HasValue ? departmentId.Value : 0);
+                command.Parameters.AddWithValue("@scopeDep", scopeDepartmentId.HasValue ? scopeDepartmentId.Value : 0);
                 command.Parameters.AddWithValue("@estado", status ?? string.Empty);
                 using (SQLiteDataReader reader = command.ExecuteReader())
                 {
@@ -91,6 +110,11 @@ namespace SistemaGestionNomina.Data
             return GetAll(string.Empty, departmentId, "Activo");
         }
 
+        public List<Empleado> GetActiveByDepartment(int? departmentId, int? scopeDepartmentId)
+        {
+            return GetAll(string.Empty, departmentId, "Activo", scopeDepartmentId);
+        }
+
         public Empleado GetById(int id)
         {
             using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
@@ -103,6 +127,18 @@ namespace SistemaGestionNomina.Data
                 {
                     return reader.Read() ? MapEmpleado(reader) : null;
                 }
+            }
+        }
+
+        public int? GetDepartmentId(int employeeId)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(
+                "SELECT IdDepartamento FROM Empleados WHERE IdEmpleado = @id LIMIT 1;", connection))
+            {
+                command.Parameters.AddWithValue("@id", employeeId);
+                object value = command.ExecuteScalar();
+                return value == null || value == DBNull.Value ? (int?)null : Convert.ToInt32(value);
             }
         }
 
@@ -199,6 +235,18 @@ namespace SistemaGestionNomina.Data
 
     public class AsistenciaRepository
     {
+        public bool Exists(int employeeId, DateTime date)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"SELECT COUNT(1) FROM Asistencias
+                WHERE IdEmpleado = @empleado AND Fecha = @fecha;", connection))
+            {
+                command.Parameters.AddWithValue("@empleado", employeeId);
+                command.Parameters.AddWithValue("@fecha", date.ToString("yyyy-MM-dd"));
+                return Convert.ToInt32(command.ExecuteScalar()) > 0;
+            }
+        }
+
         public int Add(Asistencia asistencia)
         {
             using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
@@ -219,6 +267,12 @@ namespace SistemaGestionNomina.Data
 
         public List<Asistencia> GetAll(DateTime? start, DateTime? end, int? employeeId, string status)
         {
+            return GetAll(start, end, employeeId, status, null);
+        }
+
+        public List<Asistencia> GetAll(DateTime? start, DateTime? end, int? employeeId, string status,
+            int? scopeDepartmentId)
+        {
             List<Asistencia> items = new List<Asistencia>();
             using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
             using (SQLiteCommand command = new SQLiteCommand(@"SELECT a.*, e.Nombre || ' ' || e.Apellido AS EmpleadoNombre
@@ -227,12 +281,14 @@ namespace SistemaGestionNomina.Data
                 WHERE (@inicio = '' OR a.Fecha >= @inicio)
                   AND (@fin = '' OR a.Fecha <= @fin)
                   AND (@empleado = 0 OR a.IdEmpleado = @empleado)
+                  AND (@scopeDep = 0 OR e.IdDepartamento = @scopeDep)
                   AND (@estado = '' OR a.Estado = @estado)
                 ORDER BY a.Fecha DESC, EmpleadoNombre;", connection))
             {
                 command.Parameters.AddWithValue("@inicio", start.HasValue ? start.Value.ToString("yyyy-MM-dd") : string.Empty);
                 command.Parameters.AddWithValue("@fin", end.HasValue ? end.Value.ToString("yyyy-MM-dd") : string.Empty);
                 command.Parameters.AddWithValue("@empleado", employeeId.HasValue ? employeeId.Value : 0);
+                command.Parameters.AddWithValue("@scopeDep", scopeDepartmentId.HasValue ? scopeDepartmentId.Value : 0);
                 command.Parameters.AddWithValue("@estado", status ?? string.Empty);
                 using (SQLiteDataReader reader = command.ExecuteReader())
                 {
