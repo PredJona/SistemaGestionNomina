@@ -33,7 +33,12 @@ $forms = @(
     "FrmReportes",
     "FrmConfiguracion",
     "FrmAuditoria",
-    "FrmAcercaDe"
+    "FrmAcercaDe",
+    "FrmPortalTrabajador",
+    "FrmMiPerfil",
+    "FrmMisAsistencias",
+    "FrmMisComprobantes",
+    "FrmCambiarPassword"
 )
 
 foreach ($name in $forms) {

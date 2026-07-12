@@ -20,6 +20,18 @@ namespace SistemaGestionNomina.Data
             }
         }
 
+        public bool UpdatePassword(int userId, string passwordHash)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"UPDATE Usuarios SET PasswordHash = @hash
+                WHERE IdUsuario = @id AND Estado = 'Activo';", connection))
+            {
+                command.Parameters.AddWithValue("@hash", passwordHash);
+                command.Parameters.AddWithValue("@id", userId);
+                return command.ExecuteNonQuery() == 1;
+            }
+        }
+
         public void RegisterFailedAttempt(int userId, int attempts, bool blocked, DateTime? blockedAt)
         {
             using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
