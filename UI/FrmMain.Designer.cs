@@ -9,6 +9,7 @@ namespace SistemaGestionNomina.UI
         private System.Windows.Forms.Label lblMarca;
         private System.Windows.Forms.Label lblSubmarca;
         private System.Windows.Forms.Label lblUsuarioActual;
+        public FontAwesome.Sharp.IconButton btnPortal;
         public FontAwesome.Sharp.IconButton btnDashboard;
         public FontAwesome.Sharp.IconButton btnEmpleados;
         public FontAwesome.Sharp.IconButton btnAsistencia;
@@ -35,6 +36,7 @@ namespace SistemaGestionNomina.UI
             this.panelSidebar = new System.Windows.Forms.Panel();
             this.lblMarca = new System.Windows.Forms.Label();
             this.lblSubmarca = new System.Windows.Forms.Label();
+            this.btnPortal = new FontAwesome.Sharp.IconButton();
             this.btnDashboard = new FontAwesome.Sharp.IconButton();
             this.btnEmpleados = new FontAwesome.Sharp.IconButton();
             this.btnAsistencia = new FontAwesome.Sharp.IconButton();
@@ -58,6 +60,7 @@ namespace SistemaGestionNomina.UI
             this.panelSidebar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(15)))), ((int)(((byte)(25)))));
             this.panelSidebar.Controls.Add(this.lblMarca);
             this.panelSidebar.Controls.Add(this.lblSubmarca);
+            this.panelSidebar.Controls.Add(this.btnPortal);
             this.panelSidebar.Controls.Add(this.btnDashboard);
             this.panelSidebar.Controls.Add(this.btnEmpleados);
             this.panelSidebar.Controls.Add(this.btnAsistencia);
@@ -93,6 +96,29 @@ namespace SistemaGestionNomina.UI
             this.lblSubmarca.Size = new System.Drawing.Size(210, 22);
             this.lblSubmarca.TabIndex = 1;
             this.lblSubmarca.Text = "Sistema de nómina";
+            // 
+            // btnPortal
+            // 
+            this.btnPortal.FlatAppearance.BorderSize = 0;
+            this.btnPortal.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnPortal.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnPortal.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(228)))), ((int)(((byte)(245)))));
+            this.btnPortal.IconChar = FontAwesome.Sharp.IconChar.User;
+            this.btnPortal.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(167)))), ((int)(((byte)(139)))), ((int)(((byte)(250)))));
+            this.btnPortal.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            this.btnPortal.IconSize = 20;
+            this.btnPortal.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnPortal.Location = new System.Drawing.Point(16, 128);
+            this.btnPortal.Name = "btnPortal";
+            this.btnPortal.Padding = new System.Windows.Forms.Padding(14, 0, 0, 0);
+            this.btnPortal.Size = new System.Drawing.Size(228, 44);
+            this.btnPortal.TabIndex = 2;
+            this.btnPortal.Text = "  Mi portal";
+            this.btnPortal.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnPortal.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnPortal.UseVisualStyleBackColor = true;
+            this.btnPortal.Visible = false;
+            this.btnPortal.Click += new System.EventHandler(this.btnPortal_Click);
             // 
             // btnDashboard
             // 

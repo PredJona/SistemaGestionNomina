@@ -1,0 +1,40 @@
+namespace SistemaGestionNomina.UI
+{
+    partial class FrmMisComprobantes
+    {
+        private System.ComponentModel.IContainer components = null;
+        private System.Windows.Forms.Label lblTitulo;
+        private System.Windows.Forms.TextBox txtBuscar;
+        private System.Windows.Forms.DataGridView dgvComprobantes;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colId;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colNumero;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colPeriodo;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colFecha;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colIngresos;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colDeducciones;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colNeto;
+        private System.Windows.Forms.Panel panelVistaPrevia;
+        private System.Windows.Forms.Label lblVistaPrevia;
+        private System.Windows.Forms.Button btnDescargar;
+        private System.Windows.Forms.Button btnAbrirPdf;
+        private System.Windows.Forms.Button btnImprimir;
+
+        protected override void Dispose(bool disposing) { if (disposing && components != null) components.Dispose(); base.Dispose(disposing); }
+
+        private void InitializeComponent()
+        {
+            this.lblTitulo = new System.Windows.Forms.Label(); this.txtBuscar = new System.Windows.Forms.TextBox(); this.dgvComprobantes = new System.Windows.Forms.DataGridView(); this.colId = new System.Windows.Forms.DataGridViewTextBoxColumn(); this.colNumero = new System.Windows.Forms.DataGridViewTextBoxColumn(); this.colPeriodo = new System.Windows.Forms.DataGridViewTextBoxColumn(); this.colFecha = new System.Windows.Forms.DataGridViewTextBoxColumn(); this.colIngresos = new System.Windows.Forms.DataGridViewTextBoxColumn(); this.colDeducciones = new System.Windows.Forms.DataGridViewTextBoxColumn(); this.colNeto = new System.Windows.Forms.DataGridViewTextBoxColumn(); this.panelVistaPrevia = new System.Windows.Forms.Panel(); this.lblVistaPrevia = new System.Windows.Forms.Label(); this.btnDescargar = new System.Windows.Forms.Button(); this.btnAbrirPdf = new System.Windows.Forms.Button(); this.btnImprimir = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvComprobantes)).BeginInit(); this.panelVistaPrevia.SuspendLayout(); this.SuspendLayout();
+            this.lblTitulo.AutoSize = true; this.lblTitulo.Font = new System.Drawing.Font("Segoe UI", 23F, System.Drawing.FontStyle.Bold); this.lblTitulo.Location = new System.Drawing.Point(28, 20); this.lblTitulo.Text = "Mis comprobantes";
+            this.txtBuscar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right))); this.txtBuscar.Location = new System.Drawing.Point(666, 36); this.txtBuscar.Name = "txtBuscar"; this.txtBuscar.Size = new System.Drawing.Size(320, 27); this.txtBuscar.TextChanged += new System.EventHandler(this.txtBuscar_TextChanged);
+            this.dgvComprobantes.AllowUserToAddRows = false; this.dgvComprobantes.AllowUserToDeleteRows = false; this.dgvComprobantes.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right))); this.dgvComprobantes.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill; this.dgvComprobantes.BackgroundColor = System.Drawing.Color.FromArgb(18, 19, 27); this.dgvComprobantes.BorderStyle = System.Windows.Forms.BorderStyle.None; this.dgvComprobantes.ColumnHeadersHeight = 40; this.dgvComprobantes.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] { this.colId, this.colNumero, this.colPeriodo, this.colFecha, this.colIngresos, this.colDeducciones, this.colNeto }); this.dgvComprobantes.Location = new System.Drawing.Point(34, 92); this.dgvComprobantes.MultiSelect = false; this.dgvComprobantes.Name = "dgvComprobantes"; this.dgvComprobantes.ReadOnly = true; this.dgvComprobantes.RowHeadersVisible = false; this.dgvComprobantes.RowTemplate.Height = 34; this.dgvComprobantes.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect; this.dgvComprobantes.Size = new System.Drawing.Size(952, 262); this.dgvComprobantes.SelectionChanged += new System.EventHandler(this.dgvComprobantes_SelectionChanged);
+            this.colId.HeaderText = "Id"; this.colId.Name = "colId"; this.colId.ReadOnly = true; this.colId.Visible = false; this.colNumero.HeaderText = "Numero"; this.colPeriodo.HeaderText = "Periodo"; this.colFecha.HeaderText = "Fecha"; this.colIngresos.HeaderText = "Ingresos"; this.colDeducciones.HeaderText = "Deducciones"; this.colNeto.HeaderText = "Neto";
+            this.panelVistaPrevia.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right))); this.panelVistaPrevia.BackColor = System.Drawing.Color.FromArgb(24, 25, 34); this.panelVistaPrevia.Controls.Add(this.lblVistaPrevia); this.panelVistaPrevia.Location = new System.Drawing.Point(34, 374); this.panelVistaPrevia.Name = "panelVistaPrevia"; this.panelVistaPrevia.Size = new System.Drawing.Size(694, 332);
+            this.lblVistaPrevia.Dock = System.Windows.Forms.DockStyle.Fill; this.lblVistaPrevia.Font = new System.Drawing.Font("Consolas", 11F); this.lblVistaPrevia.Location = new System.Drawing.Point(0, 0); this.lblVistaPrevia.Name = "lblVistaPrevia"; this.lblVistaPrevia.Padding = new System.Windows.Forms.Padding(28); this.lblVistaPrevia.Size = new System.Drawing.Size(694, 332); this.lblVistaPrevia.Text = "Seleccione un comprobante para ver el detalle.";
+            this.btnDescargar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right))); this.btnDescargar.Location = new System.Drawing.Point(754, 390); this.btnDescargar.Name = "btnDescargar"; this.btnDescargar.Size = new System.Drawing.Size(232, 44); this.btnDescargar.Text = "Descargar PDF";
+            this.btnAbrirPdf.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right))); this.btnAbrirPdf.Location = new System.Drawing.Point(754, 452); this.btnAbrirPdf.Name = "btnAbrirPdf"; this.btnAbrirPdf.Size = new System.Drawing.Size(232, 44); this.btnAbrirPdf.Text = "Abrir PDF existente";
+            this.btnImprimir.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right))); this.btnImprimir.Location = new System.Drawing.Point(754, 514); this.btnImprimir.Name = "btnImprimir"; this.btnImprimir.Size = new System.Drawing.Size(232, 44); this.btnImprimir.Text = "Vista previa e imprimir";
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F); this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font; this.BackColor = System.Drawing.Color.FromArgb(13, 14, 20); this.ClientSize = new System.Drawing.Size(1020, 742); this.Controls.Add(this.btnImprimir); this.Controls.Add(this.btnAbrirPdf); this.Controls.Add(this.btnDescargar); this.Controls.Add(this.panelVistaPrevia); this.Controls.Add(this.dgvComprobantes); this.Controls.Add(this.txtBuscar); this.Controls.Add(this.lblTitulo); this.Font = new System.Drawing.Font("Segoe UI", 9F); this.ForeColor = System.Drawing.Color.FromArgb(229, 228, 245); this.Name = "FrmMisComprobantes"; this.Text = "Mis comprobantes"; this.Load += new System.EventHandler(this.FrmMisComprobantes_Load); this.panelVistaPrevia.ResumeLayout(false); ((System.ComponentModel.ISupportInitialize)(this.dgvComprobantes)).EndInit(); this.ResumeLayout(false); this.PerformLayout();
+        }
+    }
+}

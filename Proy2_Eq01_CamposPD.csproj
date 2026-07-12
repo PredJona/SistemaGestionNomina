@@ -44,6 +44,11 @@
     <Compile Update="UI\FrmConfiguracion.cs"><SubType>Form</SubType></Compile>
     <Compile Update="UI\FrmAcercaDe.cs"><SubType>Form</SubType></Compile>
     <Compile Update="UI\FrmAuditoria.cs"><SubType>Form</SubType></Compile>
+    <Compile Update="UI\FrmPortalTrabajador.cs"><SubType>Form</SubType></Compile>
+    <Compile Update="UI\FrmMiPerfil.cs"><SubType>Form</SubType></Compile>
+    <Compile Update="UI\FrmMisAsistencias.cs"><SubType>Form</SubType></Compile>
+    <Compile Update="UI\FrmMisComprobantes.cs"><SubType>Form</SubType></Compile>
+    <Compile Update="UI\FrmCambiarPassword.cs"><SubType>Form</SubType></Compile>
     <Compile Update="UI\FrmLogin.Designer.cs"><DependentUpon>FrmLogin.cs</DependentUpon></Compile>
     <Compile Update="UI\FrmMain.Designer.cs"><DependentUpon>FrmMain.cs</DependentUpon></Compile>
     <Compile Update="UI\FrmDashboard.Designer.cs"><DependentUpon>FrmDashboard.cs</DependentUpon></Compile>
@@ -55,6 +60,11 @@
     <Compile Update="UI\FrmConfiguracion.Designer.cs"><DependentUpon>FrmConfiguracion.cs</DependentUpon></Compile>
     <Compile Update="UI\FrmAcercaDe.Designer.cs"><DependentUpon>FrmAcercaDe.cs</DependentUpon></Compile>
     <Compile Update="UI\FrmAuditoria.Designer.cs"><DependentUpon>FrmAuditoria.cs</DependentUpon></Compile>
+    <Compile Update="UI\FrmPortalTrabajador.Designer.cs"><DependentUpon>FrmPortalTrabajador.cs</DependentUpon></Compile>
+    <Compile Update="UI\FrmMiPerfil.Designer.cs"><DependentUpon>FrmMiPerfil.cs</DependentUpon></Compile>
+    <Compile Update="UI\FrmMisAsistencias.Designer.cs"><DependentUpon>FrmMisAsistencias.cs</DependentUpon></Compile>
+    <Compile Update="UI\FrmMisComprobantes.Designer.cs"><DependentUpon>FrmMisComprobantes.cs</DependentUpon></Compile>
+    <Compile Update="UI\FrmCambiarPassword.Designer.cs"><DependentUpon>FrmCambiarPassword.cs</DependentUpon></Compile>
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -70,6 +80,11 @@
     <EmbeddedResource Update="UI\FrmConfiguracion.resx"><DependentUpon>FrmConfiguracion.cs</DependentUpon></EmbeddedResource>
     <EmbeddedResource Update="UI\FrmAcercaDe.resx"><DependentUpon>FrmAcercaDe.cs</DependentUpon></EmbeddedResource>
     <EmbeddedResource Update="UI\FrmAuditoria.resx"><DependentUpon>FrmAuditoria.cs</DependentUpon></EmbeddedResource>
+    <EmbeddedResource Update="UI\FrmPortalTrabajador.resx"><DependentUpon>FrmPortalTrabajador.cs</DependentUpon></EmbeddedResource>
+    <EmbeddedResource Update="UI\FrmMiPerfil.resx"><DependentUpon>FrmMiPerfil.cs</DependentUpon></EmbeddedResource>
+    <EmbeddedResource Update="UI\FrmMisAsistencias.resx"><DependentUpon>FrmMisAsistencias.cs</DependentUpon></EmbeddedResource>
+    <EmbeddedResource Update="UI\FrmMisComprobantes.resx"><DependentUpon>FrmMisComprobantes.cs</DependentUpon></EmbeddedResource>
+    <EmbeddedResource Update="UI\FrmCambiarPassword.resx"><DependentUpon>FrmCambiarPassword.cs</DependentUpon></EmbeddedResource>
   </ItemGroup>
 
 </Project>

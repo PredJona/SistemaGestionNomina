@@ -62,6 +62,8 @@ namespace SistemaGestionNomina.UI
 
         private void ApplyPermissions()
         {
+            btnPortal.Visible = string.Equals(SessionContext.Role, Roles.Trabajador, StringComparison.OrdinalIgnoreCase) &&
+                authorizationService.HasPermission(Permissions.PortalView);
             btnDashboard.Visible = authorizationService.HasPermission(Permissions.DashboardView);
             btnEmpleados.Visible = authorizationService.HasPermission(Permissions.EmployeesView);
             btnAsistencia.Visible = authorizationService.HasPermission(Permissions.AttendanceView);
@@ -74,7 +76,8 @@ namespace SistemaGestionNomina.UI
 
         private void OpenInitialModule()
         {
-            if (btnDashboard.Visible) OpenDashboard();
+            if (btnPortal.Visible) OpenPortal();
+            else if (btnDashboard.Visible) OpenDashboard();
             else if (btnEmpleados.Visible) OpenAuthorized(Permissions.EmployeesView, btnEmpleados, new FrmEmpleados());
             else if (btnNomina.Visible) OpenAuthorized(Permissions.PayrollView, btnNomina, new FrmNomina());
             else if (btnAsistencia.Visible) OpenAuthorized(Permissions.AttendanceView, btnAsistencia, new FrmAsistencia());
@@ -94,6 +97,11 @@ namespace SistemaGestionNomina.UI
         {
             SetActiveButton(btnDashboard);
             OpenDashboard();
+        }
+
+        private void btnPortal_Click(object sender, EventArgs e)
+        {
+            OpenPortal();
         }
 
         private void btnEmpleados_Click(object sender, EventArgs e)
@@ -164,6 +172,32 @@ namespace SistemaGestionNomina.UI
             OpenChildForm(new FrmDashboard(
                 delegate { OpenChildForm(new FrmEmpleados()); },
                 delegate { OpenChildForm(new FrmNomina()); }));
+        }
+
+        private void OpenPortal()
+        {
+            authorizationService.DemandPermission(Permissions.PortalView);
+            SetActiveButton(btnPortal);
+            OpenChildForm(new FrmPortalTrabajador(
+                delegate { OpenPortalChild(Permissions.OwnProfileView, new FrmMiPerfil()); },
+                delegate { OpenPortalChild(Permissions.OwnAttendanceView, new FrmMisAsistencias()); },
+                delegate { OpenPortalChild(Permissions.OwnPayslipsView, new FrmMisComprobantes()); },
+                delegate { OpenPortalChild(Permissions.OwnPasswordChange, new FrmCambiarPassword()); }));
+        }
+
+        private void OpenPortalChild(string permission, Form form)
+        {
+            try
+            {
+                authorizationService.DemandPermission(permission);
+                SetActiveButton(btnPortal);
+                OpenChildForm(form);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                form.Dispose();
+                MessageBox.Show(ex.Message, "Acceso restringido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void OpenAuthorized(string permission, IconButton button, Form form)
