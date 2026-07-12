@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing.Printing;
 using System.Windows.Forms;
 using SistemaGestionNomina.Helpers;
 using SistemaGestionNomina.Models;
@@ -11,6 +13,7 @@ namespace SistemaGestionNomina.UI
     public partial class FrmMisComprobantes : Form
     {
         private readonly EmployeePortalService portalService = new EmployeePortalService();
+        private readonly PrintDocument printDocument = new PrintDocument();
         private List<Comprobante> currentItems = new List<Comprobante>();
         private Comprobante selectedPayslip;
 
@@ -18,6 +21,7 @@ namespace SistemaGestionNomina.UI
         {
             InitializeComponent();
             ControlStyleHelper.ApplyModernForm(this);
+            printDocument.PrintPage += PrintDocument_PrintPage;
         }
 
         private void FrmMisComprobantes_Load(object sender, EventArgs e)
@@ -90,6 +94,69 @@ namespace SistemaGestionNomina.UI
             MessageBox.Show("Seleccione un comprobante.", "Mis comprobantes",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             return false;
+        }
+
+        private void btnDescargar_Click(object sender, EventArgs e)
+        {
+            if (!EnsureSelected()) return;
+            try
+            {
+                string path = portalService.DownloadMyPayslipPdf(selectedPayslip.IdComprobante);
+                if (string.IsNullOrWhiteSpace(path)) return;
+                selectedPayslip.RutaPdf = path;
+                UiFactory.ShowExported(path);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Descargar PDF", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void btnAbrirPdf_Click(object sender, EventArgs e)
+        {
+            if (!EnsureSelected()) return;
+            try
+            {
+                string path = portalService.GetExistingMyPayslipPdf(selectedPayslip.IdComprobante);
+                Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Abrir PDF", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void btnImprimir_Click(object sender, EventArgs e)
+        {
+            if (!EnsureSelected()) return;
+            try
+            {
+                selectedPayslip = portalService.GetMyPayslipForPrint(selectedPayslip.IdComprobante);
+                using (PrintPreviewDialog preview = new PrintPreviewDialog())
+                {
+                    preview.Document = printDocument;
+                    preview.Width = 900;
+                    preview.Height = 700;
+                    preview.StartPosition = FormStartPosition.CenterParent;
+                    preview.ShowDialog(this);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Imprimir comprobante", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void PrintDocument_PrintPage(object sender, PrintPageEventArgs e)
+        {
+            if (selectedPayslip == null)
+            {
+                e.HasMorePages = false;
+                return;
+            }
+
+            ComprobantePrintRenderer.Draw(e.Graphics, e.MarginBounds, selectedPayslip);
+            e.HasMorePages = false;
         }
     }
 }

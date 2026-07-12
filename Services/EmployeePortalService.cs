@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using SistemaGestionNomina.Data;
 using SistemaGestionNomina.Models;
 using SistemaGestionNomina.Security;
@@ -14,6 +15,7 @@ namespace SistemaGestionNomina.Services
         private readonly AsistenciaRepository attendanceRepository = new AsistenciaRepository();
         private readonly ComprobanteRepository payslipRepository = new ComprobanteRepository();
         private readonly AuditTrailService auditTrailService = new AuditTrailService();
+        private readonly PdfExportService pdfExportService = new PdfExportService();
 
         public EmployeePortalDashboardViewModel GetDashboard()
         {
@@ -89,6 +91,37 @@ namespace SistemaGestionNomina.Services
             return payslip;
         }
 
+        public string DownloadMyPayslipPdf(int payslipId)
+        {
+            return DownloadMyPayslipPdfCore(payslipId, null);
+        }
+
+        internal string DownloadMyPayslipPdf(int payslipId, string destinationPath)
+        {
+            return DownloadMyPayslipPdfCore(payslipId, destinationPath);
+        }
+
+        public string GetExistingMyPayslipPdf(int payslipId)
+        {
+            Comprobante payslip = GetMyPayslipById(payslipId);
+            if (string.IsNullOrWhiteSpace(payslip.RutaPdf) || !File.Exists(payslip.RutaPdf))
+            {
+                throw new FileNotFoundException("El comprobante no tiene un PDF existente. Descarguelo primero.");
+            }
+
+            auditTrailService.RegistrarAccion("Portal trabajador", "Abrir PDF propio",
+                "IdComprobante=" + payslipId);
+            return Path.GetFullPath(payslip.RutaPdf);
+        }
+
+        public Comprobante GetMyPayslipForPrint(int payslipId)
+        {
+            Comprobante payslip = GetMyPayslipById(payslipId);
+            auditTrailService.RegistrarAccion("Portal trabajador", "Imprimir comprobante propio",
+                "IdComprobante=" + payslipId);
+            return payslip;
+        }
+
         public static EmployeeAttendanceSummaryViewModel SummarizeAttendance(IEnumerable<Asistencia> attendance)
         {
             EmployeeAttendanceSummaryViewModel summary = new EmployeeAttendanceSummaryViewModel();
@@ -125,6 +158,26 @@ namespace SistemaGestionNomina.Services
                 Estado = employee.Estado,
                 FechaIngreso = employee.FechaIngreso
             };
+        }
+
+        private string DownloadMyPayslipPdfCore(int payslipId, string destinationPath)
+        {
+            authorizationService.DemandPermission(Permissions.OwnPayslipsDownload);
+            Comprobante payslip = GetMyPayslipById(payslipId);
+            int employeeId = employeeScopeService.RequireCurrentEmployeeId();
+            string path = destinationPath == null
+                ? pdfExportService.ExportarComprobantePersonal(payslip)
+                : pdfExportService.ExportarComprobantePersonal(payslip, destinationPath);
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
+            if (!payslipRepository.UpdateRutaPdfForEmployee(payslipId, employeeId, path))
+            {
+                throw new InvalidOperationException("No se pudo asociar el PDF al comprobante.");
+            }
+
+            auditTrailService.RegistrarAccion("Portal trabajador", "Descargar PDF propio",
+                "IdComprobante=" + payslipId + ", Archivo=" + Path.GetFileName(path));
+            return path;
         }
 
         private static string NormalizeAttendanceStatus(string status)

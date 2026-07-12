@@ -12,6 +12,7 @@ namespace SistemaGestionNomina.Services
     {
         private readonly AuthorizationService authorizationService = new AuthorizationService();
         private readonly AuditTrailService auditTrailService = new AuditTrailService();
+        private readonly EmployeeScopeService employeeScopeService = new EmployeeScopeService();
 
         public string ExportarEmpleados(List<Empleado> empleados)
         {
@@ -87,21 +88,34 @@ namespace SistemaGestionNomina.Services
             string path = PathHelper.RequestExportPath(comprobante.NumeroComprobante, ".pdf", "Documento PDF (*.pdf)|*.pdf");
             if (string.IsNullOrWhiteSpace(path)) return string.Empty;
 
-            PdfDocument document = CreateDocument("Comprobante");
-            PdfPage page = document.AddPage();
-            XGraphics gfx = XGraphics.FromPdfPage(page);
-            DrawTitle(gfx, "Proy2_Eq01_CamposPD");
-            DrawLine(gfx, 40, 82, "COMPROBANTE DE PAGO");
-            DrawLine(gfx, 40, 120, "Número: " + comprobante.NumeroComprobante);
-            DrawLine(gfx, 40, 145, "Empleado: " + comprobante.EmpleadoNombre + " (" + comprobante.CodigoEmpleado + ")");
-            DrawLine(gfx, 40, 170, "Periodo: " + comprobante.PeriodoNombre);
-            DrawLine(gfx, 40, 220, "Total ingresos: B/. " + comprobante.TotalIngresos.ToString("0.00"));
-            DrawLine(gfx, 40, 245, "Total deducciones: B/. " + comprobante.TotalDeducciones.ToString("0.00"));
-            DrawLine(gfx, 40, 280, "Neto a pagar: B/. " + comprobante.NetoPagar.ToString("0.00"));
-            DrawLine(gfx, 40, 340, "Documento generado para fines académicos.");
-            document.Save(path);
+            SaveComprobantePdf(comprobante, path);
             auditTrailService.RegistrarAccion("Exportaciones", "PDF comprobante", System.IO.Path.GetFileName(path));
             return path;
+        }
+
+        public string ExportarComprobantePersonal(Comprobante comprobante)
+        {
+            authorizationService.DemandPermission(Permissions.OwnPayslipsDownload);
+            if (comprobante == null) throw new ArgumentNullException("comprobante");
+            employeeScopeService.DemandCurrentEmployee(comprobante.IdEmpleado);
+            string path = PathHelper.RequestExportPath(comprobante.NumeroComprobante, ".pdf", "Documento PDF (*.pdf)|*.pdf");
+            return ExportarComprobantePersonal(comprobante, path);
+        }
+
+        internal string ExportarComprobantePersonal(Comprobante comprobante, string path)
+        {
+            authorizationService.DemandPermission(Permissions.OwnPayslipsDownload);
+            if (comprobante == null) throw new ArgumentNullException("comprobante");
+            employeeScopeService.DemandCurrentEmployee(comprobante.IdEmpleado);
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+            if (!string.Equals(System.IO.Path.GetExtension(path), ".pdf", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new ArgumentException("La ubicacion seleccionada debe ser un archivo PDF.");
+            }
+
+            string fullPath = System.IO.Path.GetFullPath(path);
+            SaveComprobantePdf(comprobante, fullPath);
+            return fullPath;
         }
 
         public string ExportarReportes(List<ReporteGenerado> reportes)
@@ -132,6 +146,23 @@ namespace SistemaGestionNomina.Services
             PdfDocument document = new PdfDocument();
             document.Info.Title = title;
             return document;
+        }
+
+        private static void SaveComprobantePdf(Comprobante comprobante, string path)
+        {
+            PdfDocument document = CreateDocument("Comprobante");
+            PdfPage page = document.AddPage();
+            XGraphics gfx = XGraphics.FromPdfPage(page);
+            DrawTitle(gfx, "Proy2_Eq01_CamposPD");
+            DrawLine(gfx, 40, 82, "COMPROBANTE DE PAGO");
+            DrawLine(gfx, 40, 120, "Numero: " + comprobante.NumeroComprobante);
+            DrawLine(gfx, 40, 145, "Empleado: " + comprobante.EmpleadoNombre + " (" + comprobante.CodigoEmpleado + ")");
+            DrawLine(gfx, 40, 170, "Periodo: " + comprobante.PeriodoNombre);
+            DrawLine(gfx, 40, 220, "Total ingresos: B/. " + comprobante.TotalIngresos.ToString("0.00"));
+            DrawLine(gfx, 40, 245, "Total deducciones: B/. " + comprobante.TotalDeducciones.ToString("0.00"));
+            DrawLine(gfx, 40, 280, "Neto a pagar: B/. " + comprobante.NetoPagar.ToString("0.00"));
+            DrawLine(gfx, 40, 340, "Documento generado para fines academicos.");
+            document.Save(path);
         }
 
         private static string BuildPath(string prefix)
