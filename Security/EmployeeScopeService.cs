@@ -1,11 +1,48 @@
 using System;
 using SistemaGestionNomina.Data;
+using SistemaGestionNomina.Models;
 
 namespace SistemaGestionNomina.Security
 {
     public sealed class EmployeeScopeService
     {
         private readonly EmpleadoRepository employeeRepository = new EmpleadoRepository();
+
+        public int RequireCurrentEmployeeId()
+        {
+            if (!SessionContext.IsAuthenticated ||
+                !string.Equals(SessionContext.Role, Roles.Trabajador, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new UnauthorizedAccessException("Esta operacion requiere una sesion de trabajador.");
+            }
+
+            if (!SessionContext.EmployeeId.HasValue || SessionContext.EmployeeId.Value <= 0)
+            {
+                throw new UnauthorizedAccessException("El usuario no tiene un empleado asociado.");
+            }
+
+            Empleado employee = employeeRepository.GetById(SessionContext.EmployeeId.Value);
+            if (employee == null)
+            {
+                throw new UnauthorizedAccessException("No se encontro el empleado asociado a la cuenta.");
+            }
+
+            if (!string.Equals(employee.Estado, "Activo", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new UnauthorizedAccessException("El empleado asociado no se encuentra activo.");
+            }
+
+            return employee.IdEmpleado;
+        }
+
+        public void DemandCurrentEmployee(int employeeId)
+        {
+            int currentEmployeeId = RequireCurrentEmployeeId();
+            if (employeeId <= 0 || employeeId != currentEmployeeId)
+            {
+                throw new UnauthorizedAccessException("Solo puede consultar su propia informacion laboral.");
+            }
+        }
 
         public int? GetDepartmentScope()
         {

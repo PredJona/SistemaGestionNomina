@@ -35,7 +35,11 @@ namespace SistemaGestionNomina.Services
             {
                 Permissions.AttendanceView, Permissions.AttendanceRegister, Permissions.AttendanceExport
             };
-            permisosPorRol[Roles.Trabajador] = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            permisosPorRol[Roles.Trabajador] = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                Permissions.PortalView, Permissions.OwnProfileView, Permissions.OwnAttendanceView,
+                Permissions.OwnPayslipsView, Permissions.OwnPayslipsDownload, Permissions.OwnPasswordChange
+            };
 
             HashSet<string> admin = permisosPorRol[Roles.Admin];
             admin.Add(Permissions.DashboardView);

@@ -28,5 +28,11 @@ namespace SistemaGestionNomina.Security
         public const string ConfigurationEdit = "configuracion.editar";
         public const string BackupsManage = "backups.gestionar";
         public const string AuditView = "auditoria.ver";
+        public const string PortalView = "portal.ver";
+        public const string OwnProfileView = "portal.perfil.ver";
+        public const string OwnAttendanceView = "portal.asistencia.ver";
+        public const string OwnPayslipsView = "portal.comprobantes.ver";
+        public const string OwnPayslipsDownload = "portal.comprobantes.descargar";
+        public const string OwnPasswordChange = "cuenta.password.cambiar";
     }
 }
