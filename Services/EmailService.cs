@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using SistemaGestionNomina.Helpers;
+using SistemaGestionNomina.Security;
 
 namespace SistemaGestionNomina.Services
 {
@@ -10,6 +11,9 @@ namespace SistemaGestionNomina.Services
     /// </summary>
     public class EmailService
     {
+        private readonly AuthorizationService authorizationService = new AuthorizationService();
+        private readonly AuditTrailService auditTrailService = new AuditTrailService();
+
         /// <summary>
         /// Envía un comprobante generado a un destinatario.
         /// </summary>
@@ -23,6 +27,7 @@ namespace SistemaGestionNomina.Services
         /// </summary>
         public string CrearBorradorComprobante(string destinatario, string rutaPdf, string asunto)
         {
+            authorizationService.DemandPermission(Permissions.PayslipsEmail);
             if (string.IsNullOrWhiteSpace(destinatario) || string.IsNullOrWhiteSpace(rutaPdf))
             {
                 throw new ArgumentException("Debe indicar destinatario y ruta del comprobante.");
@@ -67,6 +72,7 @@ namespace SistemaGestionNomina.Services
             builder.AppendLine("--" + boundary + "--");
 
             File.WriteAllText(path, builder.ToString(), Encoding.UTF8);
+            auditTrailService.RegistrarAccion("Comprobantes", "Crear borrador de correo", destinatario.Trim());
             return path;
         }
 

@@ -4,13 +4,18 @@ using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using SistemaGestionNomina.Helpers;
 using SistemaGestionNomina.Models;
+using SistemaGestionNomina.Security;
 
 namespace SistemaGestionNomina.Services
 {
     public class PdfExportService
     {
+        private readonly AuthorizationService authorizationService = new AuthorizationService();
+        private readonly AuditTrailService auditTrailService = new AuditTrailService();
+
         public string ExportarEmpleados(List<Empleado> empleados)
         {
+            authorizationService.DemandAny(Permissions.EmployeesExport, Permissions.ReportsPersonal);
             string path = BuildPath("Empleados");
             if (string.IsNullOrWhiteSpace(path)) return string.Empty;
 
@@ -26,11 +31,13 @@ namespace SistemaGestionNomina.Services
                 y = NextLine(document, ref page, ref gfx, y);
             }
             document.Save(path);
+            auditTrailService.RegistrarAccion("Exportaciones", "PDF empleados", System.IO.Path.GetFileName(path));
             return path;
         }
 
         public string ExportarAsistencias(List<Asistencia> asistencias)
         {
+            authorizationService.DemandPermission(Permissions.AttendanceExport);
             string path = BuildPath("Asistencia");
             if (string.IsNullOrWhiteSpace(path)) return string.Empty;
 
@@ -46,11 +53,13 @@ namespace SistemaGestionNomina.Services
                 y = NextLine(document, ref page, ref gfx, y);
             }
             document.Save(path);
+            auditTrailService.RegistrarAccion("Exportaciones", "PDF asistencia", System.IO.Path.GetFileName(path));
             return path;
         }
 
         public string ExportarNomina(Nomina nomina)
         {
+            authorizationService.DemandPermission(Permissions.PayrollExport);
             string path = BuildPath("Nomina");
             if (string.IsNullOrWhiteSpace(path)) return string.Empty;
 
@@ -68,11 +77,13 @@ namespace SistemaGestionNomina.Services
             y += 20;
             DrawLine(gfx, 40, y, "Total neto: B/. " + nomina.TotalNeto.ToString("0.00"));
             document.Save(path);
+            auditTrailService.RegistrarAccion("Exportaciones", "PDF nómina", System.IO.Path.GetFileName(path));
             return path;
         }
 
         public string ExportarComprobante(Comprobante comprobante)
         {
+            authorizationService.DemandPermission(Permissions.PayslipsExport);
             string path = PathHelper.RequestExportPath(comprobante.NumeroComprobante, ".pdf", "Documento PDF (*.pdf)|*.pdf");
             if (string.IsNullOrWhiteSpace(path)) return string.Empty;
 
@@ -89,11 +100,13 @@ namespace SistemaGestionNomina.Services
             DrawLine(gfx, 40, 280, "Neto a pagar: B/. " + comprobante.NetoPagar.ToString("0.00"));
             DrawLine(gfx, 40, 340, "Documento generado para fines académicos.");
             document.Save(path);
+            auditTrailService.RegistrarAccion("Exportaciones", "PDF comprobante", System.IO.Path.GetFileName(path));
             return path;
         }
 
         public string ExportarReportes(List<ReporteGenerado> reportes)
         {
+            authorizationService.DemandPermission(Permissions.ReportsExport);
             string path = BuildPath("Reportes");
             if (string.IsNullOrWhiteSpace(path)) return string.Empty;
 
@@ -109,6 +122,7 @@ namespace SistemaGestionNomina.Services
                 y = NextLine(document, ref page, ref gfx, y);
             }
             document.Save(path);
+            auditTrailService.RegistrarAccion("Exportaciones", "PDF reportes", System.IO.Path.GetFileName(path));
             return path;
         }
 

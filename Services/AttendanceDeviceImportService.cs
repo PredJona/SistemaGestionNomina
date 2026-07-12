@@ -4,6 +4,7 @@ using System.Data.SQLite;
 using System.Globalization;
 using System.IO;
 using SistemaGestionNomina.Data;
+using SistemaGestionNomina.Security;
 
 namespace SistemaGestionNomina.Services
 {
@@ -12,11 +13,15 @@ namespace SistemaGestionNomina.Services
     /// </summary>
     public class AttendanceDeviceImportService
     {
+        private readonly AuthorizationService authorizationService = new AuthorizationService();
+        private readonly AuditTrailService auditTrailService = new AuditTrailService();
+
         /// <summary>
         /// Importa registros externos de asistencia desde CSV: Codigo,Fecha,HoraEntrada,HoraSalida,Estado.
         /// </summary>
         public int ImportarDesdeArchivo(string rutaArchivo)
         {
+            authorizationService.DemandPermission(Permissions.AttendanceImport);
             if (string.IsNullOrWhiteSpace(rutaArchivo))
             {
                 throw new ArgumentException("Debe indicar el archivo de asistencia.");
@@ -74,6 +79,8 @@ namespace SistemaGestionNomina.Services
                 }
 
                 transaction.Commit();
+                auditTrailService.RegistrarAccion("Asistencia", "Importar",
+                    Path.GetFileName(rutaArchivo) + ", Registros=" + imported);
                 return imported;
             }
         }

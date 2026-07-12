@@ -1,90 +1,67 @@
 using System;
 using System.Collections.Generic;
-using System.Data.SQLite;
 using SistemaGestionNomina.Data;
+using SistemaGestionNomina.Models;
+using SistemaGestionNomina.Security;
 
 namespace SistemaGestionNomina.Services
 {
-    /// <summary>
-    /// Servicio reservado para registrar historial detallado de cambios.
-    /// </summary>
     public class AuditTrailService
     {
-        /// <summary>
-        /// Registra una acción del usuario en una bitácora de auditoría.
-        /// </summary>
+        private readonly AuditRepository repository = new AuditRepository();
+
+        public void RegistrarAccion(string modulo, string accion, string detalle)
+        {
+            RegistrarCambio(SessionContext.IsAuthenticated ? SessionContext.Username : "sistema",
+                modulo, accion, detalle);
+        }
+
         public void RegistrarCambio(string usuario, string modulo, string accion)
         {
             RegistrarCambio(usuario, modulo, accion, string.Empty);
         }
 
-        /// <summary>
-        /// Registra una acción con detalle adicional para seguimiento operativo.
-        /// </summary>
         public void RegistrarCambio(string usuario, string modulo, string accion, string detalle)
         {
-            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            repository.Add(new AuditRecord
             {
-                EnsureTable(connection);
-                using (SQLiteCommand command = new SQLiteCommand(@"INSERT INTO Auditoria
-                    (Usuario, Modulo, Accion, Detalle, Fecha)
-                    VALUES (@usuario, @modulo, @accion, @detalle, @fecha);", connection))
-                {
-                    command.Parameters.AddWithValue("@usuario", Normalize(usuario, "sistema"));
-                    command.Parameters.AddWithValue("@modulo", Normalize(modulo, "General"));
-                    command.Parameters.AddWithValue("@accion", Normalize(accion, "Accion"));
-                    command.Parameters.AddWithValue("@detalle", Normalize(detalle, string.Empty));
-                    command.Parameters.AddWithValue("@fecha", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                    command.ExecuteNonQuery();
-                }
-            }
+                Usuario = Normalize(usuario, "sistema"),
+                Modulo = Normalize(modulo, "General"),
+                Accion = Normalize(accion, "Acción"),
+                Detalle = Normalize(detalle, string.Empty),
+                Fecha = DateTime.Now
+            });
         }
 
-        /// <summary>
-        /// Obtiene las últimas acciones registradas para diagnóstico o reportes.
-        /// </summary>
+        public List<AuditRecord> Buscar(AuditQuery query)
+        {
+            return repository.Search(query ?? new AuditQuery());
+        }
+
+        public List<string> ObtenerModulos()
+        {
+            return repository.GetDistinct("Modulo");
+        }
+
+        public List<string> ObtenerAcciones()
+        {
+            return repository.GetDistinct("Accion");
+        }
+
         public List<string> ObtenerUltimos(int cantidad)
         {
             List<string> items = new List<string>();
-            int limit = cantidad <= 0 ? 20 : Math.Min(cantidad, 200);
-
-            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            List<AuditRecord> records = repository.Search(new AuditQuery
             {
-                EnsureTable(connection);
-                using (SQLiteCommand command = new SQLiteCommand(@"SELECT Usuario, Modulo, Accion, Detalle, Fecha
-                    FROM Auditoria ORDER BY Fecha DESC, IdAuditoria DESC LIMIT @limit;", connection))
-                {
-                    command.Parameters.AddWithValue("@limit", limit);
-                    using (SQLiteDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            items.Add(Convert.ToString(reader["Fecha"]) + " | " +
-                                Convert.ToString(reader["Usuario"]) + " | " +
-                                Convert.ToString(reader["Modulo"]) + " | " +
-                                Convert.ToString(reader["Accion"]) + " | " +
-                                Convert.ToString(reader["Detalle"]));
-                        }
-                    }
-                }
+                Limit = cantidad <= 0 ? 20 : Math.Min(cantidad, 200)
+            });
+            for (int i = 0; i < records.Count; i++)
+            {
+                AuditRecord record = records[i];
+                items.Add(record.Fecha.ToString("yyyy-MM-dd HH:mm:ss") + " | " + record.Usuario + " | " +
+                    record.Modulo + " | " + record.Accion + " | " + record.Detalle);
             }
-
             return items;
-        }
-
-        private static void EnsureTable(SQLiteConnection connection)
-        {
-            using (SQLiteCommand command = new SQLiteCommand(@"CREATE TABLE IF NOT EXISTS Auditoria (
-                IdAuditoria INTEGER PRIMARY KEY AUTOINCREMENT,
-                Usuario TEXT NOT NULL,
-                Modulo TEXT NOT NULL,
-                Accion TEXT NOT NULL,
-                Detalle TEXT,
-                Fecha TEXT NOT NULL
-            );", connection))
-            {
-                command.ExecuteNonQuery();
-            }
         }
 
         private static string Normalize(string value, string fallback)
