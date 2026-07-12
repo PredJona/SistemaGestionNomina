@@ -21,6 +21,15 @@ $assembly = [System.Reflection.Assembly]::LoadFrom($exePath)
 $initializer = $assembly.GetType("SistemaGestionNomina.Data.DatabaseInitializer")
 $initializer.GetMethod("Initialize").Invoke($null, @())
 
+$userType = $assembly.GetType("SistemaGestionNomina.Models.Usuario")
+$admin = [Activator]::CreateInstance($userType)
+$userType.GetProperty("IdUsuario").SetValue($admin, 1)
+$userType.GetProperty("NombreUsuario").SetValue($admin, "admin")
+$userType.GetProperty("Rol").SetValue($admin, "Admin")
+$userType.GetProperty("Estado").SetValue($admin, "Activo")
+$sessionType = $assembly.GetType("SistemaGestionNomina.Security.SessionContext")
+$sessionType.GetMethod("Begin").Invoke($null, @($admin))
+
 $roleType = $assembly.GetType("SistemaGestionNomina.Services.RolePermissionService")
 $roleService = [Activator]::CreateInstance($roleType)
 if (-not $roleType.GetMethod("TienePermiso", [type[]]@([string], [string], [string])).Invoke($roleService, @("Admin", "nomina", "confirmar"))) {
@@ -44,3 +53,4 @@ if (-not $verified) {
     throw "BackupService no verificó el hash."
 }
 Write-Host "BackupService OK"
+$sessionType.GetMethod("Clear").Invoke($null, @())

@@ -14,6 +14,13 @@
 | 10 | Impresion | Seleccionar comprobante y presionar Imprimir | Se abre `PrintPreviewDialog` con recibo legible | Pendiente de validacion manual | Revisar |
 | 11 | Reportes | Generar reporte de empleados o nomina | Archivo PDF/Excel generado | Pendiente de validacion manual | Revisar |
 | 12 | Salir | Presionar `Salir` en sidebar | Se muestra confirmacion y al aceptar se cierra la app | Pendiente de validacion manual | Revisar |
+| 13 | Migraciones | Ejecutar inicializador dos veces sobre base heredada | Version 3, sin perdida de datos y con respaldo previo | Prueba automatizada aprobada | Aprobado |
+| 14 | Seguridad | Iniciar con un hash SHA-256 valido | Acceso correcto y conversion inmediata a PBKDF2 | Prueba automatizada aprobada | Aprobado |
+| 15 | Bloqueo | Cinco contrasenas incorrectas | Bloqueo temporal durante 15 minutos | Prueba automatizada aprobada | Aprobado |
+| 16 | Permisos | Probar Admin, RRHH, Contabilidad, Supervisor y Trabajador | Cada rol recibe solamente sus permisos | Prueba automatizada aprobada | Aprobado |
+| 17 | Integridad | Registrar dos asistencias para empleado y fecha iguales | Servicio y SQLite rechazan el duplicado | Prueba automatizada aprobada | Aprobado |
+| 18 | Auditoria | Autenticar y ejecutar operaciones protegidas | Se registra el usuario real y los rechazos | Prueba automatizada aprobada | Aprobado |
+| 19 | Supervisor | Consultar empleados desde un Supervisor asociado | Solo aparecen empleados de su departamento | Prueba automatizada aprobada | Aprobado |
 
 ## Nota
 
