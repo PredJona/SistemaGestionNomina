@@ -302,6 +302,35 @@ namespace SistemaGestionNomina.Data
             return items;
         }
 
+        public List<Asistencia> GetByEmployee(int employeeId, DateTime? start, DateTime? end, string status)
+        {
+            List<Asistencia> items = new List<Asistencia>();
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"SELECT a.*, e.Nombre || ' ' || e.Apellido AS EmpleadoNombre
+                FROM Asistencias a
+                INNER JOIN Empleados e ON e.IdEmpleado = a.IdEmpleado
+                WHERE a.IdEmpleado = @empleado
+                  AND (@inicio = '' OR a.Fecha >= @inicio)
+                  AND (@fin = '' OR a.Fecha <= @fin)
+                  AND (@estado = '' OR a.Estado = @estado)
+                ORDER BY a.Fecha DESC;", connection))
+            {
+                command.Parameters.AddWithValue("@empleado", employeeId);
+                command.Parameters.AddWithValue("@inicio", start.HasValue ? start.Value.ToString("yyyy-MM-dd") : string.Empty);
+                command.Parameters.AddWithValue("@fin", end.HasValue ? end.Value.ToString("yyyy-MM-dd") : string.Empty);
+                command.Parameters.AddWithValue("@estado", status ?? string.Empty);
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        items.Add(MapAsistencia(reader));
+                    }
+                }
+            }
+
+            return items;
+        }
+
         public decimal GetExtraHours(int employeeId, DateTime start, DateTime end)
         {
             decimal total = 0;
@@ -480,6 +509,15 @@ namespace SistemaGestionNomina.Data
 
     public class ComprobanteRepository
     {
+        private const string ComprobanteSelect = @"SELECT c.*, e.Codigo,
+                   e.Nombre || ' ' || e.Apellido AS EmpleadoNombre,
+                   p.Nombre AS PeriodoNombre, nd.TotalIngresos, nd.TotalDeducciones, nd.NetoPagar
+            FROM Comprobantes c
+            INNER JOIN Empleados e ON e.IdEmpleado = c.IdEmpleado
+            INNER JOIN Nominas n ON n.IdNomina = c.IdNomina
+            INNER JOIN PeriodosNomina p ON p.IdPeriodo = n.IdPeriodo
+            INNER JOIN NominaDetalle nd ON nd.IdNomina = c.IdNomina AND nd.IdEmpleado = c.IdEmpleado ";
+
         public void Add(Comprobante comprobante)
         {
             using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
@@ -507,17 +545,24 @@ namespace SistemaGestionNomina.Data
             }
         }
 
+        public bool UpdateRutaPdfForEmployee(int idComprobante, int employeeId, string ruta)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"UPDATE Comprobantes SET RutaPdf = @ruta
+                WHERE IdComprobante = @id AND IdEmpleado = @empleado;", connection))
+            {
+                command.Parameters.AddWithValue("@ruta", ruta ?? string.Empty);
+                command.Parameters.AddWithValue("@id", idComprobante);
+                command.Parameters.AddWithValue("@empleado", employeeId);
+                return command.ExecuteNonQuery() == 1;
+            }
+        }
+
         public List<Comprobante> GetAll(string search)
         {
             List<Comprobante> items = new List<Comprobante>();
             using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
-            using (SQLiteCommand command = new SQLiteCommand(@"SELECT c.*, e.Codigo, e.Nombre || ' ' || e.Apellido AS EmpleadoNombre,
-                       p.Nombre AS PeriodoNombre, nd.TotalIngresos, nd.TotalDeducciones, nd.NetoPagar
-                FROM Comprobantes c
-                INNER JOIN Empleados e ON e.IdEmpleado = c.IdEmpleado
-                INNER JOIN Nominas n ON n.IdNomina = c.IdNomina
-                INNER JOIN PeriodosNomina p ON p.IdPeriodo = n.IdPeriodo
-                INNER JOIN NominaDetalle nd ON nd.IdNomina = c.IdNomina AND nd.IdEmpleado = c.IdEmpleado
+            using (SQLiteCommand command = new SQLiteCommand(ComprobanteSelect + @"
                 WHERE (@search = '' OR c.NumeroComprobante LIKE @like OR e.Nombre LIKE @like OR e.Apellido LIKE @like OR p.Nombre LIKE @like)
                 ORDER BY c.FechaGeneracion DESC;", connection))
             {
@@ -537,16 +582,55 @@ namespace SistemaGestionNomina.Data
 
         public Comprobante GetById(int id)
         {
-            List<Comprobante> all = GetAll(string.Empty);
-            for (int i = 0; i < all.Count; i++)
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(ComprobanteSelect +
+                " WHERE c.IdComprobante = @id LIMIT 1;", connection))
             {
-                if (all[i].IdComprobante == id)
+                command.Parameters.AddWithValue("@id", id);
+                using (SQLiteDataReader reader = command.ExecuteReader())
                 {
-                    return all[i];
+                    return reader.Read() ? MapComprobante(reader) : null;
+                }
+            }
+        }
+
+        public List<Comprobante> GetByEmployee(int employeeId, string search)
+        {
+            List<Comprobante> items = new List<Comprobante>();
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(ComprobanteSelect + @"
+                WHERE c.IdEmpleado = @empleado
+                  AND (@search = '' OR c.NumeroComprobante LIKE @like OR p.Nombre LIKE @like)
+                ORDER BY c.FechaGeneracion DESC;", connection))
+            {
+                command.Parameters.AddWithValue("@empleado", employeeId);
+                command.Parameters.AddWithValue("@search", search ?? string.Empty);
+                command.Parameters.AddWithValue("@like", "%" + (search ?? string.Empty) + "%");
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        items.Add(MapComprobante(reader));
+                    }
                 }
             }
 
-            return null;
+            return items;
+        }
+
+        public Comprobante GetByIdAndEmployee(int payslipId, int employeeId)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(ComprobanteSelect + @"
+                WHERE c.IdComprobante = @id AND c.IdEmpleado = @empleado LIMIT 1;", connection))
+            {
+                command.Parameters.AddWithValue("@id", payslipId);
+                command.Parameters.AddWithValue("@empleado", employeeId);
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    return reader.Read() ? MapComprobante(reader) : null;
+                }
+            }
         }
 
         private static Comprobante MapComprobante(SQLiteDataReader reader)
