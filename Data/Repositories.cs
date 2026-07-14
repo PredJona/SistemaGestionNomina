@@ -445,17 +445,7 @@ namespace SistemaGestionNomina.Data
             {
                 while (reader.Read())
                 {
-                    items.Add(new Nomina
-                    {
-                        IdNomina = Convert.ToInt32(reader["IdNomina"]),
-                        IdPeriodo = Convert.ToInt32(reader["IdPeriodo"]),
-                        PeriodoNombre = Convert.ToString(reader["PeriodoNombre"]),
-                        FechaCalculo = DateTime.Parse(Convert.ToString(reader["FechaCalculo"])),
-                        TotalIngresos = Convert.ToDecimal(reader["TotalIngresos"]),
-                        TotalDeducciones = Convert.ToDecimal(reader["TotalDeducciones"]),
-                        TotalNeto = Convert.ToDecimal(reader["TotalNeto"]),
-                        Estado = Convert.ToString(reader["Estado"])
-                    });
+                    items.Add(MapNomina(reader));
                 }
             }
 
@@ -486,6 +476,170 @@ namespace SistemaGestionNomina.Data
             return items;
         }
 
+        public Nomina GetById(int idNomina)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"SELECT n.*, p.Nombre AS PeriodoNombre
+                FROM Nominas n INNER JOIN PeriodosNomina p ON p.IdPeriodo = n.IdPeriodo
+                WHERE n.IdNomina = @id;", connection))
+            {
+                command.Parameters.AddWithValue("@id", idNomina);
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read()) return MapNomina(reader);
+                }
+            }
+            return null;
+        }
+
+        public void UpdateEstadoNomina(int idNomina, string estado,
+            string campoFecha, DateTime? fecha,
+            string campoUsuario, string usuario,
+            string motivo = null)
+        {
+            string sql = "UPDATE Nominas SET Estado = @estado";
+            if (!string.IsNullOrWhiteSpace(campoFecha) && fecha.HasValue)
+                sql += ", " + campoFecha + " = @fecha";
+            if (!string.IsNullOrWhiteSpace(campoUsuario) && !string.IsNullOrWhiteSpace(usuario))
+                sql += ", " + campoUsuario + " = @usuario";
+            if (motivo != null)
+                sql += ", MotivoAnulacion = @motivo";
+            sql += " WHERE IdNomina = @id;";
+
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue("@id", idNomina);
+                command.Parameters.AddWithValue("@estado", estado);
+                if (fecha.HasValue) command.Parameters.AddWithValue("@fecha", fecha.Value.ToString("yyyy-MM-dd HH:mm:ss"));
+                if (!string.IsNullOrWhiteSpace(usuario)) command.Parameters.AddWithValue("@usuario", usuario);
+                if (motivo != null) command.Parameters.AddWithValue("@motivo", motivo);
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public void CerrarPeriodo(int idPeriodo, string usuario)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"UPDATE PeriodosNomina
+                SET Cerrado = 1, FechaCierre = @fecha, CerradoPor = @usuario
+                WHERE IdPeriodo = @id;", connection))
+            {
+                command.Parameters.AddWithValue("@id", idPeriodo);
+                command.Parameters.AddWithValue("@fecha", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                command.Parameters.AddWithValue("@usuario", usuario);
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public void ReabrirPeriodo(int idPeriodo)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"UPDATE PeriodosNomina
+                SET Cerrado = 0, FechaCierre = NULL, CerradoPor = NULL
+                WHERE IdPeriodo = @id;", connection))
+            {
+                command.Parameters.AddWithValue("@id", idPeriodo);
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public PeriodoNomina GetPeriodoById(int idPeriodo)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand("SELECT * FROM PeriodosNomina WHERE IdPeriodo = @id;", connection))
+            {
+                command.Parameters.AddWithValue("@id", idPeriodo);
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return new PeriodoNomina
+                        {
+                            IdPeriodo = Convert.ToInt32(reader["IdPeriodo"]),
+                            Nombre = Convert.ToString(reader["Nombre"]),
+                            FechaInicio = DateTime.Parse(Convert.ToString(reader["FechaInicio"])),
+                            FechaFin = DateTime.Parse(Convert.ToString(reader["FechaFin"])),
+                            Estado = Convert.ToString(reader["Estado"]),
+                            Cerrado = Convert.ToInt32(reader["Cerrado"]) == 1,
+                            FechaCierre = reader["FechaCierre"] == DBNull.Value ? (DateTime?)null : DateTime.Parse(Convert.ToString(reader["FechaCierre"])),
+                            CerradoPor = reader["CerradoPor"] == DBNull.Value ? null : Convert.ToString(reader["CerradoPor"])
+                        };
+                    }
+                }
+            }
+            return null;
+        }
+
+        public PeriodoNomina GetPeriodoByFechas(DateTime fechaInicio, DateTime fechaFin)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"SELECT * FROM PeriodosNomina
+                WHERE FechaInicio = @inicio AND FechaFin = @fin LIMIT 1;", connection))
+            {
+                command.Parameters.AddWithValue("@inicio", fechaInicio.ToString("yyyy-MM-dd"));
+                command.Parameters.AddWithValue("@fin", fechaFin.ToString("yyyy-MM-dd"));
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return new PeriodoNomina
+                        {
+                            IdPeriodo = Convert.ToInt32(reader["IdPeriodo"]),
+                            Nombre = Convert.ToString(reader["Nombre"]),
+                            FechaInicio = DateTime.Parse(Convert.ToString(reader["FechaInicio"])),
+                            FechaFin = DateTime.Parse(Convert.ToString(reader["FechaFin"])),
+                            Estado = Convert.ToString(reader["Estado"]),
+                            Cerrado = Convert.ToInt32(reader["Cerrado"]) == 1
+                        };
+                    }
+                }
+            }
+            return null;
+        }
+
+        public int CreateNominaEnTransaccion(SQLiteConnection connection, SQLiteTransaction transaction, Nomina nomina)
+        {
+            using (SQLiteCommand command = new SQLiteCommand(@"INSERT INTO Nominas
+                (IdPeriodo, FechaCalculo, TotalIngresos, TotalDeducciones, TotalNeto, Estado,
+                 FechaConfirmacion, ConfirmadaPor)
+                VALUES (@periodo, @fecha, @ingresos, @deducciones, @neto, @estado, @fecConf, @usrConf);
+                SELECT last_insert_rowid();", connection, transaction))
+            {
+                command.Parameters.AddWithValue("@periodo", nomina.IdPeriodo);
+                command.Parameters.AddWithValue("@fecha", nomina.FechaCalculo.ToString("yyyy-MM-dd HH:mm:ss"));
+                command.Parameters.AddWithValue("@ingresos", nomina.TotalIngresos);
+                command.Parameters.AddWithValue("@deducciones", nomina.TotalDeducciones);
+                command.Parameters.AddWithValue("@neto", nomina.TotalNeto);
+                command.Parameters.AddWithValue("@estado", nomina.Estado);
+                command.Parameters.AddWithValue("@fecConf", nomina.FechaConfirmacion?.ToString("yyyy-MM-dd HH:mm:ss") ?? DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                command.Parameters.AddWithValue("@usrConf", nomina.ConfirmadaPor ?? string.Empty);
+                return Convert.ToInt32(command.ExecuteScalar());
+            }
+        }
+
+        private static Nomina MapNomina(SQLiteDataReader reader)
+        {
+            return new Nomina
+            {
+                IdNomina = Convert.ToInt32(reader["IdNomina"]),
+                IdPeriodo = Convert.ToInt32(reader["IdPeriodo"]),
+                PeriodoNombre = Convert.ToString(reader["PeriodoNombre"]),
+                FechaCalculo = DateTime.Parse(Convert.ToString(reader["FechaCalculo"])),
+                TotalIngresos = Convert.ToDecimal(reader["TotalIngresos"]),
+                TotalDeducciones = Convert.ToDecimal(reader["TotalDeducciones"]),
+                TotalNeto = Convert.ToDecimal(reader["TotalNeto"]),
+                Estado = Convert.ToString(reader["Estado"]),
+                FechaConfirmacion = reader["FechaConfirmacion"] == DBNull.Value ? (DateTime?)null : DateTime.Parse(Convert.ToString(reader["FechaConfirmacion"])),
+                ConfirmadaPor = reader["ConfirmadaPor"] == DBNull.Value ? null : Convert.ToString(reader["ConfirmadaPor"]),
+                FechaPago = reader["FechaPago"] == DBNull.Value ? (DateTime?)null : DateTime.Parse(Convert.ToString(reader["FechaPago"])),
+                PagadaPor = reader["PagadaPor"] == DBNull.Value ? null : Convert.ToString(reader["PagadaPor"]),
+                FechaAnulacion = reader["FechaAnulacion"] == DBNull.Value ? (DateTime?)null : DateTime.Parse(Convert.ToString(reader["FechaAnulacion"])),
+                AnuladaPor = reader["AnuladaPor"] == DBNull.Value ? null : Convert.ToString(reader["AnuladaPor"]),
+                MotivoAnulacion = reader["MotivoAnulacion"] == DBNull.Value ? null : Convert.ToString(reader["MotivoAnulacion"])
+            };
+        }
+
         private static NominaDetalle MapDetalle(SQLiteDataReader reader)
         {
             return new NominaDetalle
@@ -504,6 +658,105 @@ namespace SistemaGestionNomina.Data
                 TotalDeducciones = Convert.ToDecimal(reader["TotalDeducciones"]),
                 NetoPagar = Convert.ToDecimal(reader["NetoPagar"])
             };
+        }
+    }
+
+    public class NominaVersionRepository
+    {
+        public void Add(NominaVersion version)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"INSERT INTO NominaVersiones
+                (IdNominaOriginal, IdNominaNueva, MotivoCambio, UsuarioResponsable, FechaCambio)
+                VALUES (@original, @nueva, @motivo, @usuario, @fecha);", connection))
+            {
+                command.Parameters.AddWithValue("@original", version.IdNominaOriginal);
+                command.Parameters.AddWithValue("@nueva", version.IdNominaNueva.HasValue ? (object)version.IdNominaNueva.Value : DBNull.Value);
+                command.Parameters.AddWithValue("@motivo", version.MotivoCambio);
+                command.Parameters.AddWithValue("@usuario", version.UsuarioResponsable);
+                command.Parameters.AddWithValue("@fecha", version.FechaCambio.ToString("yyyy-MM-dd HH:mm:ss"));
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public List<NominaVersion> GetByIdNominaOriginal(int idNominaOriginal)
+        {
+            List<NominaVersion> items = new List<NominaVersion>();
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"SELECT * FROM NominaVersiones
+                WHERE IdNominaOriginal = @id ORDER BY FechaCambio DESC;", connection))
+            {
+                command.Parameters.AddWithValue("@id", idNominaOriginal);
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        items.Add(new NominaVersion
+                        {
+                            IdVersion = Convert.ToInt32(reader["IdVersion"]),
+                            IdNominaOriginal = Convert.ToInt32(reader["IdNominaOriginal"]),
+                            IdNominaNueva = reader["IdNominaNueva"] == DBNull.Value ? (int?)null : Convert.ToInt32(reader["IdNominaNueva"]),
+                            MotivoCambio = Convert.ToString(reader["MotivoCambio"]),
+                            UsuarioResponsable = Convert.ToString(reader["UsuarioResponsable"]),
+                            FechaCambio = DateTime.Parse(Convert.ToString(reader["FechaCambio"]))
+                        });
+                    }
+                }
+            }
+            return items;
+        }
+
+        public void UpdateIdNominaNueva(int idVersion, int idNominaNueva)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"UPDATE NominaVersiones
+                SET IdNominaNueva = @nueva WHERE IdVersion = @id;", connection))
+            {
+                command.Parameters.AddWithValue("@id", idVersion);
+                command.Parameters.AddWithValue("@nueva", idNominaNueva);
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public List<NominaVersion> GetHistorialChain(int idNomina)
+        {
+            List<NominaVersion> result = new List<NominaVersion>();
+            int? currentId = idNomina;
+            while (currentId.HasValue)
+            {
+                NominaVersion version = GetByNominaNueva(currentId.Value);
+                if (version == null)
+                    break;
+                result.Add(version);
+                currentId = version.IdNominaOriginal;
+            }
+            return result;
+        }
+
+        private NominaVersion GetByNominaNueva(int idNominaNueva)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"SELECT * FROM NominaVersiones
+                WHERE IdNominaNueva = @id LIMIT 1;", connection))
+            {
+                command.Parameters.AddWithValue("@id", idNominaNueva);
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return new NominaVersion
+                        {
+                            IdVersion = Convert.ToInt32(reader["IdVersion"]),
+                            IdNominaOriginal = Convert.ToInt32(reader["IdNominaOriginal"]),
+                            IdNominaNueva = reader["IdNominaNueva"] == DBNull.Value ? (int?)null : Convert.ToInt32(reader["IdNominaNueva"]),
+                            MotivoCambio = Convert.ToString(reader["MotivoCambio"]),
+                            UsuarioResponsable = Convert.ToString(reader["UsuarioResponsable"]),
+                            FechaCambio = DateTime.Parse(Convert.ToString(reader["FechaCambio"]))
+                        };
+                    }
+                }
+            }
+            return null;
         }
     }
 

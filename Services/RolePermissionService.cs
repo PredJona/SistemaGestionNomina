@@ -22,14 +22,17 @@ namespace SistemaGestionNomina.Services
                 Permissions.AttendanceView, Permissions.AttendanceRegister, Permissions.AttendanceImport,
                 Permissions.AttendanceExport, Permissions.PayslipsView, Permissions.PayslipsExport,
                 Permissions.PayslipsPrint, Permissions.PayslipsEmail,
-                Permissions.ReportsView, Permissions.ReportsPersonal, Permissions.ReportsExport
+                Permissions.ReportsView, Permissions.ReportsPersonal, Permissions.ReportsExport,
+                Permissions.PayrollHistoryView
             };
             permisosPorRol[Roles.Contabilidad] = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
                 Permissions.PayrollView, Permissions.PayrollCalculate, Permissions.PayrollConfirm,
                 Permissions.PayrollExport, Permissions.PayslipsView, Permissions.PayslipsExport,
                 Permissions.PayslipsPrint, Permissions.PayslipsEmail,
-                Permissions.ReportsView, Permissions.ReportsFinancial, Permissions.ReportsExport
+                Permissions.ReportsView, Permissions.ReportsFinancial, Permissions.ReportsExport,
+                Permissions.PayrollPay, Permissions.PayrollAnnul, Permissions.PayrollRecalculate,
+                Permissions.PayrollHistoryView
             };
             permisosPorRol[Roles.Supervisor] = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {

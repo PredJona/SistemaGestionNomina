@@ -335,43 +335,31 @@ namespace SistemaGestionNomina.Services
             return nomina;
         }
 
+        private readonly PayrollLifecycleService payrollLifecycleService = new PayrollLifecycleService();
+
         public int ConfirmarPago(Nomina nomina, DateTime fechaInicio, DateTime fechaFin)
         {
-            authorizationService.DemandPermission(Permissions.PayrollConfirm);
-            if (nomina == null || nomina.Detalles.Count == 0)
-            {
-                throw new InvalidOperationException("No hay una nómina calculada para confirmar.");
-            }
+            return payrollLifecycleService.Confirmar(nomina, fechaInicio, fechaFin);
+        }
 
-            PeriodoNomina periodo = new PeriodoNomina();
-            periodo.Nombre = nomina.PeriodoNombre;
-            periodo.FechaInicio = fechaInicio;
-            periodo.FechaFin = fechaFin;
-            periodo.Estado = "Confirmado";
-            int idPeriodo = nominaRepository.CreatePeriodo(periodo);
+        public void PagarNomina(int idNomina)
+        {
+            payrollLifecycleService.Pagar(idNomina);
+        }
 
-            nomina.IdPeriodo = idPeriodo;
-            nomina.Estado = "Confirmada";
-            int idNomina = nominaRepository.CreateNomina(nomina);
+        public void AnularNomina(int idNomina, string motivo)
+        {
+            payrollLifecycleService.Anular(idNomina, motivo);
+        }
 
-            for (int i = 0; i < nomina.Detalles.Count; i++)
-            {
-                // Cada detalle confirmado genera un comprobante trazable para impresion y exportacion.
-                NominaDetalle detalle = nomina.Detalles[i];
-                Comprobante comprobante = new Comprobante();
-                comprobante.IdNomina = idNomina;
-                comprobante.IdEmpleado = detalle.IdEmpleado;
-                comprobante.NumeroComprobante = "COMP-" + idNomina.ToString("0000") + "-" + detalle.IdEmpleado.ToString("0000");
-                comprobante.FechaGeneracion = DateTime.Now;
-                comprobante.RutaPdf = string.Empty;
-                comprobanteRepository.Add(comprobante);
-            }
+        public int RecalcularNomina(int idNominaAnulada, DateTime fechaInicio, DateTime fechaFin, Nomina nominaRecalculada)
+        {
+            return payrollLifecycleService.Recalcular(idNominaAnulada, fechaInicio, fechaFin, nominaRecalculada);
+        }
 
-            auditTrailService.RegistrarAccion("Nómina", "Confirmar",
-                "IdNomina=" + idNomina + ", Empleados=" + nomina.Detalles.Count);
-            auditTrailService.RegistrarAccion("Comprobantes", "Generar",
-                "IdNomina=" + idNomina + ", Cantidad=" + nomina.Detalles.Count);
-            return idNomina;
+        public List<NominaVersion> ObtenerHistorialNomina(int idNomina)
+        {
+            return payrollLifecycleService.ObtenerHistorial(idNomina);
         }
 
         public List<Nomina> GetNominas()

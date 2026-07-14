@@ -9,7 +9,7 @@ namespace SistemaGestionNomina.Data
 {
     public static class DatabaseMigrationRunner
     {
-        public const int LatestVersion = 3;
+        public const int LatestVersion = 4;
 
         public static int GetCurrentVersion(SQLiteConnection connection)
         {
@@ -38,6 +38,7 @@ namespace SistemaGestionNomina.Data
             if (version < 1) ApplyMigration(connection, 1, "Seguridad de usuarios", MigrateUsers);
             if (version < 2) ApplyMigration(connection, 2, "Índices e integridad de asistencia", MigrateIndexesAndAttendance);
             if (version < 3) ApplyMigration(connection, 3, "Validaciones críticas", MigrateIntegrityRules);
+            if (version < 4) ApplyMigration(connection, 4, "Cierre, pago y anulación de nómina", MigrateNominaRobusta);
         }
 
         private static void ApplyMigration(SQLiteConnection connection, int version, string name,
@@ -186,6 +187,51 @@ namespace SistemaGestionNomina.Data
                     SELECT RAISE(ABORT, 'Las horas de asistencia no son válidas.');
                 END;");
             detail.Append("Roles, asociaciones, salarios, departamentos y horas protegidos mediante índices y triggers.");
+        }
+
+        private static void MigrateNominaRobusta(SQLiteConnection connection, SQLiteTransaction transaction, StringBuilder detail)
+        {
+            AddColumnIfMissing(connection, transaction, "PeriodosNomina", "Cerrado",
+                "INTEGER NOT NULL DEFAULT 0");
+            AddColumnIfMissing(connection, transaction, "PeriodosNomina", "FechaCierre", "TEXT NULL");
+            AddColumnIfMissing(connection, transaction, "PeriodosNomina", "CerradoPor", "TEXT NULL");
+
+            AddColumnIfMissing(connection, transaction, "Nominas", "FechaConfirmacion", "TEXT NULL");
+            AddColumnIfMissing(connection, transaction, "Nominas", "ConfirmadaPor", "TEXT NULL");
+            AddColumnIfMissing(connection, transaction, "Nominas", "FechaPago", "TEXT NULL");
+            AddColumnIfMissing(connection, transaction, "Nominas", "PagadaPor", "TEXT NULL");
+            AddColumnIfMissing(connection, transaction, "Nominas", "FechaAnulacion", "TEXT NULL");
+            AddColumnIfMissing(connection, transaction, "Nominas", "AnuladaPor", "TEXT NULL");
+            AddColumnIfMissing(connection, transaction, "Nominas", "MotivoAnulacion", "TEXT NULL");
+
+            Execute(connection, transaction, @"CREATE TABLE IF NOT EXISTS NominaVersiones (
+                IdVersion INTEGER PRIMARY KEY AUTOINCREMENT,
+                IdNominaOriginal INTEGER NOT NULL,
+                IdNominaNueva INTEGER NULL,
+                MotivoCambio TEXT NOT NULL,
+                UsuarioResponsable TEXT NOT NULL,
+                FechaCambio TEXT NOT NULL,
+                FOREIGN KEY(IdNominaOriginal) REFERENCES Nominas(IdNomina),
+                FOREIGN KEY(IdNominaNueva) REFERENCES Nominas(IdNomina)
+            );");
+
+            Execute(connection, transaction,
+                "CREATE INDEX IF NOT EXISTS IX_Nominas_IdPeriodo_Estado ON Nominas(IdPeriodo, Estado);");
+            Execute(connection, transaction,
+                "CREATE INDEX IF NOT EXISTS IX_NominaVersiones_IdNominaOriginal ON NominaVersiones(IdNominaOriginal);");
+
+            Execute(connection, transaction, @"CREATE TRIGGER IF NOT EXISTS TR_Asistencias_PeriodoCerrado_Insert
+                BEFORE INSERT ON Asistencias
+                WHEN EXISTS (SELECT 1 FROM PeriodosNomina
+                    WHERE Cerrado = 1
+                      AND FechaInicio <= NEW.Fecha
+                      AND FechaFin >= NEW.Fecha)
+                BEGIN
+                    SELECT RAISE(ABORT, 'No se puede registrar asistencia en un período cerrado.');
+                END;");
+
+            detail.Append("PeriodosNomina (Cerrado,FechaCierre,CerradoPor), Nominas (fechas/usuarios de cada estado), ");
+            detail.Append("NominaVersiones, índices y trigger de bloqueo de asistencia creados.");
         }
 
         private static void AddColumnIfMissing(SQLiteConnection connection, SQLiteTransaction transaction,

@@ -34,5 +34,10 @@ namespace SistemaGestionNomina.Security
         public const string OwnPayslipsView = "portal.comprobantes.ver";
         public const string OwnPayslipsDownload = "portal.comprobantes.descargar";
         public const string OwnPasswordChange = "cuenta.password.cambiar";
+
+        public const string PayrollPay = "nomina.pagar";
+        public const string PayrollAnnul = "nomina.anular";
+        public const string PayrollRecalculate = "nomina.recalcular";
+        public const string PayrollHistoryView = "nomina.historial.ver";
     }
 }

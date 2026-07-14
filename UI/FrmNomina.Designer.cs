@@ -23,11 +23,24 @@ namespace SistemaGestionNomina.UI
         private System.Windows.Forms.Button btnConfirmarPago;
         private System.Windows.Forms.Button btnExportarExcel;
         private System.Windows.Forms.Button btnExportarPdf;
+        private System.Windows.Forms.Button btnPagar;
+        private System.Windows.Forms.Button btnAnular;
+        private System.Windows.Forms.Button btnRecalcular;
+        private System.Windows.Forms.Button btnVerHistorial;
+        private System.Windows.Forms.Label lblEstadoNomina;
         private System.Windows.Forms.DataGridView dgvNominaDetalle;
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null)) components.Dispose();
+            if (disposing)
+            {
+                if (components != null) components.Dispose();
+                if (btnPagar != null) btnPagar.Dispose();
+                if (btnAnular != null) btnAnular.Dispose();
+                if (btnRecalcular != null) btnRecalcular.Dispose();
+                if (btnVerHistorial != null) btnVerHistorial.Dispose();
+                if (lblEstadoNomina != null) lblEstadoNomina.Dispose();
+            }
             base.Dispose(disposing);
         }
 
@@ -53,6 +66,11 @@ namespace SistemaGestionNomina.UI
             this.btnConfirmarPago = new System.Windows.Forms.Button();
             this.btnExportarExcel = new System.Windows.Forms.Button();
             this.btnExportarPdf = new System.Windows.Forms.Button();
+            this.btnPagar = new System.Windows.Forms.Button();
+            this.btnAnular = new System.Windows.Forms.Button();
+            this.btnRecalcular = new System.Windows.Forms.Button();
+            this.btnVerHistorial = new System.Windows.Forms.Button();
+            this.lblEstadoNomina = new System.Windows.Forms.Label();
             this.dgvNominaDetalle = new System.Windows.Forms.DataGridView();
             this.panelParametros.SuspendLayout();
             this.cardTotales.SuspendLayout();
@@ -168,8 +186,13 @@ namespace SistemaGestionNomina.UI
             this.cardTotales.Controls.Add(this.lblTotalIngresos);
             this.cardTotales.Controls.Add(this.lblTotalDeducciones);
             this.cardTotales.Controls.Add(this.btnConfirmarPago);
+            this.cardTotales.Controls.Add(this.btnPagar);
+            this.cardTotales.Controls.Add(this.btnAnular);
+            this.cardTotales.Controls.Add(this.btnRecalcular);
+            this.cardTotales.Controls.Add(this.btnVerHistorial);
             this.cardTotales.Controls.Add(this.btnExportarExcel);
             this.cardTotales.Controls.Add(this.btnExportarPdf);
+            this.cardTotales.Controls.Add(this.lblEstadoNomina);
             this.cardTotales.Location = new System.Drawing.Point(392, 96);
             this.cardTotales.Name = "cardTotales";
             this.cardTotales.Size = new System.Drawing.Size(592, 250);
@@ -256,6 +279,71 @@ namespace SistemaGestionNomina.UI
             this.btnExportarPdf.Text = "PDF";
             this.btnExportarPdf.UseVisualStyleBackColor = false;
             this.btnExportarPdf.Click += new System.EventHandler(this.btnExportarPdf_Click);
+            // 
+            // btnPagar
+            // 
+            this.btnPagar.BackColor = System.Drawing.Color.FromArgb(34, 197, 94);
+            this.btnPagar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnPagar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnPagar.ForeColor = System.Drawing.Color.White;
+            this.btnPagar.Location = new System.Drawing.Point(390, 140);
+            this.btnPagar.Name = "btnPagar";
+            this.btnPagar.Size = new System.Drawing.Size(80, 32);
+            this.btnPagar.TabIndex = 7;
+            this.btnPagar.Text = "Pagar";
+            this.btnPagar.UseVisualStyleBackColor = false;
+            this.btnPagar.Click += new System.EventHandler(this.btnPagar_Click);
+            // 
+            // btnAnular
+            // 
+            this.btnAnular.BackColor = System.Drawing.Color.FromArgb(239, 68, 68);
+            this.btnAnular.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAnular.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnAnular.ForeColor = System.Drawing.Color.White;
+            this.btnAnular.Location = new System.Drawing.Point(480, 140);
+            this.btnAnular.Name = "btnAnular";
+            this.btnAnular.Size = new System.Drawing.Size(80, 32);
+            this.btnAnular.TabIndex = 8;
+            this.btnAnular.Text = "Anular";
+            this.btnAnular.UseVisualStyleBackColor = false;
+            this.btnAnular.Click += new System.EventHandler(this.btnAnular_Click);
+            // 
+            // btnRecalcular
+            // 
+            this.btnRecalcular.BackColor = System.Drawing.Color.FromArgb(250, 204, 21);
+            this.btnRecalcular.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnRecalcular.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnRecalcular.ForeColor = System.Drawing.Color.Black;
+            this.btnRecalcular.Location = new System.Drawing.Point(390, 180);
+            this.btnRecalcular.Name = "btnRecalcular";
+            this.btnRecalcular.Size = new System.Drawing.Size(100, 32);
+            this.btnRecalcular.TabIndex = 9;
+            this.btnRecalcular.Text = "Recalcular";
+            this.btnRecalcular.UseVisualStyleBackColor = false;
+            this.btnRecalcular.Click += new System.EventHandler(this.btnRecalcular_Click);
+            // 
+            // btnVerHistorial
+            // 
+            this.btnVerHistorial.BackColor = System.Drawing.Color.Black;
+            this.btnVerHistorial.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnVerHistorial.ForeColor = System.Drawing.Color.FromArgb(167, 139, 250);
+            this.btnVerHistorial.Location = new System.Drawing.Point(500, 180);
+            this.btnVerHistorial.Name = "btnVerHistorial";
+            this.btnVerHistorial.Size = new System.Drawing.Size(80, 32);
+            this.btnVerHistorial.TabIndex = 10;
+            this.btnVerHistorial.Text = "Historial";
+            this.btnVerHistorial.UseVisualStyleBackColor = false;
+            this.btnVerHistorial.Click += new System.EventHandler(this.btnVerHistorial_Click);
+            // 
+            // lblEstadoNomina
+            // 
+            this.lblEstadoNomina.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblEstadoNomina.ForeColor = System.Drawing.Color.FromArgb(167, 139, 250);
+            this.lblEstadoNomina.Location = new System.Drawing.Point(24, 214);
+            this.lblEstadoNomina.Name = "lblEstadoNomina";
+            this.lblEstadoNomina.Size = new System.Drawing.Size(260, 20);
+            this.lblEstadoNomina.TabIndex = 11;
+            this.lblEstadoNomina.Text = "Estado: —";
             // 
             // dgvNominaDetalle
             // 

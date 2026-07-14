@@ -206,6 +206,9 @@ namespace SistemaGestionNomina.Models
         public DateTime FechaInicio { get; set; }
         public DateTime FechaFin { get; set; }
         public string Estado { get; set; }
+        public bool Cerrado { get; set; }
+        public DateTime? FechaCierre { get; set; }
+        public string CerradoPor { get; set; }
     }
 
     public class Nomina
@@ -218,6 +221,13 @@ namespace SistemaGestionNomina.Models
         private decimal totalDeducciones;
         private decimal totalNeto;
         private string estado;
+        private DateTime? fechaConfirmacion;
+        private string confirmadaPor;
+        private DateTime? fechaPago;
+        private string pagadaPor;
+        private DateTime? fechaAnulacion;
+        private string anuladaPor;
+        private string motivoAnulacion;
         private List<NominaDetalle> detalles;
 
         public Nomina()
@@ -287,6 +297,48 @@ namespace SistemaGestionNomina.Models
         {
             get { return estado; }
             set { estado = EntityValidation.NormalizeOptional(value); }
+        }
+
+        public DateTime? FechaConfirmacion
+        {
+            get { return fechaConfirmacion; }
+            set { fechaConfirmacion = value; }
+        }
+
+        public string ConfirmadaPor
+        {
+            get { return confirmadaPor; }
+            set { confirmadaPor = EntityValidation.NormalizeOptional(value); }
+        }
+
+        public DateTime? FechaPago
+        {
+            get { return fechaPago; }
+            set { fechaPago = value; }
+        }
+
+        public string PagadaPor
+        {
+            get { return pagadaPor; }
+            set { pagadaPor = EntityValidation.NormalizeOptional(value); }
+        }
+
+        public DateTime? FechaAnulacion
+        {
+            get { return fechaAnulacion; }
+            set { fechaAnulacion = value; }
+        }
+
+        public string AnuladaPor
+        {
+            get { return anuladaPor; }
+            set { anuladaPor = EntityValidation.NormalizeOptional(value); }
+        }
+
+        public string MotivoAnulacion
+        {
+            get { return motivoAnulacion; }
+            set { motivoAnulacion = EntityValidation.NormalizeOptional(value); }
         }
 
         public List<NominaDetalle> Detalles
@@ -539,6 +591,16 @@ namespace SistemaGestionNomina.Models
         public string GeneradoPor { get; set; }
         public DateTime FechaGeneracion { get; set; }
         public string RutaArchivo { get; set; }
+    }
+
+    public class NominaVersion
+    {
+        public int IdVersion { get; set; }
+        public int IdNominaOriginal { get; set; }
+        public int? IdNominaNueva { get; set; }
+        public string MotivoCambio { get; set; }
+        public string UsuarioResponsable { get; set; }
+        public DateTime FechaCambio { get; set; }
     }
 
     internal static class EntityValidation

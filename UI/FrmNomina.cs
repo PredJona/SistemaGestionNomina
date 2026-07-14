@@ -16,7 +16,9 @@ namespace SistemaGestionNomina.UI
         private readonly ExcelExportService excelExportService = new ExcelExportService();
         private readonly PdfExportService pdfExportService = new PdfExportService();
         private readonly AuthorizationService authorizationService = new AuthorizationService();
+        private readonly PayrollLifecycleService payrollLifecycleService = new PayrollLifecycleService();
         private Nomina currentNomina;
+        private int? currentNominaId;
 
         public FrmNomina()
         {
@@ -31,7 +33,12 @@ namespace SistemaGestionNomina.UI
             btnConfirmarPago.Visible = authorizationService.HasPermission(Permissions.PayrollConfirm);
             btnExportarExcel.Visible = authorizationService.HasPermission(Permissions.PayrollExport);
             btnExportarPdf.Visible = authorizationService.HasPermission(Permissions.PayrollExport);
+            btnPagar.Visible = authorizationService.HasPermission(Permissions.PayrollPay);
+            btnAnular.Visible = authorizationService.HasPermission(Permissions.PayrollAnnul);
+            btnRecalcular.Visible = authorizationService.HasPermission(Permissions.PayrollRecalculate);
+            btnVerHistorial.Visible = authorizationService.HasPermission(Permissions.PayrollHistoryView);
             LoadDepartments();
+            ActualizarEstadoBotones();
         }
 
         private void LoadDepartments()
@@ -86,6 +93,8 @@ namespace SistemaGestionNomina.UI
             lblTotalDeducciones.Text = "Deducciones: B/. " + currentNomina.TotalDeducciones.ToString("0.00");
             lblTotalNeto.Text = "B/. " + currentNomina.TotalNeto.ToString("0.00");
             lblProcesados.Text = currentNomina.Detalles.Count + " empleados procesados";
+            lblEstadoNomina.Text = "Estado: " + (currentNomina.Estado ?? "Calculada");
+            ActualizarEstadoBotones();
         }
 
         private void btnConfirmarPago_Click(object sender, EventArgs e)
@@ -100,13 +109,141 @@ namespace SistemaGestionNomina.UI
             try
             {
                 int id = nominaService.ConfirmarPago(currentNomina, dtpFechaInicio.Value.Date, dtpFechaFin.Value.Date);
-                MessageBox.Show("Nómina confirmada correctamente. Id: " + id + "\nSe generaron los comprobantes.",
+                currentNominaId = id;
+                currentNomina.Estado = "Confirmada";
+                MessageBox.Show("Nómina confirmada correctamente. Id: " + id + "\nSe generaron los comprobantes.\nEl período ha sido cerrado.",
                     "Nómina", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ActualizarEstadoBotones();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Nómina", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+        }
+
+        private void btnPagar_Click(object sender, EventArgs e)
+        {
+            if (!currentNominaId.HasValue)
+            {
+                MessageBox.Show("Primero debe confirmar la nómina.", "Pago", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            if (MessageBox.Show("¿Registrar el pago de esta nómina? Esta acción no se puede deshacer.",
+                "Registrar pago", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+            {
+                return;
+            }
+
+            try
+            {
+                nominaService.PagarNomina(currentNominaId.Value);
+                currentNomina.Estado = "Pagada";
+                MessageBox.Show("Pago registrado correctamente.", "Nómina", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ActualizarEstadoBotones();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Nómina", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void btnAnular_Click(object sender, EventArgs e)
+        {
+            if (!currentNominaId.HasValue)
+            {
+                MessageBox.Show("Primero debe confirmar la nómina.", "Anular", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            using (FrmAnularNomina dialogo = new FrmAnularNomina(currentNomina))
+            {
+                if (dialogo.ShowDialog() != DialogResult.OK) return;
+
+                try
+                {
+                    nominaService.AnularNomina(currentNominaId.Value, dialogo.Motivo);
+                    currentNomina.Estado = "Anulada";
+                    MessageBox.Show("Nómina anulada correctamente.\nEl período ha sido reabierto para corrección.",
+                        "Nómina", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    ActualizarEstadoBotones();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Nómina", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+        }
+
+        private void btnRecalcular_Click(object sender, EventArgs e)
+        {
+            if (!currentNominaId.HasValue)
+            {
+                MessageBox.Show("Primero debe anular la nómina.", "Recalcular", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            try
+            {
+                int? dep = null;
+                if (cmbDepartamento.SelectedValue is int && (int)cmbDepartamento.SelectedValue > 0)
+                    dep = (int)cmbDepartamento.SelectedValue;
+
+                Nomina nuevaNomina = nominaService.CalcularNomina(dtpFechaInicio.Value.Date, dtpFechaFin.Value.Date, dep);
+                if (!string.IsNullOrWhiteSpace(cmbPeriodo.Text))
+                    nuevaNomina.PeriodoNombre = cmbPeriodo.Text.Trim();
+
+                int idNueva = nominaService.RecalcularNomina(currentNominaId.Value,
+                    dtpFechaInicio.Value.Date, dtpFechaFin.Value.Date, nuevaNomina);
+                currentNomina = nuevaNomina;
+                currentNomina.Estado = "Confirmada";
+                currentNominaId = idNueva;
+                LoadNominaGrid();
+                MessageBox.Show("Nómina recalculada y confirmada correctamente. Id: " + idNueva,
+                    "Nómina", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ActualizarEstadoBotones();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Nómina", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void btnVerHistorial_Click(object sender, EventArgs e)
+        {
+            if (!currentNominaId.HasValue)
+            {
+                MessageBox.Show("Primero debe confirmar la nómina.", "Historial", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            List<NominaVersion> versiones = nominaService.ObtenerHistorialNomina(currentNominaId.Value);
+            if (versiones.Count == 0)
+            {
+                MessageBox.Show("No hay versiones registradas para esta nómina.", "Historial",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            using (FrmHistorialNomina dialogo = new FrmHistorialNomina(versiones))
+            {
+                dialogo.ShowDialog();
+            }
+        }
+
+        private void ActualizarEstadoBotones()
+        {
+            string estado = currentNomina?.Estado ?? string.Empty;
+            bool calculada = string.Equals(estado, "Calculada", StringComparison.OrdinalIgnoreCase);
+            bool confirmada = string.Equals(estado, "Confirmada", StringComparison.OrdinalIgnoreCase);
+            bool pagada = string.Equals(estado, "Pagada", StringComparison.OrdinalIgnoreCase);
+            bool anulada = string.Equals(estado, "Anulada", StringComparison.OrdinalIgnoreCase);
+
+            btnCalcular.Enabled = !confirmada && !pagada;
+            btnConfirmarPago.Enabled = calculada;
+            btnPagar.Enabled = confirmada;
+            btnAnular.Enabled = confirmada || pagada;
+            btnRecalcular.Enabled = anulada;
         }
 
         private void btnExportarExcel_Click(object sender, EventArgs e)
