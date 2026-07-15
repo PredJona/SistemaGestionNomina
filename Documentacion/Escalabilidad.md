@@ -1032,3 +1032,31 @@ La aplicación ya tiene una base funcional para gestionar empleados, asistencia,
 La recomendación principal es no agregar funcionalidades al azar. Primero se debe fortalecer el núcleo del sistema: seguridad, roles, nómina cerrada y portal del trabajador. Después se pueden incorporar préstamos, vacaciones, reportes avanzados y modo demo.
 
 Con estas mejoras, **SistemaGestionNomina** puede pasar de ser una aplicación académica funcional a un sistema de escritorio más completo, ordenado y defendible como proyecto profesional.
+
+---
+
+# Estado implementado: Fases 3 y 4
+
+## Fase 3 - Nómina robusta
+
+La propuesta de cierre, anulación y recálculo ya fue implementada mediante las migraciones 4 y 5. El dominio conserva el estado `Borrador`, pero las nóminas persistidas comienzan en `Calculada` porque la vista previa se mantiene en memoria.
+
+Transiciones admitidas:
+
+```text
+Calculada -> Confirmada
+Confirmada -> Pagada o Anulada
+Pagada -> Anulada
+```
+
+La confirmación, el pago, la anulación y el recálculo se ejecutan en una sola conexión y transacción SQLite. Los detalles y comprobantes históricos conservan snapshots del empleado; las nóminas anuladas permanecen para trazabilidad y se excluyen de los indicadores financieros vigentes.
+
+## Fase 4 - RRHH avanzado
+
+La migración 5 incorpora historial laboral, cambios efectivos y snapshots. La migración 6 incorpora solicitudes de ausencia y su relación opcional con asistencia. Se agregaron servicios con alcance por rol, auditoría, exportación Excel/PDF y cinco formularios WinForms con Designer.
+
+Se implementaron cambios laborales inmediatos y programados, consulta de datos efectivos para nóminas históricas o futuras, permisos de historial, solicitudes propias del trabajador y gestión departamental del supervisor.
+
+Las ausencias aprobadas crean asistencia de lunes a viernes sin sobrescribir registros existentes. Su cancelación elimina solamente los registros generados por esa solicitud. Las operaciones que intersectan períodos cerrados se rechazan tanto en servicios como en SQLite.
+
+La evidencia técnica y las limitaciones de esta fase se detallan en `Documentacion/Fase4_RRHH_Avanzado.md`.

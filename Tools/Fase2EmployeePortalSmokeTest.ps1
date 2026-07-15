@@ -150,7 +150,7 @@ INSERT INTO Comprobantes (IdNomina,IdEmpleado,NumeroComprobante,FechaGeneracion,
     $connection = [Activator]::CreateInstance($sqliteType, [object[]]@("Data Source=$dbPath;Version=3;Foreign Keys=True;")); $connection.Open()
     $secretAudit = [int](Get-Scalar $connection "SELECT COUNT(1) FROM Auditoria WHERE Detalle LIKE '%Worker123%' OR Detalle LIKE '%NuevaClave456%' OR Detalle LIKE '%pbkdf2%';")
     Assert-True ($secretAudit -eq 0) "La auditoria contiene secretos de autenticacion."
-    Invoke-NonQuery $connection "UPDATE Empleados SET Estado='Inactivo' WHERE IdEmpleado=2;"
+    Invoke-NonQuery $connection "UPDATE Empleados SET Estado='Inactivo', FechaEfectivaLaboral='2031-06-01' WHERE IdEmpleado=2;"
     $connection.Close(); $connection.Dispose()
 
     $sessionType.GetMethod("Begin").Invoke($null, @((New-SessionUser $assembly 900 "sin_vinculo" "Trabajador" $null)))
