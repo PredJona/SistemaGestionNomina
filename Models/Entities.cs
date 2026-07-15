@@ -41,6 +41,7 @@ namespace SistemaGestionNomina.Models
         private decimal salarioBase;
         private string estado;
         private DateTime fechaIngreso;
+        private DateTime? fechaEfectivaLaboral;
 
         public int IdEmpleado
         {
@@ -116,6 +117,12 @@ namespace SistemaGestionNomina.Models
             }
         }
 
+        public DateTime? FechaEfectivaLaboral
+        {
+            get { return fechaEfectivaLaboral; }
+            set { fechaEfectivaLaboral = value; }
+        }
+
         public string NombreCompleto
         {
             get { return (Nombre + " " + Apellido).Trim(); }
@@ -137,6 +144,7 @@ namespace SistemaGestionNomina.Models
         private TimeSpan? horaSalida;
         private decimal horasTrabajadas;
         private string estado;
+        private int? idSolicitudAusencia;
 
         public int IdAsistencia
         {
@@ -196,6 +204,12 @@ namespace SistemaGestionNomina.Models
         {
             get { return estado; }
             set { estado = EntityValidation.NormalizeAllowedRequired(value, "El estado de asistencia", "Puntual", "Tardanza", "Falta", "Permiso"); }
+        }
+
+        public int? IdSolicitudAusencia
+        {
+            get { return idSolicitudAusencia; }
+            set { idSolicitudAusencia = value; }
         }
     }
 
@@ -363,6 +377,7 @@ namespace SistemaGestionNomina.Models
         private decimal totalIngresos;
         private decimal totalDeducciones;
         private decimal netoPagar;
+        private string cargoEmpleado;
 
         public int IdDetalle
         {
@@ -398,6 +413,12 @@ namespace SistemaGestionNomina.Models
         {
             get { return departamento; }
             set { departamento = EntityValidation.NormalizeOptional(value); }
+        }
+
+        public string CargoEmpleado
+        {
+            get { return cargoEmpleado; }
+            set { cargoEmpleado = EntityValidation.NormalizeOptional(value); }
         }
 
         public decimal SueldoBase
