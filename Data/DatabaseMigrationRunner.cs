@@ -21,6 +21,7 @@ namespace SistemaGestionNomina.Data
 
         public static string BackupBeforeMigration(string databasePath)
         {
+            // Se conserva una copia verificable antes de modificar una base existente.
             string folder = Path.Combine(Path.GetDirectoryName(databasePath), "Backups", "Migrations");
             Directory.CreateDirectory(folder);
             string destination = Path.Combine(folder,
@@ -46,6 +47,7 @@ namespace SistemaGestionNomina.Data
         private static void ApplyMigration(SQLiteConnection connection, int version, string name,
             Action<SQLiteConnection, SQLiteTransaction, StringBuilder> migration)
         {
+            // El numero de version y el registro de auditoria avanzan solo si toda la migracion termina bien.
             using (SQLiteTransaction transaction = connection.BeginTransaction())
             {
                 StringBuilder detail = new StringBuilder();
@@ -280,6 +282,7 @@ namespace SistemaGestionNomina.Data
             Execute(connection, transaction,
                 "CREATE INDEX IF NOT EXISTS IX_HistorialEmpleado_Pendientes ON HistorialEmpleado(Aplicado, FechaEfectiva);");
 
+            // Los tres triggers cubren insercion, actualizacion y eliminacion de asistencia en periodos cerrados.
             Execute(connection, transaction, "DROP TRIGGER IF EXISTS TR_Asistencias_PeriodoCerrado_Insert;");
             Execute(connection, transaction, @"CREATE TRIGGER TR_Asistencias_PeriodoCerrado_Insert
                 BEFORE INSERT ON Asistencias
@@ -313,6 +316,7 @@ namespace SistemaGestionNomina.Data
             Execute(connection, transaction, @"CREATE TRIGGER IF NOT EXISTS TR_PeriodosNomina_Rango_Update
                 BEFORE UPDATE OF FechaInicio, FechaFin ON PeriodosNomina WHEN NEW.FechaInicio > NEW.FechaFin
                 BEGIN SELECT RAISE(ABORT, 'La fecha inicial del periodo no puede superar la fecha final.'); END;");
+            // Dos rangos se solapan cuando el inicio de uno es anterior al fin del otro y viceversa.
             Execute(connection, transaction, @"CREATE TRIGGER IF NOT EXISTS TR_PeriodosNomina_Solapado_Insert
                 BEFORE INSERT ON PeriodosNomina
                 WHEN (NEW.Cerrado = 1 OR NEW.Estado IN ('Confirmado','Pagado'))

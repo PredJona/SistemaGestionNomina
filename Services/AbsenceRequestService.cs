@@ -93,6 +93,7 @@ namespace SistemaGestionNomina.Services
                         current.FechaInicio, current.FechaFin, current.IdSolicitud))
                         throw new InvalidOperationException("Ya existe una ausencia aprobada que se solapa con el rango.");
 
+                    // Se valida todo el rango antes de escribir para no reemplazar asistencias existentes.
                     for (int i = 0; i < workdays.Count; i++)
                     {
                         if (repository.AttendanceExists(connection, transaction, current.IdEmpleado, workdays[i]))
@@ -103,6 +104,7 @@ namespace SistemaGestionNomina.Services
                     repository.UpdateState(connection, transaction, requestId, AbsenceStates.Pending,
                         AbsenceStates.Approved, user, now, observation);
                     string attendanceStatus = AbsenceTypes.ToAttendanceStatus(current.Tipo);
+                    // La aprobacion refleja la ausencia como asistencia y mantiene el vinculo para poder revertirla.
                     for (int i = 0; i < workdays.Count; i++)
                         repository.AddGeneratedAttendance(connection, transaction, requestId,
                             current.IdEmpleado, workdays[i], attendanceStatus);
@@ -161,6 +163,7 @@ namespace SistemaGestionNomina.Services
                 try
                 {
                     if (string.Equals(current.Estado, AbsenceStates.Approved, StringComparison.OrdinalIgnoreCase))
+                        // Solo se eliminan las asistencias creadas automaticamente por esta solicitud.
                         repository.DeleteGeneratedAttendance(connection, transaction, current.IdSolicitud);
                     repository.UpdateState(connection, transaction, current.IdSolicitud, current.Estado,
                         AbsenceStates.Cancelled, user, now, reason.Trim());
