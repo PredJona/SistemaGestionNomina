@@ -201,7 +201,7 @@ namespace SistemaGestionNomina.Services
             PdfDocument document = CreateDocument("Comprobante");
             PdfPage page = document.AddPage();
             XGraphics gfx = XGraphics.FromPdfPage(page);
-            DrawTitle(gfx, "Proy2_Eq01_CamposPD");
+            DrawTitle(gfx, "ProyFinal_LPI_Eq01_NomiCore");
             DrawLine(gfx, 40, 82, "COMPROBANTE DE PAGO");
             DrawLine(gfx, 40, 120, "Numero: " + comprobante.NumeroComprobante);
             DrawLine(gfx, 40, 145, "Empleado: " + comprobante.EmpleadoNombre + " (" + comprobante.CodigoEmpleado + ")");

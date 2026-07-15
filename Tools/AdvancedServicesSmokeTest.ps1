@@ -2,8 +2,8 @@ $ErrorActionPreference = "Stop"
 
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $binDir = Join-Path $projectRoot "bin\Debug\net48"
-$exePath = Join-Path $binDir "Proy2_Eq01_CamposPD.exe"
-$backupDir = Join-Path ([System.IO.Path]::GetTempPath()) "Proy2_Eq01_CamposPDSmokeBackups"
+$exePath = Join-Path $binDir "ProyFinal_LPI_Eq01_NomiCore.exe"
+$backupDir = Join-Path ([System.IO.Path]::GetTempPath()) "ProyFinal_LPI_Eq01_NomiCoreSmokeBackups"
 
 [AppDomain]::CurrentDomain.add_AssemblyResolve({
     param($sender, $args)

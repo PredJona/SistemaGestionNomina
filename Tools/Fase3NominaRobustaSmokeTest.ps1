@@ -2,8 +2,8 @@ $ErrorActionPreference = "Stop"
 
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $binDir = Join-Path $projectRoot "bin\Debug\net48"
-$projectPath = Join-Path $projectRoot "Proy2_Eq01_CamposPD.csproj"
-$appPath = Join-Path $binDir "Proy2_Eq01_CamposPD.exe"
+$projectPath = Join-Path $projectRoot "ProyFinal_LPI_Eq01_NomiCore.csproj"
+$appPath = Join-Path $binDir "ProyFinal_LPI_Eq01_NomiCore.exe"
 $sqlitePath = Join-Path $binDir "System.Data.SQLite.dll"
 $hostSource = Join-Path $PSScriptRoot "Fase3NominaSmokeHost.cs"
 $hostExe = Join-Path $binDir "Fase3NominaSmokeHost.exe"

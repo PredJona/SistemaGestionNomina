@@ -50,8 +50,8 @@ La aplicación usa `PDFsharp-GDI` 6.2.4, variante oficial para Windows y .NET Fr
 Ejecutar desde la raíz del proyecto:
 
 ```powershell
-dotnet restore Proy2_Eq01_CamposPD.csproj
-dotnet build Proy2_Eq01_CamposPD.csproj
+dotnet restore ProyFinal_LPI_Eq01_NomiCore.csproj
+dotnet build ProyFinal_LPI_Eq01_NomiCore.csproj
 powershell -ExecutionPolicy Bypass -File Tools\Fase1SecuritySmokeTest.ps1
 powershell -ExecutionPolicy Bypass -File Tools\Fase2EmployeePortalSmokeTest.ps1
 powershell -ExecutionPolicy Bypass -File Tools\Fase2FormSmokeTest.ps1

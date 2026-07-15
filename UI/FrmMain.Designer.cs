@@ -489,7 +489,7 @@ namespace SistemaGestionNomina.UI
             this.MinimumSize = new System.Drawing.Size(1120, 720);
             this.Name = "FrmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Proy2_Eq01_CamposPD";
+            this.Text = "ProyFinal_LPI_Eq01_NomiCore";
             this.panelSidebar.ResumeLayout(false);
             this.panelBrand.ResumeLayout(false);
             this.flowMenu.ResumeLayout(false);

@@ -15,7 +15,7 @@ namespace SistemaGestionNomina.Helpers
             using (Font totalFont = new Font("Segoe UI", 13F, FontStyle.Bold))
             using (Pen linePen = new Pen(Color.Black, 1F))
             {
-                graphics.DrawString("Proy2_Eq01_CamposPD", titleFont, Brushes.Black, bounds.Left, y);
+                graphics.DrawString("ProyFinal_LPI_Eq01_NomiCore", titleFont, Brushes.Black, bounds.Left, y);
                 y += 42;
                 graphics.DrawString("Comprobante de Pago", headerFont, Brushes.Black, bounds.Left, y);
                 y += 34;

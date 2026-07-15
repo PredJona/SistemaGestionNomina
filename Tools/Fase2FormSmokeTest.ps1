@@ -8,7 +8,7 @@ function Assert-True {
 
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $binDir = Join-Path $projectRoot "bin\Debug\net48"
-$exePath = Join-Path $binDir "Proy2_Eq01_CamposPD.exe"
+$exePath = Join-Path $binDir "ProyFinal_LPI_Eq01_NomiCore.exe"
 $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("Proy2_Fase2Forms_" + [Guid]::NewGuid().ToString("N"))
 $dbPath = Join-Path $tempRoot "nomina_forms.db"
 $previousDbPath = [Environment]::GetEnvironmentVariable("NOMINA_DB_PATH")

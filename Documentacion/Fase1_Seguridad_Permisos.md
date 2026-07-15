@@ -48,7 +48,7 @@ una llamada directa.
 Primero compile la aplicacion y luego ejecute:
 
 ```powershell
-dotnet build Proy2_Eq01_CamposPD.csproj
+dotnet build ProyFinal_LPI_Eq01_NomiCore.csproj
 powershell -ExecutionPolicy Bypass -File Tools/PrepararUsuariosPruebaFase1.ps1
 ```
 

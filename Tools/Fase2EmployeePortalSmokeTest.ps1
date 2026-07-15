@@ -45,7 +45,7 @@ function New-SessionUser {
 
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $binDir = Join-Path $projectRoot "bin\Debug\net48"
-$exePath = Join-Path $binDir "Proy2_Eq01_CamposPD.exe"
+$exePath = Join-Path $binDir "ProyFinal_LPI_Eq01_NomiCore.exe"
 $sqlitePath = Join-Path $binDir "System.Data.SQLite.dll"
 $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("Proy2_Fase2_" + [Guid]::NewGuid().ToString("N"))
 $dbPath = Join-Path $tempRoot "nomina_fase2.db"

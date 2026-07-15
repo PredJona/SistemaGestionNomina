@@ -178,7 +178,7 @@ namespace SistemaGestionNomina.UI
             this.MinimumSize = new System.Drawing.Size(900, 640);
             this.Name = "FrmLogin";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Proy2_Eq01_CamposPD - Login";
+            this.Text = "ProyFinal_LPI_Eq01_NomiCore - Login";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.FrmLogin_Paint);
             this.panelLogin.ResumeLayout(false);
             this.panelLogin.PerformLayout();

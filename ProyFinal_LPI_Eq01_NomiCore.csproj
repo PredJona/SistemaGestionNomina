@@ -6,7 +6,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <LangVersion>7.3</LangVersion>
     <RootNamespace>SistemaGestionNomina</RootNamespace>
-    <AssemblyName>Proy2_Eq01_CamposPD</AssemblyName>
+    <AssemblyName>ProyFinal_LPI_Eq01_NomiCore</AssemblyName>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Deterministic>true</Deterministic>
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
