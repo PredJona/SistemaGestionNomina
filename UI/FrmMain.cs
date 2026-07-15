@@ -72,6 +72,7 @@ namespace SistemaGestionNomina.UI
             btnReportes.Visible = authorizationService.HasPermission(Permissions.ReportsView);
             btnConfiguracion.Visible = authorizationService.HasPermission(Permissions.ConfigurationView);
             btnAuditoria.Visible = authorizationService.HasPermission(Permissions.AuditView);
+            btnAusencias.Visible = authorizationService.HasPermission(Permissions.AbsencesView);
         }
 
         private void OpenInitialModule()
@@ -165,6 +166,11 @@ namespace SistemaGestionNomina.UI
             OpenAuthorized(Permissions.AuditView, btnAuditoria, new FrmAuditoria());
         }
 
+        private void btnAusencias_Click(object sender, EventArgs e)
+        {
+            OpenAuthorized(Permissions.AbsencesView, btnAusencias, new FrmSolicitudesAusencia());
+        }
+
         private void OpenDashboard()
         {
             authorizationService.DemandPermission(Permissions.DashboardView);
@@ -182,7 +188,8 @@ namespace SistemaGestionNomina.UI
                 delegate { OpenPortalChild(Permissions.OwnProfileView, new FrmMiPerfil()); },
                 delegate { OpenPortalChild(Permissions.OwnAttendanceView, new FrmMisAsistencias()); },
                 delegate { OpenPortalChild(Permissions.OwnPayslipsView, new FrmMisComprobantes()); },
-                delegate { OpenPortalChild(Permissions.OwnPasswordChange, new FrmCambiarPassword()); }));
+                delegate { OpenPortalChild(Permissions.OwnPasswordChange, new FrmCambiarPassword()); },
+                delegate { OpenPortalChild(Permissions.OwnAbsencesView, new FrmSolicitudesAusencia()); }));
         }
 
         private void OpenPortalChild(string permission, Form form)

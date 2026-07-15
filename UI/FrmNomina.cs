@@ -110,7 +110,7 @@ namespace SistemaGestionNomina.UI
             {
                 int id = nominaService.ConfirmarPago(currentNomina, dtpFechaInicio.Value.Date, dtpFechaFin.Value.Date);
                 currentNominaId = id;
-                currentNomina.Estado = "Confirmada";
+                currentNomina.Estado = PayrollStates.Confirmed;
                 MessageBox.Show("Nómina confirmada correctamente. Id: " + id + "\nSe generaron los comprobantes.\nEl período ha sido cerrado.",
                     "Nómina", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ActualizarEstadoBotones();
@@ -138,7 +138,7 @@ namespace SistemaGestionNomina.UI
             try
             {
                 nominaService.PagarNomina(currentNominaId.Value);
-                currentNomina.Estado = "Pagada";
+                currentNomina.Estado = PayrollStates.Paid;
                 MessageBox.Show("Pago registrado correctamente.", "Nómina", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ActualizarEstadoBotones();
             }
@@ -163,7 +163,7 @@ namespace SistemaGestionNomina.UI
                 try
                 {
                     nominaService.AnularNomina(currentNominaId.Value, dialogo.Motivo);
-                    currentNomina.Estado = "Anulada";
+                    currentNomina.Estado = PayrollStates.Annulled;
                     MessageBox.Show("Nómina anulada correctamente.\nEl período ha sido reabierto para corrección.",
                         "Nómina", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     ActualizarEstadoBotones();
@@ -196,7 +196,7 @@ namespace SistemaGestionNomina.UI
                 int idNueva = nominaService.RecalcularNomina(currentNominaId.Value,
                     dtpFechaInicio.Value.Date, dtpFechaFin.Value.Date, nuevaNomina);
                 currentNomina = nuevaNomina;
-                currentNomina.Estado = "Confirmada";
+                currentNomina.Estado = PayrollStates.Confirmed;
                 currentNominaId = idNueva;
                 LoadNominaGrid();
                 MessageBox.Show("Nómina recalculada y confirmada correctamente. Id: " + idNueva,
@@ -234,16 +234,16 @@ namespace SistemaGestionNomina.UI
         private void ActualizarEstadoBotones()
         {
             string estado = currentNomina?.Estado ?? string.Empty;
-            bool calculada = string.Equals(estado, "Calculada", StringComparison.OrdinalIgnoreCase);
-            bool confirmada = string.Equals(estado, "Confirmada", StringComparison.OrdinalIgnoreCase);
-            bool pagada = string.Equals(estado, "Pagada", StringComparison.OrdinalIgnoreCase);
-            bool anulada = string.Equals(estado, "Anulada", StringComparison.OrdinalIgnoreCase);
-
-            btnCalcular.Enabled = !confirmada && !pagada;
-            btnConfirmarPago.Enabled = calculada;
-            btnPagar.Enabled = confirmada;
-            btnAnular.Enabled = confirmada || pagada;
-            btnRecalcular.Enabled = anulada;
+            bool annulled = string.Equals(estado, PayrollStates.Annulled, StringComparison.OrdinalIgnoreCase);
+            btnCalcular.Enabled = authorizationService.HasPermission(Permissions.PayrollCalculate) &&
+                (!currentNominaId.HasValue || annulled);
+            btnConfirmarPago.Enabled = authorizationService.HasPermission(Permissions.PayrollConfirm) &&
+                PayrollStateMachine.CanTransition(estado, PayrollStates.Confirmed);
+            btnPagar.Enabled = authorizationService.HasPermission(Permissions.PayrollPay) &&
+                PayrollStateMachine.CanTransition(estado, PayrollStates.Paid);
+            btnAnular.Enabled = authorizationService.HasPermission(Permissions.PayrollAnnul) &&
+                PayrollStateMachine.CanTransition(estado, PayrollStates.Annulled);
+            btnRecalcular.Enabled = authorizationService.HasPermission(Permissions.PayrollRecalculate) && annulled;
         }
 
         private void btnExportarExcel_Click(object sender, EventArgs e)

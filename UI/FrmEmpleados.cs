@@ -36,6 +36,7 @@ namespace SistemaGestionNomina.UI
             btnDesactivar.Visible = authorizationService.HasPermission(Permissions.EmployeesDeactivate);
             btnExportarExcel.Visible = authorizationService.HasPermission(Permissions.EmployeesExport);
             btnExportarPdf.Visible = authorizationService.HasPermission(Permissions.EmployeesExport);
+            btnHistorialLaboral.Visible = authorizationService.HasPermission(Permissions.EmployeeHistoryView);
             LoadDepartments();
             LoadEmployees();
         }
@@ -144,8 +145,24 @@ namespace SistemaGestionNomina.UI
                 empleado.SalarioBase = salary;
                 empleado.Estado = cmbEstado.SelectedItem.ToString();
                 empleado.FechaIngreso = dtpIngreso.Value.Date;
-                empleadoService.Save(empleado);
-                MessageBox.Show("Empleado guardado correctamente.", "Empleados", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                EmployeeChangeContext changeContext = null;
+                if (selectedId > 0)
+                {
+                    Empleado original = empleadoService.GetById(selectedId);
+                    if (HasTrackedChanges(original, empleado))
+                    {
+                        using (FrmCambioLaboral dialog = new FrmCambioLaboral(original))
+                        {
+                            if (dialog.ShowDialog() != DialogResult.OK) return;
+                            changeContext = dialog.ChangeContext;
+                        }
+                    }
+                }
+                EmployeeSaveResult result = empleadoService.Save(empleado, changeContext);
+                string message = result.HasScheduledChanges
+                    ? "El cambio laboral quedó programado para la fecha indicada."
+                    : "Empleado guardado correctamente.";
+                MessageBox.Show(message, "Empleados", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ClearForm();
                 LoadEmployees();
             }
@@ -166,9 +183,24 @@ namespace SistemaGestionNomina.UI
             if (MessageBox.Show("¿Desea desactivar el empleado seleccionado?", "Confirmar",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                empleadoService.Deactivate(selectedId);
-                ClearForm();
-                LoadEmployees();
+                try
+                {
+                    Empleado employee = empleadoService.GetById(selectedId);
+                    using (FrmCambioLaboral dialog = new FrmCambioLaboral(employee))
+                    {
+                        if (dialog.ShowDialog() != DialogResult.OK) return;
+                        EmployeeSaveResult result = empleadoService.Deactivate(selectedId, dialog.ChangeContext);
+                        MessageBox.Show(result.HasScheduledChanges
+                            ? "La desactivación quedó programada." : "Empleado desactivado correctamente.",
+                            "Empleados", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    ClearForm();
+                    LoadEmployees();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Empleados", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
         }
 
@@ -200,6 +232,20 @@ namespace SistemaGestionNomina.UI
             {
                 LoadEmployees();
             }
+        }
+
+        private void btnHistorialLaboral_Click(object sender, EventArgs e)
+        {
+            using (FrmHistorialEmpleado form = new FrmHistorialEmpleado(selectedId > 0 ? (int?)selectedId : null))
+                form.ShowDialog();
+        }
+
+        private static bool HasTrackedChanges(Empleado original, Empleado updated)
+        {
+            return original != null && (original.SalarioBase != updated.SalarioBase ||
+                original.IdDepartamento != updated.IdDepartamento ||
+                !string.Equals(original.Cargo, updated.Cargo, StringComparison.Ordinal) ||
+                !string.Equals(original.Estado, updated.Estado, StringComparison.OrdinalIgnoreCase));
         }
 
         private void ClearForm()

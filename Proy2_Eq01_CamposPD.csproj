@@ -14,6 +14,8 @@
 
   <ItemGroup>
     <Compile Remove="Tools\Fase2PdfSmokeHost.cs" />
+    <Compile Remove="Tools\Fase3NominaSmokeHost.cs" />
+    <Compile Remove="Tools\Fase4RrhhAvanzadoSmokeHost.cs" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.119" />
     <PackageReference Include="ClosedXML" Version="0.105.0" />
     <PackageReference Include="PDFsharp-GDI" Version="6.2.4" />
@@ -50,6 +52,11 @@
     <Compile Update="UI\FrmMisAsistencias.cs"><SubType>Form</SubType></Compile>
     <Compile Update="UI\FrmMisComprobantes.cs"><SubType>Form</SubType></Compile>
     <Compile Update="UI\FrmCambiarPassword.cs"><SubType>Form</SubType></Compile>
+    <Compile Update="UI\FrmCambioLaboral.cs"><SubType>Form</SubType></Compile>
+    <Compile Update="UI\FrmHistorialEmpleado.cs"><SubType>Form</SubType></Compile>
+    <Compile Update="UI\FrmSolicitudesAusencia.cs"><SubType>Form</SubType></Compile>
+    <Compile Update="UI\FrmSolicitudAusenciaDetalle.cs"><SubType>Form</SubType></Compile>
+    <Compile Update="UI\FrmGestionAusencias.cs"><SubType>Form</SubType></Compile>
     <Compile Update="UI\FrmLogin.Designer.cs"><DependentUpon>FrmLogin.cs</DependentUpon></Compile>
     <Compile Update="UI\FrmMain.Designer.cs"><DependentUpon>FrmMain.cs</DependentUpon></Compile>
     <Compile Update="UI\FrmDashboard.Designer.cs"><DependentUpon>FrmDashboard.cs</DependentUpon></Compile>
@@ -66,6 +73,11 @@
     <Compile Update="UI\FrmMisAsistencias.Designer.cs"><DependentUpon>FrmMisAsistencias.cs</DependentUpon></Compile>
     <Compile Update="UI\FrmMisComprobantes.Designer.cs"><DependentUpon>FrmMisComprobantes.cs</DependentUpon></Compile>
     <Compile Update="UI\FrmCambiarPassword.Designer.cs"><DependentUpon>FrmCambiarPassword.cs</DependentUpon></Compile>
+    <Compile Update="UI\FrmCambioLaboral.Designer.cs"><DependentUpon>FrmCambioLaboral.cs</DependentUpon></Compile>
+    <Compile Update="UI\FrmHistorialEmpleado.Designer.cs"><DependentUpon>FrmHistorialEmpleado.cs</DependentUpon></Compile>
+    <Compile Update="UI\FrmSolicitudesAusencia.Designer.cs"><DependentUpon>FrmSolicitudesAusencia.cs</DependentUpon></Compile>
+    <Compile Update="UI\FrmSolicitudAusenciaDetalle.Designer.cs"><DependentUpon>FrmSolicitudAusenciaDetalle.cs</DependentUpon></Compile>
+    <Compile Update="UI\FrmGestionAusencias.Designer.cs"><DependentUpon>FrmGestionAusencias.cs</DependentUpon></Compile>
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -86,6 +98,11 @@
     <EmbeddedResource Update="UI\FrmMisAsistencias.resx"><DependentUpon>FrmMisAsistencias.cs</DependentUpon></EmbeddedResource>
     <EmbeddedResource Update="UI\FrmMisComprobantes.resx"><DependentUpon>FrmMisComprobantes.cs</DependentUpon></EmbeddedResource>
     <EmbeddedResource Update="UI\FrmCambiarPassword.resx"><DependentUpon>FrmCambiarPassword.cs</DependentUpon></EmbeddedResource>
+    <EmbeddedResource Update="UI\FrmCambioLaboral.resx"><DependentUpon>FrmCambioLaboral.cs</DependentUpon></EmbeddedResource>
+    <EmbeddedResource Update="UI\FrmHistorialEmpleado.resx"><DependentUpon>FrmHistorialEmpleado.cs</DependentUpon></EmbeddedResource>
+    <EmbeddedResource Update="UI\FrmSolicitudesAusencia.resx"><DependentUpon>FrmSolicitudesAusencia.cs</DependentUpon></EmbeddedResource>
+    <EmbeddedResource Update="UI\FrmSolicitudAusenciaDetalle.resx"><DependentUpon>FrmSolicitudAusenciaDetalle.cs</DependentUpon></EmbeddedResource>
+    <EmbeddedResource Update="UI\FrmGestionAusencias.resx"><DependentUpon>FrmGestionAusencias.cs</DependentUpon></EmbeddedResource>
   </ItemGroup>
 
 </Project>

@@ -14,6 +14,7 @@ namespace SistemaGestionNomina.UI
         private System.Windows.Forms.Button btnDesactivar;
         private System.Windows.Forms.Button btnExportarExcel;
         private System.Windows.Forms.Button btnExportarPdf;
+        private System.Windows.Forms.Button btnHistorialLaboral;
         private System.Windows.Forms.TextBox txtCodigo;
         private System.Windows.Forms.TextBox txtNombre;
         private System.Windows.Forms.TextBox txtApellido;
@@ -76,6 +77,7 @@ namespace SistemaGestionNomina.UI
             this.btnDesactivar = new System.Windows.Forms.Button();
             this.btnExportarExcel = new System.Windows.Forms.Button();
             this.btnExportarPdf = new System.Windows.Forms.Button();
+            this.btnHistorialLaboral = new System.Windows.Forms.Button();
             this.dgvEmpleados = new System.Windows.Forms.DataGridView();
             this.colIdEmpleado = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colCodigo = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -100,6 +102,18 @@ namespace SistemaGestionNomina.UI
             this.lblTitulo.Size = new System.Drawing.Size(420, 42);
             this.lblTitulo.TabIndex = 0;
             this.lblTitulo.Text = "Empleados";
+            // 
+            // btnHistorialLaboral
+            // 
+            this.btnHistorialLaboral.BackColor = System.Drawing.Color.FromArgb(17, 18, 26);
+            this.btnHistorialLaboral.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnHistorialLaboral.Location = new System.Drawing.Point(824, 28);
+            this.btnHistorialLaboral.Name = "btnHistorialLaboral";
+            this.btnHistorialLaboral.Size = new System.Drawing.Size(160, 34);
+            this.btnHistorialLaboral.TabIndex = 20;
+            this.btnHistorialLaboral.Text = "Historial laboral";
+            this.btnHistorialLaboral.UseVisualStyleBackColor = false;
+            this.btnHistorialLaboral.Click += new System.EventHandler(this.btnHistorialLaboral_Click);
             // 
             // panelFormulario
             // 
@@ -432,6 +446,7 @@ namespace SistemaGestionNomina.UI
             this.Controls.Add(this.dgvEmpleados);
             this.Controls.Add(this.panelFiltros);
             this.Controls.Add(this.panelFormulario);
+            this.Controls.Add(this.btnHistorialLaboral);
             this.Controls.Add(this.lblTitulo);
             this.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.ForeColor = System.Drawing.Color.FromArgb(229, 228, 245);
