@@ -58,6 +58,54 @@ namespace SistemaGestionNomina.Services
             return path;
         }
 
+        public string ExportarHistorialEmpleados(List<HistorialEmpleado> history)
+        {
+            authorizationService.DemandPermission(Permissions.EmployeeHistoryExport);
+            string path = BuildPath("Historial_Laboral");
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+            PdfDocument document = CreateDocument("Historial laboral");
+            PdfPage page = document.AddPage();
+            XGraphics gfx = XGraphics.FromPdfPage(page);
+            DrawTitle(gfx, "Historial Laboral");
+            int y = 80;
+            for (int i = 0; i < history.Count; i++)
+            {
+                HistorialEmpleado item = history[i];
+                DrawLine(gfx, 40, y, item.FechaEfectiva.ToString("dd/MM/yyyy") + " | " +
+                    item.CodigoEmpleado + " | " + item.CampoModificado + " | " +
+                    item.ValorAnterior + " -> " + item.ValorNuevo + " | " + item.UsuarioResponsable);
+                y = NextLine(document, ref page, ref gfx, y);
+            }
+            document.Save(path);
+            auditTrailService.RegistrarAccion("Exportaciones", "PDF historial laboral",
+                System.IO.Path.GetFileName(path));
+            return path;
+        }
+
+        public string ExportarAusencias(List<SolicitudAusencia> requests)
+        {
+            authorizationService.DemandPermission(Permissions.AbsencesExport);
+            string path = BuildPath("Solicitudes_Ausencia");
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+            PdfDocument document = CreateDocument("Solicitudes de ausencia");
+            PdfPage page = document.AddPage();
+            XGraphics gfx = XGraphics.FromPdfPage(page);
+            DrawTitle(gfx, "Solicitudes de Ausencia");
+            int y = 80;
+            for (int i = 0; i < requests.Count; i++)
+            {
+                SolicitudAusencia item = requests[i];
+                DrawLine(gfx, 40, y, item.CodigoEmpleado + " | " + item.EmpleadoNombre + " | " +
+                    item.Tipo + " | " + item.FechaInicio.ToString("dd/MM") + " - " +
+                    item.FechaFin.ToString("dd/MM/yyyy") + " | " + item.Estado);
+                y = NextLine(document, ref page, ref gfx, y);
+            }
+            document.Save(path);
+            auditTrailService.RegistrarAccion("Exportaciones", "PDF ausencias",
+                System.IO.Path.GetFileName(path));
+            return path;
+        }
+
         public string ExportarNomina(Nomina nomina)
         {
             authorizationService.DemandPermission(Permissions.PayrollExport);
