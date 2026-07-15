@@ -115,12 +115,24 @@ namespace SistemaGestionNomina.Data
             return GetAll(string.Empty, departmentId, "Activo", scopeDepartmentId);
         }
 
+        public List<Empleado> GetAllForEffectiveDate(int? departmentId)
+        {
+            return GetAll(string.Empty, departmentId, string.Empty, null);
+        }
+
         public Empleado GetById(int id)
         {
             using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            {
+                return GetById(connection, null, id);
+            }
+        }
+
+        public Empleado GetById(SQLiteConnection connection, SQLiteTransaction transaction, int id)
+        {
             using (SQLiteCommand command = new SQLiteCommand(@"SELECT e.*, d.Nombre AS DepartamentoNombre
                 FROM Empleados e INNER JOIN Departamentos d ON d.IdDepartamento = e.IdDepartamento
-                WHERE e.IdEmpleado = @id;", connection))
+                WHERE e.IdEmpleado = @id;", connection, transaction))
             {
                 command.Parameters.AddWithValue("@id", id);
                 using (SQLiteDataReader reader = command.ExecuteReader())
@@ -156,8 +168,8 @@ namespace SistemaGestionNomina.Data
         {
             using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
             using (SQLiteCommand command = new SQLiteCommand(@"INSERT INTO Empleados
-                (Codigo, Nombre, Apellido, Cedula, Cargo, IdDepartamento, SalarioBase, Estado, FechaIngreso)
-                VALUES (@codigo, @nombre, @apellido, @cedula, @cargo, @dep, @salario, @estado, @fecha);
+                (Codigo, Nombre, Apellido, Cedula, Cargo, IdDepartamento, SalarioBase, Estado, FechaIngreso, FechaEfectivaLaboral)
+                VALUES (@codigo, @nombre, @apellido, @cedula, @cargo, @dep, @salario, @estado, @fecha, @efectiva);
                 SELECT last_insert_rowid();", connection))
             {
                 FillEmpleadoParameters(command, empleado);
@@ -168,15 +180,37 @@ namespace SistemaGestionNomina.Data
         public void Update(Empleado empleado)
         {
             using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteTransaction transaction = connection.BeginTransaction())
+            {
+                Update(connection, transaction, empleado);
+                transaction.Commit();
+            }
+        }
+
+        public void Update(SQLiteConnection connection, SQLiteTransaction transaction, Empleado empleado)
+        {
             using (SQLiteCommand command = new SQLiteCommand(@"UPDATE Empleados SET
                 Codigo = @codigo, Nombre = @nombre, Apellido = @apellido, Cedula = @cedula,
                 Cargo = @cargo, IdDepartamento = @dep, SalarioBase = @salario,
-                Estado = @estado, FechaIngreso = @fecha
-                WHERE IdEmpleado = @id;", connection))
+                Estado = @estado, FechaIngreso = @fecha, FechaEfectivaLaboral = @efectiva
+                WHERE IdEmpleado = @id;", connection, transaction))
             {
                 FillEmpleadoParameters(command, empleado);
                 command.Parameters.AddWithValue("@id", empleado.IdEmpleado);
-                command.ExecuteNonQuery();
+                if (command.ExecuteNonQuery() != 1)
+                    throw new InvalidOperationException("No se pudo actualizar el empleado.");
+            }
+        }
+
+        public string GetDepartmentName(int departmentId)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(
+                "SELECT Nombre FROM Departamentos WHERE IdDepartamento = @id LIMIT 1;", connection))
+            {
+                command.Parameters.AddWithValue("@id", departmentId);
+                object value = command.ExecuteScalar();
+                return value == null || value == DBNull.Value ? string.Empty : Convert.ToString(value);
             }
         }
 
@@ -215,7 +249,10 @@ namespace SistemaGestionNomina.Data
                 DepartamentoNombre = Convert.ToString(reader["DepartamentoNombre"]),
                 SalarioBase = Convert.ToDecimal(reader["SalarioBase"]),
                 Estado = Convert.ToString(reader["Estado"]),
-                FechaIngreso = DateTime.Parse(Convert.ToString(reader["FechaIngreso"]))
+                FechaIngreso = DateTime.Parse(Convert.ToString(reader["FechaIngreso"])),
+                FechaEfectivaLaboral = reader["FechaEfectivaLaboral"] == DBNull.Value ||
+                    string.IsNullOrWhiteSpace(Convert.ToString(reader["FechaEfectivaLaboral"]))
+                    ? (DateTime?)null : DateTime.Parse(Convert.ToString(reader["FechaEfectivaLaboral"]))
             };
         }
 
@@ -230,6 +267,7 @@ namespace SistemaGestionNomina.Data
             command.Parameters.AddWithValue("@salario", empleado.SalarioBase);
             command.Parameters.AddWithValue("@estado", empleado.Estado);
             command.Parameters.AddWithValue("@fecha", empleado.FechaIngreso.ToString("yyyy-MM-dd"));
+            command.Parameters.AddWithValue("@efectiva", (empleado.FechaEfectivaLaboral ?? empleado.FechaIngreso).ToString("yyyy-MM-dd"));
         }
     }
 
@@ -370,7 +408,9 @@ namespace SistemaGestionNomina.Data
                 HoraEntrada = string.IsNullOrWhiteSpace(entrada) ? (TimeSpan?)null : TimeSpan.Parse(entrada),
                 HoraSalida = string.IsNullOrWhiteSpace(salida) ? (TimeSpan?)null : TimeSpan.Parse(salida),
                 HorasTrabajadas = Convert.ToDecimal(reader["HorasTrabajadas"]),
-                Estado = Convert.ToString(reader["Estado"])
+                Estado = Convert.ToString(reader["Estado"]),
+                IdSolicitudAusencia = reader["IdSolicitudAusencia"] == DBNull.Value
+                    ? (int?)null : Convert.ToInt32(reader["IdSolicitudAusencia"])
             };
         }
     }
@@ -440,6 +480,7 @@ namespace SistemaGestionNomina.Data
             using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
             using (SQLiteCommand command = new SQLiteCommand(@"SELECT n.*, p.Nombre AS PeriodoNombre
                 FROM Nominas n INNER JOIN PeriodosNomina p ON p.IdPeriodo = n.IdPeriodo
+                WHERE n.Estado <> 'Anulada'
                 ORDER BY n.FechaCalculo DESC;", connection))
             using (SQLiteDataReader reader = command.ExecuteReader())
             {
@@ -456,7 +497,11 @@ namespace SistemaGestionNomina.Data
         {
             List<NominaDetalle> items = new List<NominaDetalle>();
             using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
-            using (SQLiteCommand command = new SQLiteCommand(@"SELECT nd.*, e.Codigo, e.Nombre || ' ' || e.Apellido AS EmpleadoNombre, d.Nombre AS Departamento
+            using (SQLiteCommand command = new SQLiteCommand(@"SELECT nd.*,
+                    COALESCE(NULLIF(nd.CodigoEmpleadoSnapshot, ''), e.Codigo) AS Codigo,
+                    COALESCE(NULLIF(nd.NombreEmpleadoSnapshot, ''), e.Nombre || ' ' || e.Apellido) AS EmpleadoNombre,
+                    COALESCE(NULLIF(nd.CargoEmpleadoSnapshot, ''), e.Cargo) AS CargoEmpleado,
+                    COALESCE(NULLIF(nd.DepartamentoSnapshot, ''), d.Nombre) AS Departamento
                 FROM NominaDetalle nd
                 INNER JOIN Empleados e ON e.IdEmpleado = nd.IdEmpleado
                 INNER JOIN Departamentos d ON d.IdDepartamento = e.IdDepartamento
@@ -575,7 +620,8 @@ namespace SistemaGestionNomina.Data
         {
             using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
             using (SQLiteCommand command = new SQLiteCommand(@"SELECT * FROM PeriodosNomina
-                WHERE FechaInicio = @inicio AND FechaFin = @fin LIMIT 1;", connection))
+                WHERE FechaInicio <= @fin AND FechaFin >= @inicio
+                ORDER BY Cerrado DESC, FechaInicio LIMIT 1;", connection))
             {
                 command.Parameters.AddWithValue("@inicio", fechaInicio.ToString("yyyy-MM-dd"));
                 command.Parameters.AddWithValue("@fin", fechaFin.ToString("yyyy-MM-dd"));
@@ -596,6 +642,59 @@ namespace SistemaGestionNomina.Data
                 }
             }
             return null;
+        }
+
+        public PeriodoNomina GetOverlappingProtectedPeriod(DateTime fechaInicio, DateTime fechaFin)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            using (SQLiteCommand command = new SQLiteCommand(@"SELECT * FROM PeriodosNomina
+                WHERE FechaInicio <= @fin AND FechaFin >= @inicio
+                  AND (Cerrado = 1 OR Estado IN ('Confirmado','Pagado'))
+                ORDER BY FechaInicio LIMIT 1;", connection))
+            {
+                command.Parameters.AddWithValue("@inicio", fechaInicio.ToString("yyyy-MM-dd"));
+                command.Parameters.AddWithValue("@fin", fechaFin.ToString("yyyy-MM-dd"));
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read()) return MapPeriodo(reader);
+                }
+            }
+            return null;
+        }
+
+        public bool HasClosedPeriodAffectedByEmployeeChange(DateTime effectiveDate)
+        {
+            using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            {
+                return HasClosedPeriodAffectedByEmployeeChange(connection, null, effectiveDate);
+            }
+        }
+
+        public bool HasClosedPeriodAffectedByEmployeeChange(SQLiteConnection connection,
+            SQLiteTransaction transaction, DateTime effectiveDate)
+        {
+            using (SQLiteCommand command = new SQLiteCommand(@"SELECT COUNT(1) FROM PeriodosNomina
+                WHERE Cerrado = 1 AND FechaFin >= @efectiva;", connection, transaction))
+            {
+                command.Parameters.AddWithValue("@efectiva", effectiveDate.ToString("yyyy-MM-dd"));
+                return Convert.ToInt32(command.ExecuteScalar()) > 0;
+            }
+        }
+
+        private static PeriodoNomina MapPeriodo(SQLiteDataReader reader)
+        {
+            return new PeriodoNomina
+            {
+                IdPeriodo = Convert.ToInt32(reader["IdPeriodo"]),
+                Nombre = Convert.ToString(reader["Nombre"]),
+                FechaInicio = DateTime.Parse(Convert.ToString(reader["FechaInicio"])),
+                FechaFin = DateTime.Parse(Convert.ToString(reader["FechaFin"])),
+                Estado = Convert.ToString(reader["Estado"]),
+                Cerrado = Convert.ToInt32(reader["Cerrado"]) == 1,
+                FechaCierre = reader["FechaCierre"] == DBNull.Value ? (DateTime?)null :
+                    DateTime.Parse(Convert.ToString(reader["FechaCierre"])),
+                CerradoPor = reader["CerradoPor"] == DBNull.Value ? null : Convert.ToString(reader["CerradoPor"])
+            };
         }
 
         public int CreateNominaEnTransaccion(SQLiteConnection connection, SQLiteTransaction transaction, Nomina nomina)
@@ -649,6 +748,7 @@ namespace SistemaGestionNomina.Data
                 IdEmpleado = Convert.ToInt32(reader["IdEmpleado"]),
                 CodigoEmpleado = Convert.ToString(reader["Codigo"]),
                 EmpleadoNombre = Convert.ToString(reader["EmpleadoNombre"]),
+                CargoEmpleado = Convert.ToString(reader["CargoEmpleado"]),
                 Departamento = Convert.ToString(reader["Departamento"]),
                 SueldoBase = Convert.ToDecimal(reader["SueldoBase"]),
                 Bonos = Convert.ToDecimal(reader["Bonos"]),
@@ -762,8 +862,9 @@ namespace SistemaGestionNomina.Data
 
     public class ComprobanteRepository
     {
-        private const string ComprobanteSelect = @"SELECT c.*, e.Codigo,
-                   e.Nombre || ' ' || e.Apellido AS EmpleadoNombre,
+        private const string ComprobanteSelect = @"SELECT c.*,
+                   COALESCE(NULLIF(nd.CodigoEmpleadoSnapshot, ''), e.Codigo) AS Codigo,
+                   COALESCE(NULLIF(nd.NombreEmpleadoSnapshot, ''), e.Nombre || ' ' || e.Apellido) AS EmpleadoNombre,
                    p.Nombre AS PeriodoNombre, nd.TotalIngresos, nd.TotalDeducciones, nd.NetoPagar
             FROM Comprobantes c
             INNER JOIN Empleados e ON e.IdEmpleado = c.IdEmpleado

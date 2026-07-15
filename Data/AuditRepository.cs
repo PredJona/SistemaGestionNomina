@@ -10,9 +10,19 @@ namespace SistemaGestionNomina.Data
         public void Add(AuditRecord record)
         {
             using (SQLiteConnection connection = SQLiteConnectionFactory.CreateConnection())
+            {
+                Add(connection, null, record);
+            }
+        }
+
+        public void Add(SQLiteConnection connection, SQLiteTransaction transaction, AuditRecord record)
+        {
+            if (connection == null) throw new ArgumentNullException("connection");
+            if (record == null) throw new ArgumentNullException("record");
+
             using (SQLiteCommand command = new SQLiteCommand(@"INSERT INTO Auditoria
                 (Usuario, Modulo, Accion, Detalle, Fecha)
-                VALUES (@usuario, @modulo, @accion, @detalle, @fecha);", connection))
+                VALUES (@usuario, @modulo, @accion, @detalle, @fecha);", connection, transaction))
             {
                 command.Parameters.AddWithValue("@usuario", record.Usuario);
                 command.Parameters.AddWithValue("@modulo", record.Modulo);

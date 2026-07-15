@@ -82,10 +82,12 @@ namespace SistemaGestionNomina.Services
         private readonly AuditTrailService auditTrailService = new AuditTrailService();
         private readonly AuthorizationService authorizationService = new AuthorizationService();
         private readonly EmployeeScopeService employeeScopeService = new EmployeeScopeService();
+        private readonly EmployeeHistoryService employeeHistoryService = new EmployeeHistoryService();
 
         public List<Empleado> GetAll(string search, int? departmentId, string status)
         {
             authorizationService.DemandPermission(Permissions.EmployeesView);
+            employeeHistoryService.ApplyDueChanges(DateTime.Today);
             return empleadoRepository.GetAll(search, departmentId, status, employeeScopeService.GetDepartmentScope());
         }
 
@@ -93,6 +95,7 @@ namespace SistemaGestionNomina.Services
         {
             authorizationService.DemandAny(Permissions.EmployeesView, Permissions.AttendanceView,
                 Permissions.PayrollView, Permissions.ReportsPersonal);
+            employeeHistoryService.ApplyDueChanges(DateTime.Today);
             int? scope = employeeScopeService.GetDepartmentScope();
             return empleadoRepository.GetActiveByDepartment(scope ?? departmentId, scope);
         }
@@ -101,6 +104,7 @@ namespace SistemaGestionNomina.Services
         {
             authorizationService.DemandPermission(Permissions.EmployeesView);
             employeeScopeService.DemandEmployeeInScope(id);
+            employeeHistoryService.ApplyDueChanges(DateTime.Today);
             return empleadoRepository.GetById(id);
         }
 
@@ -112,6 +116,11 @@ namespace SistemaGestionNomina.Services
         }
 
         public int Save(Empleado empleado)
+        {
+            return Save(empleado, null).EmployeeId;
+        }
+
+        public EmployeeSaveResult Save(Empleado empleado, EmployeeChangeContext changeContext)
         {
             if (empleado == null)
             {
@@ -143,21 +152,34 @@ namespace SistemaGestionNomina.Services
 
             if (empleado.IdEmpleado == 0)
             {
+                empleado.FechaEfectivaLaboral = empleado.FechaIngreso;
                 int id = empleadoRepository.Add(empleado);
                 auditTrailService.RegistrarAccion("Empleados", "Crear", empleado.Codigo);
-                return id;
+                return new EmployeeSaveResult
+                {
+                    EmployeeId = id,
+                    AppliedImmediately = true
+                };
             }
 
-            empleadoRepository.Update(empleado);
-            auditTrailService.RegistrarAccion("Empleados", "Actualizar", empleado.Codigo);
-            return empleado.IdEmpleado;
+            EmployeeSaveResult result = employeeHistoryService.SaveEmployee(empleado, changeContext);
+            if (result.HistoryRecords == 0)
+                auditTrailService.RegistrarAccion("Empleados", "Actualizar", empleado.Codigo);
+            return result;
         }
 
         public void Deactivate(int id)
         {
+            throw new ArgumentException("Debe indicar la fecha efectiva y el motivo de desactivación.");
+        }
+
+        public EmployeeSaveResult Deactivate(int id, EmployeeChangeContext changeContext)
+        {
             authorizationService.DemandPermission(Permissions.EmployeesDeactivate);
-            empleadoRepository.Deactivate(id);
-            auditTrailService.RegistrarAccion("Empleados", "Desactivar", "IdEmpleado=" + id);
+            Empleado employee = empleadoRepository.GetById(id);
+            if (employee == null) throw new InvalidOperationException("El empleado no existe.");
+            employee.Estado = "Inactivo";
+            return employeeHistoryService.SaveEmployee(employee, changeContext);
         }
     }
 
@@ -166,6 +188,7 @@ namespace SistemaGestionNomina.Services
         private readonly AsistenciaRepository asistenciaRepository = new AsistenciaRepository();
         private readonly AuditTrailService auditTrailService = new AuditTrailService();
         private readonly AuthorizationService authorizationService = new AuthorizationService();
+        private readonly PayrollPeriodPolicyService periodPolicyService = new PayrollPeriodPolicyService();
         private readonly EmployeeScopeService employeeScopeService = new EmployeeScopeService();
 
         public int Register(Asistencia asistencia)
@@ -177,6 +200,7 @@ namespace SistemaGestionNomina.Services
 
             authorizationService.DemandPermission(Permissions.AttendanceRegister);
             employeeScopeService.DemandEmployeeInScope(asistencia.IdEmpleado);
+            periodPolicyService.VerificarFechasAbiertas(asistencia.Fecha.Date, asistencia.Fecha.Date);
 
             if (asistenciaRepository.Exists(asistencia.IdEmpleado, asistencia.Fecha.Date))
             {
@@ -269,6 +293,8 @@ namespace SistemaGestionNomina.Services
         private readonly ComprobanteRepository comprobanteRepository = new ComprobanteRepository();
         private readonly AuditTrailService auditTrailService = new AuditTrailService();
         private readonly AuthorizationService authorizationService = new AuthorizationService();
+        private readonly EmployeeEffectiveDataService effectiveEmployeeService = new EmployeeEffectiveDataService();
+        private readonly PayrollPeriodPolicyService periodPolicyService = new PayrollPeriodPolicyService();
 
         public Nomina CalcularNomina(DateTime fechaInicio, DateTime fechaFin, int? departamentoId)
         {
@@ -278,7 +304,9 @@ namespace SistemaGestionNomina.Services
                 throw new InvalidOperationException("La fecha de inicio debe ser menor o igual que la fecha fin.");
             }
 
-            List<Empleado> empleados = empleadoRepository.GetActiveByDepartment(departamentoId);
+            periodPolicyService.VerificarFechasAbiertas(fechaInicio.Date, fechaFin.Date);
+
+            List<Empleado> empleados = effectiveEmployeeService.GetActiveEmployeesAsOf(fechaFin.Date, departamentoId);
             if (empleados.Count == 0)
             {
                 throw new InvalidOperationException("No hay empleados activos para calcular la nómina.");
@@ -293,7 +321,7 @@ namespace SistemaGestionNomina.Services
             Nomina nomina = new Nomina();
             nomina.FechaCalculo = DateTime.Now;
             nomina.PeriodoNombre = "Nómina " + fechaInicio.ToString("dd/MM/yyyy") + " - " + fechaFin.ToString("dd/MM/yyyy");
-            nomina.Estado = "Calculada";
+            nomina.Estado = PayrollStates.Calculated;
 
             foreach (Empleado empleado in empleados)
             {
@@ -313,6 +341,7 @@ namespace SistemaGestionNomina.Services
                 detalle.IdEmpleado = empleado.IdEmpleado;
                 detalle.CodigoEmpleado = empleado.Codigo;
                 detalle.EmpleadoNombre = empleado.NombreCompleto;
+                detalle.CargoEmpleado = empleado.Cargo;
                 detalle.Departamento = empleado.DepartamentoNombre;
                 detalle.SueldoBase = empleado.SalarioBase;
                 detalle.Bonos = bonos;

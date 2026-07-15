@@ -10,14 +10,13 @@ namespace SistemaGestionNomina.Services
 
         public bool EstaAbierto(DateTime fecha)
         {
-            PeriodoNomina periodo = nominaRepository.GetPeriodoByFechas(fecha, fecha);
-            return periodo == null || !periodo.Cerrado;
+            return nominaRepository.GetOverlappingProtectedPeriod(fecha.Date, fecha.Date) == null;
         }
 
         public bool EstaAbierto(DateTime fechaInicio, DateTime fechaFin)
         {
-            PeriodoNomina periodo = nominaRepository.GetPeriodoByFechas(fechaInicio, fechaFin);
-            return periodo == null || !periodo.Cerrado;
+            if (fechaInicio.Date > fechaFin.Date) return false;
+            return nominaRepository.GetOverlappingProtectedPeriod(fechaInicio.Date, fechaFin.Date) == null;
         }
 
         public void VerificarPeriodoAbierto(int idPeriodo)
@@ -31,8 +30,16 @@ namespace SistemaGestionNomina.Services
 
         public void VerificarFechasAbiertas(DateTime fechaInicio, DateTime fechaFin)
         {
+            if (fechaInicio.Date > fechaFin.Date)
+                throw new ArgumentException("La fecha inicial no puede superar la fecha final.");
             if (!EstaAbierto(fechaInicio, fechaFin))
-                throw new InvalidOperationException("El período de fechas seleccionado ya está cerrado.");
+                throw new InvalidOperationException("El rango seleccionado se solapa con un período cerrado o confirmado.");
+        }
+
+        public void VerificarCambioLaboralPermitido(DateTime fechaEfectiva)
+        {
+            if (nominaRepository.HasClosedPeriodAffectedByEmployeeChange(fechaEfectiva.Date))
+                throw new InvalidOperationException("La fecha efectiva del cambio afectaría una nómina cerrada.");
         }
     }
 }

@@ -18,6 +18,7 @@ namespace SistemaGestionNomina
             try
             {
                 DatabaseInitializer.Initialize();
+                new EmployeeHistoryService().ApplyDueChanges(DateTime.Today);
             }
             catch (Exception ex)
             {

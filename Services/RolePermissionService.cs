@@ -19,11 +19,15 @@ namespace SistemaGestionNomina.Services
             {
                 Permissions.EmployeesView, Permissions.EmployeesCreate, Permissions.EmployeesEdit,
                 Permissions.EmployeesDeactivate, Permissions.EmployeesExport,
+                Permissions.EmployeeHistoryView, Permissions.EmployeeHistoryExport,
+                Permissions.EmployeeChangesSchedule,
                 Permissions.AttendanceView, Permissions.AttendanceRegister, Permissions.AttendanceImport,
                 Permissions.AttendanceExport, Permissions.PayslipsView, Permissions.PayslipsExport,
                 Permissions.PayslipsPrint, Permissions.PayslipsEmail,
                 Permissions.ReportsView, Permissions.ReportsPersonal, Permissions.ReportsExport,
-                Permissions.PayrollHistoryView
+                Permissions.PayrollHistoryView,
+                Permissions.AbsencesView, Permissions.AbsencesCreate, Permissions.AbsencesApprove,
+                Permissions.AbsencesReject, Permissions.AbsencesCancel, Permissions.AbsencesExport
             };
             permisosPorRol[Roles.Contabilidad] = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -32,16 +36,18 @@ namespace SistemaGestionNomina.Services
                 Permissions.PayslipsPrint, Permissions.PayslipsEmail,
                 Permissions.ReportsView, Permissions.ReportsFinancial, Permissions.ReportsExport,
                 Permissions.PayrollPay, Permissions.PayrollAnnul, Permissions.PayrollRecalculate,
-                Permissions.PayrollHistoryView
+                Permissions.PayrollHistoryView, Permissions.AbsencesView
             };
             permisosPorRol[Roles.Supervisor] = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                Permissions.AttendanceView, Permissions.AttendanceRegister, Permissions.AttendanceExport
+                Permissions.AttendanceView, Permissions.AttendanceRegister, Permissions.AttendanceExport,
+                Permissions.AbsencesView, Permissions.AbsencesApprove, Permissions.AbsencesReject
             };
             permisosPorRol[Roles.Trabajador] = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
                 Permissions.PortalView, Permissions.OwnProfileView, Permissions.OwnAttendanceView,
-                Permissions.OwnPayslipsView, Permissions.OwnPayslipsDownload, Permissions.OwnPasswordChange
+                Permissions.OwnPayslipsView, Permissions.OwnPayslipsDownload, Permissions.OwnPasswordChange,
+                Permissions.OwnAbsencesView, Permissions.OwnAbsencesCreate, Permissions.OwnAbsencesCancel
             };
 
             HashSet<string> admin = permisosPorRol[Roles.Admin];
