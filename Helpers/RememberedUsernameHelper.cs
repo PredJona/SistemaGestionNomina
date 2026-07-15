@@ -10,7 +10,7 @@ namespace SistemaGestionNomina.Helpers
             get
             {
                 return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    "Proy2_Eq01_CamposPD", "usuario.recordado");
+                    "ProyFinal_LPI_Eq01_NomiCore", "usuario.recordado");
             }
         }
 

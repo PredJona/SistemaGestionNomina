@@ -252,8 +252,8 @@ Al abrir desde la nómina actual se muestran **todas las versiones de la cadena*
 Ejecutar desde la raíz del proyecto:
 
 ```powershell
-dotnet restore Proy2_Eq01_CamposPD.csproj
-dotnet build Proy2_Eq01_CamposPD.csproj
+dotnet restore ProyFinal_LPI_Eq01_NomiCore.csproj
+dotnet build ProyFinal_LPI_Eq01_NomiCore.csproj
 powershell -ExecutionPolicy Bypass -File Tools\Fase3NominaRobustaSmokeTest.ps1
 ```
 
