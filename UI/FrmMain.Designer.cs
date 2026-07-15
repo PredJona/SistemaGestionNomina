@@ -6,6 +6,10 @@ namespace SistemaGestionNomina.UI
         public System.Windows.Forms.Panel panelSidebar;
         private System.Windows.Forms.Panel panelTopbar;
         public System.Windows.Forms.Panel panelContent;
+        private System.Windows.Forms.Panel panelBrand;
+        private System.Windows.Forms.FlowLayoutPanel flowMenu;
+        private System.Windows.Forms.FlowLayoutPanel flowAccount;
+        private System.Windows.Forms.Panel panelAccountSeparator;
         private System.Windows.Forms.Label lblMarca;
         private System.Windows.Forms.Label lblSubmarca;
         private System.Windows.Forms.Label lblUsuarioActual;
@@ -35,8 +39,10 @@ namespace SistemaGestionNomina.UI
         private void InitializeComponent()
         {
             this.panelSidebar = new System.Windows.Forms.Panel();
+            this.panelBrand = new System.Windows.Forms.Panel();
             this.lblMarca = new System.Windows.Forms.Label();
             this.lblSubmarca = new System.Windows.Forms.Label();
+            this.flowMenu = new System.Windows.Forms.FlowLayoutPanel();
             this.btnPortal = new FontAwesome.Sharp.IconButton();
             this.btnDashboard = new FontAwesome.Sharp.IconButton();
             this.btnEmpleados = new FontAwesome.Sharp.IconButton();
@@ -50,42 +56,46 @@ namespace SistemaGestionNomina.UI
             this.btnAusencias = new FontAwesome.Sharp.IconButton();
             this.btnSalir = new FontAwesome.Sharp.IconButton();
             this.btnCerrarSesion = new FontAwesome.Sharp.IconButton();
+            this.flowAccount = new System.Windows.Forms.FlowLayoutPanel();
+            this.panelAccountSeparator = new System.Windows.Forms.Panel();
             this.panelTopbar = new System.Windows.Forms.Panel();
             this.lblUsuarioActual = new System.Windows.Forms.Label();
             this.panelContent = new System.Windows.Forms.Panel();
             this.panelSidebar.SuspendLayout();
+            this.panelBrand.SuspendLayout();
+            this.flowMenu.SuspendLayout();
+            this.flowAccount.SuspendLayout();
             this.panelTopbar.SuspendLayout();
             this.SuspendLayout();
             // 
             // panelSidebar
             // 
             this.panelSidebar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(15)))), ((int)(((byte)(25)))));
-            this.panelSidebar.Controls.Add(this.lblMarca);
-            this.panelSidebar.Controls.Add(this.lblSubmarca);
-            this.panelSidebar.Controls.Add(this.btnPortal);
-            this.panelSidebar.Controls.Add(this.btnDashboard);
-            this.panelSidebar.Controls.Add(this.btnEmpleados);
-            this.panelSidebar.Controls.Add(this.btnAsistencia);
-            this.panelSidebar.Controls.Add(this.btnNomina);
-            this.panelSidebar.Controls.Add(this.btnComprobantes);
-            this.panelSidebar.Controls.Add(this.btnReportes);
-            this.panelSidebar.Controls.Add(this.btnConfiguracion);
-            this.panelSidebar.Controls.Add(this.btnAcercaDe);
-            this.panelSidebar.Controls.Add(this.btnAuditoria);
-            this.panelSidebar.Controls.Add(this.btnAusencias);
-            this.panelSidebar.Controls.Add(this.btnSalir);
-            this.panelSidebar.Controls.Add(this.btnCerrarSesion);
+            this.panelSidebar.Controls.Add(this.flowMenu);
+            this.panelSidebar.Controls.Add(this.flowAccount);
+            this.panelSidebar.Controls.Add(this.panelBrand);
             this.panelSidebar.Dock = System.Windows.Forms.DockStyle.Left;
             this.panelSidebar.Location = new System.Drawing.Point(0, 0);
             this.panelSidebar.Name = "panelSidebar";
             this.panelSidebar.Size = new System.Drawing.Size(260, 820);
             this.panelSidebar.TabIndex = 0;
-            // 
+            //
+            // panelBrand
+            //
+            this.panelBrand.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(15)))), ((int)(((byte)(25)))));
+            this.panelBrand.Controls.Add(this.lblMarca);
+            this.panelBrand.Controls.Add(this.lblSubmarca);
+            this.panelBrand.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelBrand.Location = new System.Drawing.Point(0, 0);
+            this.panelBrand.Name = "panelBrand";
+            this.panelBrand.Size = new System.Drawing.Size(260, 112);
+            this.panelBrand.TabIndex = 0;
+            //
             // lblMarca
-            // 
+            //
             this.lblMarca.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
             this.lblMarca.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(244)))), ((int)(((byte)(246)))));
-            this.lblMarca.Location = new System.Drawing.Point(24, 30);
+            this.lblMarca.Location = new System.Drawing.Point(24, 28);
             this.lblMarca.Name = "lblMarca";
             this.lblMarca.Size = new System.Drawing.Size(210, 32);
             this.lblMarca.TabIndex = 0;
@@ -94,11 +104,35 @@ namespace SistemaGestionNomina.UI
             // lblSubmarca
             // 
             this.lblSubmarca.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(170)))), ((int)(((byte)(185)))));
-            this.lblSubmarca.Location = new System.Drawing.Point(26, 64);
+            this.lblSubmarca.Location = new System.Drawing.Point(26, 63);
             this.lblSubmarca.Name = "lblSubmarca";
             this.lblSubmarca.Size = new System.Drawing.Size(210, 22);
             this.lblSubmarca.TabIndex = 1;
             this.lblSubmarca.Text = "Sistema de nómina";
+            //
+            // flowMenu
+            //
+            this.flowMenu.AutoScroll = true;
+            this.flowMenu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(15)))), ((int)(((byte)(25)))));
+            this.flowMenu.Controls.Add(this.btnPortal);
+            this.flowMenu.Controls.Add(this.btnDashboard);
+            this.flowMenu.Controls.Add(this.btnEmpleados);
+            this.flowMenu.Controls.Add(this.btnAsistencia);
+            this.flowMenu.Controls.Add(this.btnNomina);
+            this.flowMenu.Controls.Add(this.btnComprobantes);
+            this.flowMenu.Controls.Add(this.btnReportes);
+            this.flowMenu.Controls.Add(this.btnAusencias);
+            this.flowMenu.Controls.Add(this.btnConfiguracion);
+            this.flowMenu.Controls.Add(this.btnAuditoria);
+            this.flowMenu.Controls.Add(this.btnAcercaDe);
+            this.flowMenu.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowMenu.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.flowMenu.Location = new System.Drawing.Point(0, 112);
+            this.flowMenu.Name = "flowMenu";
+            this.flowMenu.Padding = new System.Windows.Forms.Padding(12, 20, 12, 12);
+            this.flowMenu.Size = new System.Drawing.Size(260, 592);
+            this.flowMenu.TabIndex = 1;
+            this.flowMenu.WrapContents = false;
             // 
             // btnPortal
             // 
@@ -111,7 +145,7 @@ namespace SistemaGestionNomina.UI
             this.btnPortal.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnPortal.IconSize = 20;
             this.btnPortal.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnPortal.Location = new System.Drawing.Point(16, 128);
+            this.btnPortal.Margin = new System.Windows.Forms.Padding(0, 0, 0, 8);
             this.btnPortal.Name = "btnPortal";
             this.btnPortal.Padding = new System.Windows.Forms.Padding(14, 0, 0, 0);
             this.btnPortal.Size = new System.Drawing.Size(228, 44);
@@ -134,7 +168,7 @@ namespace SistemaGestionNomina.UI
             this.btnDashboard.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnDashboard.IconSize = 20;
             this.btnDashboard.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnDashboard.Location = new System.Drawing.Point(16, 128);
+            this.btnDashboard.Margin = new System.Windows.Forms.Padding(0, 0, 0, 8);
             this.btnDashboard.Name = "btnDashboard";
             this.btnDashboard.Padding = new System.Windows.Forms.Padding(14, 0, 0, 0);
             this.btnDashboard.Size = new System.Drawing.Size(228, 44);
@@ -156,7 +190,7 @@ namespace SistemaGestionNomina.UI
             this.btnEmpleados.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnEmpleados.IconSize = 20;
             this.btnEmpleados.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnEmpleados.Location = new System.Drawing.Point(16, 184);
+            this.btnEmpleados.Margin = new System.Windows.Forms.Padding(0, 0, 0, 8);
             this.btnEmpleados.Name = "btnEmpleados";
             this.btnEmpleados.Padding = new System.Windows.Forms.Padding(14, 0, 0, 0);
             this.btnEmpleados.Size = new System.Drawing.Size(228, 44);
@@ -178,7 +212,7 @@ namespace SistemaGestionNomina.UI
             this.btnAsistencia.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnAsistencia.IconSize = 20;
             this.btnAsistencia.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnAsistencia.Location = new System.Drawing.Point(16, 240);
+            this.btnAsistencia.Margin = new System.Windows.Forms.Padding(0, 0, 0, 8);
             this.btnAsistencia.Name = "btnAsistencia";
             this.btnAsistencia.Padding = new System.Windows.Forms.Padding(14, 0, 0, 0);
             this.btnAsistencia.Size = new System.Drawing.Size(228, 44);
@@ -200,7 +234,7 @@ namespace SistemaGestionNomina.UI
             this.btnNomina.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnNomina.IconSize = 20;
             this.btnNomina.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnNomina.Location = new System.Drawing.Point(16, 296);
+            this.btnNomina.Margin = new System.Windows.Forms.Padding(0, 0, 0, 8);
             this.btnNomina.Name = "btnNomina";
             this.btnNomina.Padding = new System.Windows.Forms.Padding(14, 0, 0, 0);
             this.btnNomina.Size = new System.Drawing.Size(228, 44);
@@ -222,7 +256,7 @@ namespace SistemaGestionNomina.UI
             this.btnComprobantes.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnComprobantes.IconSize = 20;
             this.btnComprobantes.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnComprobantes.Location = new System.Drawing.Point(16, 352);
+            this.btnComprobantes.Margin = new System.Windows.Forms.Padding(0, 0, 0, 8);
             this.btnComprobantes.Name = "btnComprobantes";
             this.btnComprobantes.Padding = new System.Windows.Forms.Padding(14, 0, 0, 0);
             this.btnComprobantes.Size = new System.Drawing.Size(228, 44);
@@ -244,7 +278,7 @@ namespace SistemaGestionNomina.UI
             this.btnReportes.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnReportes.IconSize = 20;
             this.btnReportes.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnReportes.Location = new System.Drawing.Point(16, 408);
+            this.btnReportes.Margin = new System.Windows.Forms.Padding(0, 0, 0, 8);
             this.btnReportes.Name = "btnReportes";
             this.btnReportes.Padding = new System.Windows.Forms.Padding(14, 0, 0, 0);
             this.btnReportes.Size = new System.Drawing.Size(228, 44);
@@ -266,7 +300,7 @@ namespace SistemaGestionNomina.UI
             this.btnConfiguracion.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnConfiguracion.IconSize = 20;
             this.btnConfiguracion.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnConfiguracion.Location = new System.Drawing.Point(16, 464);
+            this.btnConfiguracion.Margin = new System.Windows.Forms.Padding(0, 0, 0, 8);
             this.btnConfiguracion.Name = "btnConfiguracion";
             this.btnConfiguracion.Padding = new System.Windows.Forms.Padding(14, 0, 0, 0);
             this.btnConfiguracion.Size = new System.Drawing.Size(228, 44);
@@ -288,7 +322,7 @@ namespace SistemaGestionNomina.UI
             this.btnAcercaDe.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnAcercaDe.IconSize = 20;
             this.btnAcercaDe.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnAcercaDe.Location = new System.Drawing.Point(16, 520);
+            this.btnAcercaDe.Margin = new System.Windows.Forms.Padding(0, 0, 0, 8);
             this.btnAcercaDe.Name = "btnAcercaDe";
             this.btnAcercaDe.Padding = new System.Windows.Forms.Padding(14, 0, 0, 0);
             this.btnAcercaDe.Size = new System.Drawing.Size(228, 44);
@@ -310,7 +344,7 @@ namespace SistemaGestionNomina.UI
             this.btnAuditoria.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnAuditoria.IconSize = 20;
             this.btnAuditoria.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnAuditoria.Location = new System.Drawing.Point(16, 576);
+            this.btnAuditoria.Margin = new System.Windows.Forms.Padding(0, 0, 0, 8);
             this.btnAuditoria.Name = "btnAuditoria";
             this.btnAuditoria.Padding = new System.Windows.Forms.Padding(14, 0, 0, 0);
             this.btnAuditoria.Size = new System.Drawing.Size(228, 44);
@@ -332,7 +366,7 @@ namespace SistemaGestionNomina.UI
             this.btnAusencias.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnAusencias.IconSize = 20;
             this.btnAusencias.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnAusencias.Location = new System.Drawing.Point(16, 632);
+            this.btnAusencias.Margin = new System.Windows.Forms.Padding(0, 0, 0, 8);
             this.btnAusencias.Name = "btnAusencias";
             this.btnAusencias.Padding = new System.Windows.Forms.Padding(14, 0, 0, 0);
             this.btnAusencias.Size = new System.Drawing.Size(228, 44);
@@ -345,7 +379,6 @@ namespace SistemaGestionNomina.UI
             // 
             // btnSalir
             // 
-            this.btnSalir.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnSalir.FlatAppearance.BorderSize = 0;
             this.btnSalir.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSalir.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
@@ -355,7 +388,7 @@ namespace SistemaGestionNomina.UI
             this.btnSalir.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnSalir.IconSize = 20;
             this.btnSalir.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnSalir.Location = new System.Drawing.Point(16, 688);
+            this.btnSalir.Margin = new System.Windows.Forms.Padding(0, 0, 0, 4);
             this.btnSalir.Name = "btnSalir";
             this.btnSalir.Padding = new System.Windows.Forms.Padding(14, 0, 0, 0);
             this.btnSalir.Size = new System.Drawing.Size(228, 44);
@@ -368,7 +401,6 @@ namespace SistemaGestionNomina.UI
             // 
             // btnCerrarSesion
             // 
-            this.btnCerrarSesion.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnCerrarSesion.FlatAppearance.BorderSize = 0;
             this.btnCerrarSesion.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCerrarSesion.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
@@ -378,7 +410,7 @@ namespace SistemaGestionNomina.UI
             this.btnCerrarSesion.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.btnCerrarSesion.IconSize = 20;
             this.btnCerrarSesion.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnCerrarSesion.Location = new System.Drawing.Point(16, 744);
+            this.btnCerrarSesion.Margin = new System.Windows.Forms.Padding(0, 0, 0, 4);
             this.btnCerrarSesion.Name = "btnCerrarSesion";
             this.btnCerrarSesion.Padding = new System.Windows.Forms.Padding(14, 0, 0, 0);
             this.btnCerrarSesion.Size = new System.Drawing.Size(228, 44);
@@ -388,6 +420,29 @@ namespace SistemaGestionNomina.UI
             this.btnCerrarSesion.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnCerrarSesion.UseVisualStyleBackColor = true;
             this.btnCerrarSesion.Click += new System.EventHandler(this.btnCerrarSesion_Click);
+            //
+            // flowAccount
+            //
+            this.flowAccount.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(15)))), ((int)(((byte)(25)))));
+            this.flowAccount.Controls.Add(this.panelAccountSeparator);
+            this.flowAccount.Controls.Add(this.btnCerrarSesion);
+            this.flowAccount.Controls.Add(this.btnSalir);
+            this.flowAccount.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.flowAccount.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.flowAccount.Location = new System.Drawing.Point(0, 704);
+            this.flowAccount.Name = "flowAccount";
+            this.flowAccount.Padding = new System.Windows.Forms.Padding(12, 8, 12, 8);
+            this.flowAccount.Size = new System.Drawing.Size(260, 116);
+            this.flowAccount.TabIndex = 2;
+            this.flowAccount.WrapContents = false;
+            //
+            // panelAccountSeparator
+            //
+            this.panelAccountSeparator.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(54)))), ((int)(((byte)(68)))));
+            this.panelAccountSeparator.Margin = new System.Windows.Forms.Padding(0, 0, 0, 7);
+            this.panelAccountSeparator.Name = "panelAccountSeparator";
+            this.panelAccountSeparator.Size = new System.Drawing.Size(228, 1);
+            this.panelAccountSeparator.TabIndex = 0;
             // 
             // panelTopbar
             // 
@@ -436,6 +491,9 @@ namespace SistemaGestionNomina.UI
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Proy2_Eq01_CamposPD";
             this.panelSidebar.ResumeLayout(false);
+            this.panelBrand.ResumeLayout(false);
+            this.flowMenu.ResumeLayout(false);
+            this.flowAccount.ResumeLayout(false);
             this.panelTopbar.ResumeLayout(false);
             this.ResumeLayout(false);
 

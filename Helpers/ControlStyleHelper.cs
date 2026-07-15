@@ -116,12 +116,22 @@ namespace SistemaGestionNomina.Helpers
 
         public static void SetActiveSidebarButton(Control sidebar, IconButton activeButton)
         {
-            foreach (Control control in sidebar.Controls)
+            StyleSidebarButtons(sidebar, activeButton);
+        }
+
+        private static void StyleSidebarButtons(Control parent, IconButton activeButton)
+        {
+            foreach (Control control in parent.Controls)
             {
                 IconButton button = control as IconButton;
                 if (button != null)
                 {
                     StyleSidebarButton(button, button == activeButton);
+                }
+
+                if (control.HasChildren)
+                {
+                    StyleSidebarButtons(control, activeButton);
                 }
             }
         }
@@ -358,7 +368,12 @@ namespace SistemaGestionNomina.Helpers
         private static bool IsLayoutPanel(Panel panel)
         {
             string name = panel.Name.ToLowerInvariant();
-            return name == "panelsidebar" || name == "panelcontent" || name == "paneltopbar";
+            return name == "panelsidebar" ||
+                   name == "panelcontent" ||
+                   name == "paneltopbar" ||
+                   name == "panelbrand" ||
+                   name == "flowmenu" ||
+                   name == "flowaccount";
         }
 
         private static void TryApplyMaterialTheme()
