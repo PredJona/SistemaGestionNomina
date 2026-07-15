@@ -80,6 +80,7 @@ namespace SistemaGestionNomina.Services
             {
                 try
                 {
+                    // Historial, dato vigente y auditoria se guardan juntos para no dejar cambios parciales.
                     for (int i = 0; i < changes.Count; i++) historyRepository.Add(connection, transaction, changes[i]);
                     employeeRepository.Update(connection, transaction, valueToPersist);
                     auditRepository.Add(connection, transaction, new AuditRecord
@@ -120,6 +121,7 @@ namespace SistemaGestionNomina.Services
                 {
                     List<HistorialEmpleado> pending = historyRepository.GetPendingDue(
                         connection, transaction, effectiveThrough.Date);
+                    // Los cambios futuros se aplican por fecha efectiva, no por la fecha en que fueron creados.
                     for (int i = 0; i < pending.Count; i++)
                     {
                         HistorialEmpleado item = pending[i];

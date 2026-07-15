@@ -235,6 +235,7 @@ namespace SistemaGestionNomina.Services
 
         private static string BuildPath(string prefix)
         {
+            // El usuario elige la ubicacion final; la aplicacion no guarda exportaciones en rutas fijas.
             return PathHelper.RequestExportPath(prefix, ".xlsx", "Libro de Excel (*.xlsx)|*.xlsx");
         }
 

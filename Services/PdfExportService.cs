@@ -21,6 +21,7 @@ namespace SistemaGestionNomina.Services
             if (string.IsNullOrWhiteSpace(path)) return string.Empty;
 
             PdfDocument document = CreateDocument("Empleados");
+            // Cada reporte crea un documento independiente para que pueda guardarse donde indique el usuario.
             PdfPage page = document.AddPage();
             XGraphics gfx = XGraphics.FromPdfPage(page);
             DrawTitle(gfx, "Reporte de Empleados");

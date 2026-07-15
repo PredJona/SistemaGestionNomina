@@ -25,6 +25,7 @@ namespace SistemaGestionNomina.Services
             {
                 try
                 {
+                    // Periodo, nomina, detalles, comprobantes y auditoria deben persistirse juntos.
                     int idNomina = CreateConfirmedPayroll(connection, transaction, nominaCalculada,
                         fechaInicio.Date, fechaFin.Date, CurrentUsername(), DateTime.Now);
                     transaction.Commit();
@@ -53,6 +54,7 @@ namespace SistemaGestionNomina.Services
                     if (payroll == null) throw new InvalidOperationException("La nómina no existe.");
                     PayrollStateMachine.DemandTransition(payroll.Estado, PayrollStates.Paid);
 
+                    // La condicion por estado evita registrar un pago duplicado ante acciones simultaneas.
                     using (SQLiteCommand command = new SQLiteCommand(@"UPDATE Nominas
                         SET Estado = @nuevo, FechaPago = @fecha, PagadaPor = @usuario
                         WHERE IdNomina = @id AND Estado = @anterior;", connection, transaction))
@@ -100,6 +102,7 @@ namespace SistemaGestionNomina.Services
                     if (payroll == null) throw new InvalidOperationException("La nómina no existe.");
                     PayrollStateMachine.DemandTransition(payroll.Estado, PayrollStates.Annulled);
 
+                    // La anulacion conserva la nomina original para mantener la trazabilidad financiera.
                     using (SQLiteCommand command = new SQLiteCommand(@"UPDATE Nominas
                         SET Estado = @nuevo, FechaAnulacion = @fecha, AnuladaPor = @usuario,
                             MotivoAnulacion = @motivo
@@ -170,6 +173,7 @@ namespace SistemaGestionNomina.Services
                     int newPayrollId = CreateConfirmedPayroll(connection, transaction, nominaRecalculada,
                         fechaInicio.Date, fechaFin.Date, user, now);
 
+                    // La nueva nomina queda enlazada con la anulada como una version corregida.
                     using (SQLiteCommand command = new SQLiteCommand(@"UPDATE NominaVersiones
                         SET IdNominaNueva = @nueva
                         WHERE IdVersion = @id AND IdNominaNueva IS NULL;", connection, transaction))
@@ -239,6 +243,7 @@ namespace SistemaGestionNomina.Services
             for (int i = 0; i < calculated.Detalles.Count; i++)
             {
                 NominaDetalle detail = calculated.Detalles[i];
+                // El snapshot evita que cambios futuros del empleado alteren comprobantes historicos.
                 using (SQLiteCommand command = new SQLiteCommand(@"INSERT INTO NominaDetalle
                     (IdNomina, IdEmpleado, SueldoBase, Bonos, HorasExtra, MontoHorasExtra,
                      TotalIngresos, TotalDeducciones, NetoPagar, CodigoEmpleadoSnapshot,

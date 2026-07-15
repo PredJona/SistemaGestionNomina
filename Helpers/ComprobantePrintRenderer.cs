@@ -7,6 +7,7 @@ namespace SistemaGestionNomina.Helpers
     {
         public static void Draw(Graphics graphics, Rectangle bounds, Comprobante comprobante)
         {
+            // El mismo diseno se reutiliza en vista previa, impresion fisica y comprobante PDF.
             int y = bounds.Top;
             using (Font titleFont = new Font("Segoe UI", 18F, FontStyle.Bold))
             using (Font headerFont = new Font("Segoe UI", 11F, FontStyle.Bold))
