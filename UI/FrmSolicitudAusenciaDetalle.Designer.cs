@@ -1,0 +1,30 @@
+namespace SistemaGestionNomina.UI
+{
+    partial class FrmSolicitudAusenciaDetalle
+    {
+        private System.ComponentModel.IContainer components = null;
+        private System.Windows.Forms.Label lblTitulo, lblEmpleado, lblTipo, lblInicio, lblFin, lblMotivo, lblResolucion, lblEstado;
+        private System.Windows.Forms.ComboBox cmbEmpleado, cmbTipo;
+        private System.Windows.Forms.DateTimePicker dtpInicio, dtpFin;
+        private System.Windows.Forms.TextBox txtMotivo, txtResolucion;
+        private System.Windows.Forms.Button btnGuardar, btnCerrar;
+        protected override void Dispose(bool disposing) { if (disposing && components != null) components.Dispose(); base.Dispose(disposing); }
+        private void InitializeComponent()
+        {
+            this.lblTitulo = new System.Windows.Forms.Label(); this.lblEmpleado = new System.Windows.Forms.Label(); this.lblTipo = new System.Windows.Forms.Label(); this.lblInicio = new System.Windows.Forms.Label(); this.lblFin = new System.Windows.Forms.Label(); this.lblMotivo = new System.Windows.Forms.Label(); this.lblResolucion = new System.Windows.Forms.Label(); this.lblEstado = new System.Windows.Forms.Label();
+            this.cmbEmpleado = new System.Windows.Forms.ComboBox(); this.cmbTipo = new System.Windows.Forms.ComboBox(); this.dtpInicio = new System.Windows.Forms.DateTimePicker(); this.dtpFin = new System.Windows.Forms.DateTimePicker(); this.txtMotivo = new System.Windows.Forms.TextBox(); this.txtResolucion = new System.Windows.Forms.TextBox(); this.btnGuardar = new System.Windows.Forms.Button(); this.btnCerrar = new System.Windows.Forms.Button(); this.SuspendLayout();
+            this.BackColor = System.Drawing.Color.FromArgb(18, 18, 27); this.ClientSize = new System.Drawing.Size(650, 510); this.Font = new System.Drawing.Font("Segoe UI", 9F); this.ForeColor = System.Drawing.Color.FromArgb(229, 228, 245); this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog; this.MaximizeBox = false; this.MinimizeBox = false; this.Name = "FrmSolicitudAusenciaDetalle"; this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent; this.Text = "Nueva solicitud de ausencia"; this.Load += new System.EventHandler(this.FrmSolicitudAusenciaDetalle_Load);
+            this.lblTitulo.AutoSize = true; this.lblTitulo.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold); this.lblTitulo.Location = new System.Drawing.Point(28, 20); this.lblTitulo.Text = "Nueva solicitud de ausencia";
+            this.lblEstado.AutoSize = true; this.lblEstado.ForeColor = System.Drawing.Color.FromArgb(167, 139, 250); this.lblEstado.Location = new System.Drawing.Point(32, 66); this.lblEstado.Text = "Estado inicial: Pendiente";
+            this.lblEmpleado.AutoSize = true; this.lblEmpleado.Location = new System.Drawing.Point(32, 104); this.lblEmpleado.Text = "Empleado"; this.cmbEmpleado.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList; this.cmbEmpleado.Location = new System.Drawing.Point(35, 126); this.cmbEmpleado.Size = new System.Drawing.Size(278, 23);
+            this.lblTipo.AutoSize = true; this.lblTipo.Location = new System.Drawing.Point(329, 104); this.lblTipo.Text = "Tipo"; this.cmbTipo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList; this.cmbTipo.Location = new System.Drawing.Point(332, 126); this.cmbTipo.Size = new System.Drawing.Size(278, 23);
+            this.lblInicio.AutoSize = true; this.lblInicio.Location = new System.Drawing.Point(32, 170); this.lblInicio.Text = "Fecha inicial"; this.dtpInicio.Format = System.Windows.Forms.DateTimePickerFormat.Short; this.dtpInicio.Location = new System.Drawing.Point(35, 192); this.dtpInicio.Size = new System.Drawing.Size(180, 23);
+            this.lblFin.AutoSize = true; this.lblFin.Location = new System.Drawing.Point(230, 170); this.lblFin.Text = "Fecha final"; this.dtpFin.Format = System.Windows.Forms.DateTimePickerFormat.Short; this.dtpFin.Location = new System.Drawing.Point(233, 192); this.dtpFin.Size = new System.Drawing.Size(180, 23);
+            this.lblMotivo.AutoSize = true; this.lblMotivo.Location = new System.Drawing.Point(32, 236); this.lblMotivo.Text = "Motivo"; this.txtMotivo.Location = new System.Drawing.Point(35, 258); this.txtMotivo.MaxLength = 500; this.txtMotivo.Multiline = true; this.txtMotivo.Size = new System.Drawing.Size(575, 76);
+            this.lblResolucion.AutoSize = true; this.lblResolucion.Location = new System.Drawing.Point(32, 350); this.lblResolucion.Text = "Observación de resolución"; this.txtResolucion.Location = new System.Drawing.Point(35, 372); this.txtResolucion.Multiline = true; this.txtResolucion.ReadOnly = true; this.txtResolucion.Size = new System.Drawing.Size(575, 58);
+            this.btnGuardar.BackColor = System.Drawing.Color.FromArgb(124, 58, 237); this.btnGuardar.FlatStyle = System.Windows.Forms.FlatStyle.Flat; this.btnGuardar.Location = new System.Drawing.Point(414, 452); this.btnGuardar.Size = new System.Drawing.Size(94, 34); this.btnGuardar.Text = "Registrar"; this.btnGuardar.UseVisualStyleBackColor = false; this.btnGuardar.Click += new System.EventHandler(this.btnGuardar_Click);
+            this.btnCerrar.FlatStyle = System.Windows.Forms.FlatStyle.Flat; this.btnCerrar.Location = new System.Drawing.Point(516, 452); this.btnCerrar.Size = new System.Drawing.Size(94, 34); this.btnCerrar.Text = "Cerrar"; this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
+            this.Controls.Add(this.lblTitulo); this.Controls.Add(this.lblEstado); this.Controls.Add(this.lblEmpleado); this.Controls.Add(this.cmbEmpleado); this.Controls.Add(this.lblTipo); this.Controls.Add(this.cmbTipo); this.Controls.Add(this.lblInicio); this.Controls.Add(this.dtpInicio); this.Controls.Add(this.lblFin); this.Controls.Add(this.dtpFin); this.Controls.Add(this.lblMotivo); this.Controls.Add(this.txtMotivo); this.Controls.Add(this.lblResolucion); this.Controls.Add(this.txtResolucion); this.Controls.Add(this.btnGuardar); this.Controls.Add(this.btnCerrar); this.ResumeLayout(false); this.PerformLayout();
+        }
+    }
+}

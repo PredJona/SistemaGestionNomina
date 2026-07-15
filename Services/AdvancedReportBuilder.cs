@@ -37,9 +37,9 @@ namespace SistemaGestionNomina.Services
             {
                 AppendMetric(builder, connection, "Empleados activos", "SELECT COUNT(1) FROM Empleados WHERE Estado = 'Activo';");
                 AppendMetric(builder, connection, "Departamentos", "SELECT COUNT(1) FROM Departamentos;");
-                AppendMetric(builder, connection, "Nominas confirmadas", "SELECT COUNT(1) FROM Nominas WHERE Estado = 'Confirmada';");
+                AppendMetric(builder, connection, "Nominas vigentes", "SELECT COUNT(1) FROM Nominas WHERE Estado <> 'Anulada';");
                 AppendMetric(builder, connection, "Comprobantes generados", "SELECT COUNT(1) FROM Comprobantes;");
-                AppendMetric(builder, connection, "Total neto pagado", "SELECT COALESCE(SUM(TotalNeto), 0) FROM Nominas WHERE Estado = 'Confirmada';", true);
+                AppendMetric(builder, connection, "Total neto pagado", "SELECT COALESCE(SUM(TotalNeto), 0) FROM Nominas WHERE Estado = 'Pagada';", true);
 
                 builder.AppendLine();
                 builder.AppendLine("## Nómina por departamento");
@@ -50,6 +50,8 @@ namespace SistemaGestionNomina.Services
                     FROM Departamentos d
                     LEFT JOIN Empleados e ON e.IdDepartamento = d.IdDepartamento AND e.Estado = 'Activo'
                     LEFT JOIN NominaDetalle nd ON nd.IdEmpleado = e.IdEmpleado
+                        AND EXISTS (SELECT 1 FROM Nominas n
+                            WHERE n.IdNomina = nd.IdNomina AND n.Estado <> 'Anulada')
                     GROUP BY d.Nombre
                     ORDER BY d.Nombre;", connection))
                 using (SQLiteDataReader reader = command.ExecuteReader())

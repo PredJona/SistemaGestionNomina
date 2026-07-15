@@ -14,15 +14,18 @@ namespace SistemaGestionNomina.UI
         private readonly Action openAttendance;
         private readonly Action openPayslips;
         private readonly Action openPassword;
+        private readonly Action openAbsences;
 
-        public FrmPortalTrabajador() : this(null, null, null, null) { }
+        public FrmPortalTrabajador() : this(null, null, null, null, null) { }
 
-        public FrmPortalTrabajador(Action profile, Action attendance, Action payslips, Action password)
+        public FrmPortalTrabajador(Action profile, Action attendance, Action payslips, Action password,
+            Action absences)
         {
             openProfile = profile;
             openAttendance = attendance;
             openPayslips = payslips;
             openPassword = password;
+            openAbsences = absences;
             InitializeComponent();
             ControlStyleHelper.ApplyModernForm(this);
         }
@@ -62,5 +65,6 @@ namespace SistemaGestionNomina.UI
         private void btnMisAsistencias_Click(object sender, EventArgs e) { if (openAttendance != null) openAttendance(); }
         private void btnMisComprobantes_Click(object sender, EventArgs e) { if (openPayslips != null) openPayslips(); }
         private void btnCambiarPassword_Click(object sender, EventArgs e) { if (openPassword != null) openPassword(); }
+        private void btnMisSolicitudes_Click(object sender, EventArgs e) { if (openAbsences != null) openAbsences(); }
     }
 }

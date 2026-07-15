@@ -19,6 +19,7 @@ namespace SistemaGestionNomina.UI
         public FontAwesome.Sharp.IconButton btnConfiguracion;
         public FontAwesome.Sharp.IconButton btnAcercaDe;
         public FontAwesome.Sharp.IconButton btnAuditoria;
+        public FontAwesome.Sharp.IconButton btnAusencias;
         public FontAwesome.Sharp.IconButton btnSalir;
         public FontAwesome.Sharp.IconButton btnCerrarSesion;
 
@@ -46,6 +47,7 @@ namespace SistemaGestionNomina.UI
             this.btnConfiguracion = new FontAwesome.Sharp.IconButton();
             this.btnAcercaDe = new FontAwesome.Sharp.IconButton();
             this.btnAuditoria = new FontAwesome.Sharp.IconButton();
+            this.btnAusencias = new FontAwesome.Sharp.IconButton();
             this.btnSalir = new FontAwesome.Sharp.IconButton();
             this.btnCerrarSesion = new FontAwesome.Sharp.IconButton();
             this.panelTopbar = new System.Windows.Forms.Panel();
@@ -70,6 +72,7 @@ namespace SistemaGestionNomina.UI
             this.panelSidebar.Controls.Add(this.btnConfiguracion);
             this.panelSidebar.Controls.Add(this.btnAcercaDe);
             this.panelSidebar.Controls.Add(this.btnAuditoria);
+            this.panelSidebar.Controls.Add(this.btnAusencias);
             this.panelSidebar.Controls.Add(this.btnSalir);
             this.panelSidebar.Controls.Add(this.btnCerrarSesion);
             this.panelSidebar.Dock = System.Windows.Forms.DockStyle.Left;
@@ -317,6 +320,28 @@ namespace SistemaGestionNomina.UI
             this.btnAuditoria.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnAuditoria.UseVisualStyleBackColor = true;
             this.btnAuditoria.Click += new System.EventHandler(this.btnAuditoria_Click);
+            //
+            // btnAusencias
+            //
+            this.btnAusencias.FlatAppearance.BorderSize = 0;
+            this.btnAusencias.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAusencias.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnAusencias.ForeColor = System.Drawing.Color.FromArgb(170, 170, 185);
+            this.btnAusencias.IconChar = FontAwesome.Sharp.IconChar.CalendarMinus;
+            this.btnAusencias.IconColor = System.Drawing.Color.FromArgb(170, 170, 185);
+            this.btnAusencias.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            this.btnAusencias.IconSize = 20;
+            this.btnAusencias.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnAusencias.Location = new System.Drawing.Point(16, 632);
+            this.btnAusencias.Name = "btnAusencias";
+            this.btnAusencias.Padding = new System.Windows.Forms.Padding(14, 0, 0, 0);
+            this.btnAusencias.Size = new System.Drawing.Size(228, 44);
+            this.btnAusencias.TabIndex = 11;
+            this.btnAusencias.Text = "  Ausencias";
+            this.btnAusencias.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnAusencias.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnAusencias.UseVisualStyleBackColor = true;
+            this.btnAusencias.Click += new System.EventHandler(this.btnAusencias_Click);
             // 
             // btnSalir
             // 

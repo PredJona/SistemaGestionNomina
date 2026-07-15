@@ -8,6 +8,9 @@ namespace SistemaGestionNomina.Security
         public const string EmployeesEdit = "empleados.editar";
         public const string EmployeesDeactivate = "empleados.desactivar";
         public const string EmployeesExport = "empleados.exportar";
+        public const string EmployeeHistoryView = "empleados.historial.ver";
+        public const string EmployeeHistoryExport = "empleados.historial.exportar";
+        public const string EmployeeChangesSchedule = "empleados.cambios.programar";
         public const string AttendanceView = "asistencia.ver";
         public const string AttendanceRegister = "asistencia.registrar";
         public const string AttendanceImport = "asistencia.importar";
@@ -39,5 +42,15 @@ namespace SistemaGestionNomina.Security
         public const string PayrollAnnul = "nomina.anular";
         public const string PayrollRecalculate = "nomina.recalcular";
         public const string PayrollHistoryView = "nomina.historial.ver";
+
+        public const string AbsencesView = "ausencias.ver";
+        public const string AbsencesCreate = "ausencias.crear";
+        public const string AbsencesApprove = "ausencias.aprobar";
+        public const string AbsencesReject = "ausencias.rechazar";
+        public const string AbsencesCancel = "ausencias.cancelar";
+        public const string AbsencesExport = "ausencias.exportar";
+        public const string OwnAbsencesView = "portal.ausencias.ver";
+        public const string OwnAbsencesCreate = "portal.ausencias.crear";
+        public const string OwnAbsencesCancel = "portal.ausencias.cancelar";
     }
 }

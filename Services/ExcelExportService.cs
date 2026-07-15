@@ -71,6 +71,72 @@ namespace SistemaGestionNomina.Services
             return path;
         }
 
+        public string ExportarHistorialEmpleados(List<HistorialEmpleado> history)
+        {
+            authorizationService.DemandPermission(Permissions.EmployeeHistoryExport);
+            string path = BuildPath("Historial_Laboral");
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+            using (XLWorkbook workbook = new XLWorkbook())
+            {
+                IXLWorksheet sheet = workbook.Worksheets.Add("Historial laboral");
+                WriteHeader(sheet, "Código", "Empleado", "Campo", "Valor anterior", "Valor nuevo",
+                    "Fecha efectiva", "Registrado", "Usuario", "Motivo", "Aplicado");
+                for (int i = 0; i < history.Count; i++)
+                {
+                    HistorialEmpleado item = history[i];
+                    int row = i + 2;
+                    sheet.Cell(row, 1).Value = item.CodigoEmpleado;
+                    sheet.Cell(row, 2).Value = item.EmpleadoNombre;
+                    sheet.Cell(row, 3).Value = item.CampoModificado;
+                    sheet.Cell(row, 4).Value = item.ValorAnterior;
+                    sheet.Cell(row, 5).Value = item.ValorNuevo;
+                    sheet.Cell(row, 6).Value = item.FechaEfectiva.ToString("dd/MM/yyyy");
+                    sheet.Cell(row, 7).Value = item.FechaCambio.ToString("dd/MM/yyyy HH:mm");
+                    sheet.Cell(row, 8).Value = item.UsuarioResponsable;
+                    sheet.Cell(row, 9).Value = item.Motivo;
+                    sheet.Cell(row, 10).Value = item.Aplicado ? "Sí" : "Programado";
+                }
+                Finish(sheet);
+                workbook.SaveAs(path);
+            }
+            auditTrailService.RegistrarAccion("Exportaciones", "Excel historial laboral",
+                System.IO.Path.GetFileName(path));
+            return path;
+        }
+
+        public string ExportarAusencias(List<SolicitudAusencia> requests)
+        {
+            authorizationService.DemandPermission(Permissions.AbsencesExport);
+            string path = BuildPath("Solicitudes_Ausencia");
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+            using (XLWorkbook workbook = new XLWorkbook())
+            {
+                IXLWorksheet sheet = workbook.Worksheets.Add("Ausencias");
+                WriteHeader(sheet, "Código", "Empleado", "Departamento", "Tipo", "Desde", "Hasta",
+                    "Estado", "Solicitante", "Resolución", "Motivo");
+                for (int i = 0; i < requests.Count; i++)
+                {
+                    SolicitudAusencia item = requests[i];
+                    int row = i + 2;
+                    sheet.Cell(row, 1).Value = item.CodigoEmpleado;
+                    sheet.Cell(row, 2).Value = item.EmpleadoNombre;
+                    sheet.Cell(row, 3).Value = item.DepartamentoNombre;
+                    sheet.Cell(row, 4).Value = item.Tipo;
+                    sheet.Cell(row, 5).Value = item.FechaInicio.ToString("dd/MM/yyyy");
+                    sheet.Cell(row, 6).Value = item.FechaFin.ToString("dd/MM/yyyy");
+                    sheet.Cell(row, 7).Value = item.Estado;
+                    sheet.Cell(row, 8).Value = item.UsuarioSolicitante;
+                    sheet.Cell(row, 9).Value = item.ObservacionResolucion;
+                    sheet.Cell(row, 10).Value = item.Motivo;
+                }
+                Finish(sheet);
+                workbook.SaveAs(path);
+            }
+            auditTrailService.RegistrarAccion("Exportaciones", "Excel ausencias",
+                System.IO.Path.GetFileName(path));
+            return path;
+        }
+
         public string ExportarNomina(Nomina nomina)
         {
             authorizationService.DemandPermission(Permissions.PayrollExport);

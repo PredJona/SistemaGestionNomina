@@ -103,12 +103,13 @@ CREATE TABLE Usuarios (
     $initializer = $assembly.GetType("SistemaGestionNomina.Data.DatabaseInitializer")
     $initializer.GetMethod("Initialize").Invoke($null, @())
     $initializer.GetMethod("Initialize").Invoke($null, @())
+    $latestVersion = [int]$assembly.GetType("SistemaGestionNomina.Data.DatabaseMigrationRunner").GetField("LatestVersion").GetRawConstantValue()
 
     $connection = [Activator]::CreateInstance($sqliteType, [object[]]@("Data Source=$dbPath;Version=3;Foreign Keys=True;"))
     $connection.Open()
-    Assert-True ((Get-Scalar $connection "PRAGMA user_version;") -eq 3) "Las migraciones no llegaron a la versión 3."
+    Assert-True ((Get-Scalar $connection "PRAGMA user_version;") -eq $latestVersion) "Las migraciones no llegaron a la última versión."
     Assert-True ((Get-Scalar $connection "SELECT COUNT(1) FROM pragma_table_info('Usuarios') WHERE name='IdEmpleado';") -eq 1) "Falta IdEmpleado en Usuarios."
-    Assert-True ((Get-Scalar $connection "SELECT COUNT(1) FROM MigracionesLog;") -eq 3) "Las migraciones no son idempotentes."
+    Assert-True ((Get-Scalar $connection "SELECT COUNT(1) FROM MigracionesLog;") -eq $latestVersion) "Las migraciones no son idempotentes."
     $connection.Close()
     $connection.Dispose()
 
